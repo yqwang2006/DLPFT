@@ -3,6 +3,7 @@
 #include "AutoEncoder.h"
 #include "RBM.h"
 #include "ResultModel.h"
+#include "SparseCoding.h"
 #include "SoftMax.h"
 using namespace dlpft::module;
 #endif

@@ -35,8 +35,8 @@ namespace dlpft{
 			}
 
 			/*get and set*/
-			arma::mat& get_coefficient(){return coefficient;}
-			arma::mat& get_labels(){return labels;}
+			arma::mat get_coefficient(){return coefficient;}
+			arma::mat get_labels(){return labels;}
 
 			int get_visiableSize() const {return visiableSize;}
 			void set_visiableSize(int& v){visiableSize = v;}
@@ -47,7 +47,7 @@ namespace dlpft{
 
 
 			void initialParam();
-			double& value_gradient(arma::mat& grad);
+			double value_gradient(arma::mat& grad);
 			void gradient(arma::mat& grad);
 			void hessian(arma::mat& grad, arma::mat& hess);
 		};

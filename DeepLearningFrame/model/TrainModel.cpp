@@ -28,6 +28,8 @@ ResultModel TrainModel::single_layer_train(arma::mat& data,arma::mat& labels, Ne
 		module = new AutoEncoder();
 	}else if(m_name == "RBM"){
 		module = new RBM();
+	}else if(m_name == "SC"){
+		module = new SparseCoding();
 	}else if(m_name == "SoftMax"){
 		module = new SoftMax();
 	}

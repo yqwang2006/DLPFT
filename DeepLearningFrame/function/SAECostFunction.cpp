@@ -20,7 +20,7 @@ void dlpft::function::SAECostFunction::initialParam(){
 	coefficient.rows(2*h_v_size+hiddenSize,coefficient.size()-1) = arma::zeros(visiableSize,1);
 	
 }
-double& dlpft::function::SAECostFunction::value_gradient(arma::mat& grad){
+double dlpft::function::SAECostFunction::value_gradient(arma::mat& grad){
 	/*clock_t start,end;
 	double dur;
 	start = clock();*/

@@ -26,7 +26,7 @@ double dlpft::optimizer::CgOptimizer::optimize(string varname){
 	int iter = 0;
 	double step_size;
 	double gtd = 0;
-	arma::mat x = function_ptr->get_coefficient();
+	arma::mat x = function_ptr->coefficient;
 	//cout << "before opt:" << function_ptr->get_coefficient()->n_rows<<";" << function_ptr->get_coefficient()->n_cols << endl;
 	while(true){
 		
@@ -38,12 +38,12 @@ double dlpft::optimizer::CgOptimizer::optimize(string varname){
 		if(stop(f,f_old,g,iter)){
 			break;
 		}
-		cout << "iteration " << iter << ": ";
-		cout << "func_value:"<< f << "; step_size = " << step_size << ";" << endl;
+		//cout << "iteration " << iter << ": ";
+		//cout << "func_value:"<< f << "; step_size = " << step_size << ";" << endl;
 		iter ++;
 	}
 	//cout << "after opt:" << function_ptr->get_coefficient()->n_rows<<";"  << function_ptr->get_coefficient()->n_cols << endl;
-	function_ptr->set_coefficient(x);
+	function_ptr->coefficient = x;
 	return f;
 }
 bool dlpft::optimizer::CgOptimizer::stop(const double& f, const double &f_old, const arma::mat& g, const int& iter){
@@ -78,7 +78,7 @@ void dlpft::optimizer::CgOptimizer::search_direction(
 	grad_old = grad;
 }
 double dlpft::optimizer::CgOptimizer::evaluate(arma::mat& x,arma::mat& grad){
-	function_ptr->set_coefficient(x);
+	function_ptr->coefficient = x;
 	double f_value = function_ptr->value_gradient(grad);
 	if(f_value < opt_value){
 		opt_location = x;
@@ -188,7 +188,7 @@ void dlpft::optimizer::CgOptimizer::wolfe_line_search(
 	arma::mat grad_new;
 	
 	arma::mat x_new = x+t*search_dir;
-	function_ptr->set_coefficient(x_new);
+	function_ptr->coefficient = x_new;
 	f_new = function_ptr->value_gradient(grad_new);
 	double gtd_new = arma::dot(grad_new,search_dir);
 	int iter = 0;
@@ -248,8 +248,8 @@ void dlpft::optimizer::CgOptimizer::wolfe_line_search(
 		gtd_prev = gtd_new;
 		
 
-		arma::mat x_new = x + t*search_dir;
-		function_ptr->set_coefficient(x_new);
+		x_new = x + t*search_dir;
+		function_ptr->coefficient = x_new;
 		f_new = function_ptr->value_gradient(grad_new);
 		gtd_new = arma::dot(grad_new,search_dir);
 
@@ -306,9 +306,9 @@ void dlpft::optimizer::CgOptimizer::wolfe_line_search(
 		}else{
 			insufProgress = 0;
 		}
-		arma::mat x_new = zeros(x.size());
+		x_new = zeros(x.size());
 		x_new = x+t*search_dir;
-		function_ptr->set_coefficient(x_new);
+		function_ptr->coefficient = x_new;
 		f_new = function_ptr->value_gradient(grad_new);
 		gtd_new = arma::dot(grad_new,search_dir);
 		iter ++;

@@ -4,9 +4,7 @@
 #include "Module.h"
 #include "ResultModel.h"
 #include "../function/SAECostFunction.h"
-#include "../optimizer/CgOptimizer.h"
-#include "../optimizer/LbfgsOptimizer.h"
-#include "../optimizer/SgdOptimizer.h"
+#include "../optimizer/AllOptMethod.h"
 #include "../factory/Creator.h"
 
 namespace dlpft{

@@ -13,29 +13,17 @@
 using namespace std;
 using namespace arma;
 using namespace dlpft::factory;
-using namespace dlpft::function;
-using namespace dlpft::optimizer;
-using namespace dlpft::module;
 using namespace dlpft::model;
 using namespace dlpft::io;
 arma::mat load_data(string filename);
 
 int main(){
-	//test_matrix();
-	//test_load_data();
+
 	RegisterFunction();
 	RegisterOptimizer();
 
-	double a[8] = {0,1,2,3,0,1,2,3};
-	arma::mat A(a,4,2);
 
-	arma::mat B = arma::randu(4,2);
-
-	cout << B;
-	cout << find(A>B);
-
-	
-	dlpft::io::LoadParam load_param("prj_21.param");
+	dlpft::io::LoadParam load_param("SC.param");
 	vector<vector<NewParam>> params;
 	AllDataAddr data_addr;
 	load_param.load(params,data_addr);
@@ -68,10 +56,11 @@ void test_matrix(){
 
 }
 arma::mat load_data(string filename){
-	dlpft::io::LoadData file(filename);
+	LoadData file(filename);
 	clock_t start = clock(),end;
 	double dur_time = 0;
 	arma::mat data_mat;
+
 	file.load_data(data_mat);
 	end = clock();
 	dur_time = (double)(end-start)/CLOCKS_PER_SEC;

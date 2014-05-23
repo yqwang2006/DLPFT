@@ -6,7 +6,7 @@ void dlpft::function::SoftMaxCost::initialParam(){
 	//coefficient = 0.005* arma::ones(classesNum*visiableSize,1);
 }
 
-double& dlpft::function::SoftMaxCost::value_gradient(arma::mat& grad){
+double dlpft::function::SoftMaxCost::value_gradient(arma::mat& grad){
 	
 	
 	coefficient.reshape(classesNum,visiableSize);

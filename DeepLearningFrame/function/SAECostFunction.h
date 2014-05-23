@@ -49,7 +49,7 @@ namespace dlpft{
 
 
 			void initialParam();
-			double& value_gradient(arma::mat& grad);
+			double value_gradient(arma::mat& grad);
 			void gradient(arma::mat& grad);
 			void hessian(arma::mat& grad, arma::mat& hess);
 		};

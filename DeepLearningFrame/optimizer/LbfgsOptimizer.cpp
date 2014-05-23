@@ -1,6 +1,6 @@
 #include "LbfgsOptimizer.h"
 
-double dlpft::optimizer::LbfgsOptimizer::optimize(arma::mat *var){
+double dlpft::optimizer::LbfgsOptimizer::optimize(string varname){
 	
 	return 0;
 }

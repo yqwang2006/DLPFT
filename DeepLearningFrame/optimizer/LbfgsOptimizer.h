@@ -7,7 +7,7 @@ namespace dlpft{
 		public:
 			LbfgsOptimizer(void){ name = "lbfgs";cout << name << endl;}
 			~LbfgsOptimizer(void);
-			double optimize(arma::mat *);
+			double optimize(string );
 		};//class sgdopt
 	};//namespace optimizer
 };//namespace dlpft

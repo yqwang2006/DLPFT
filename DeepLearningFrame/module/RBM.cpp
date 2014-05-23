@@ -40,7 +40,7 @@ ResultModel RBM::run(arma::mat& data, arma::mat& labels, NewParam& param){
 			
 			//update W,b,c
 			
-			arma::mat deltaW = h_means * minibatches[batch].t() - nh_means * nv_means.t();
+			arma::mat deltaW = h_means * minibatches[batch].t() - nh_means * nv_samples.t();
 			arma::mat deltac = sum(minibatches[batch],1) - sum(nv_samples,1);
 			arma::mat deltab = sum(h_means,1) - sum(nh_means,1);
 
@@ -48,7 +48,7 @@ ResultModel RBM::run(arma::mat& data, arma::mat& labels, NewParam& param){
 			result_model.bias = result_model.bias + learn_rate * (deltab / batch_size);
 			c_bias = c_bias + learn_rate * (deltac / batch_size);
 
-			double err = arma::sum(arma::sum(arma::pow((minibatches[batch]-nv_means),2)));
+			double err = arma::sum(arma::sum(arma::pow((minibatches[batch]-nv_means),2)))/batch_size;
 			errsum += err;
 		}
 

@@ -8,7 +8,7 @@ namespace dlpft{
 		
 		class CostFunction
 		{
-		protected:
+		public:
 			string function_name;
 			arma::mat coefficient;
 			arma::mat data;
@@ -17,7 +17,7 @@ namespace dlpft{
 			~CostFunction(void){
 				cout << "~CostFunction" << endl;
 			}
-			virtual double& value_gradient(arma::mat&){
+			virtual double value_gradient(arma::mat&){
 				double a = 0;
 				return a;
 			}
