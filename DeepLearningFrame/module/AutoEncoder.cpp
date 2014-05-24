@@ -6,7 +6,7 @@ using namespace dlpft::module;
 using namespace dlpft::function;
 using namespace dlpft::optimizer;
 using namespace dlpft::factory;
-ResultModel AutoEncoder::run(arma::mat& data, arma::mat& labels, NewParam& param){
+ResultModel AutoEncoder::pretrain(const arma::mat data, const arma::mat labels, NewParam param){
 	
 	ResultModel result_model;
 
@@ -41,7 +41,16 @@ ResultModel AutoEncoder::run(arma::mat& data, arma::mat& labels, NewParam& param
 	result_model.weightMatrix.reshape(hid_size,vis_size);
 	result_model.bias = (costfunc->get_coefficient()).rows(2*h_v_size,2*h_v_size+hid_size-1);
 
-	arma::mat activation = result_model.weightMatrix * data + repmat(result_model.bias,1,data.n_cols);
-	result_model.features = sigmoid(activation);
+	
 	return result_model;
+}
+
+void AutoEncoder::backpropagate( ResultModel& result_model,const arma::mat data, const arma::mat labels,NewParam param){
+	
+
+}
+arma::mat AutoEncoder::forwardpropagate(const ResultModel result_model,const arma::mat data, const arma::mat labels){
+	arma::mat activation = result_model.weightMatrix * data + repmat(result_model.bias,1,data.n_cols);
+	activation = sigmoid(activation);
+	return activation;
 }

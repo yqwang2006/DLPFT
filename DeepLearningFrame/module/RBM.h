@@ -14,7 +14,8 @@ namespace dlpft{
 
 			RBM() : Module(){}
 			
-			ResultModel run(arma::mat& data, arma::mat& labels, NewParam& param);
+			ResultModel pretrain(const arma::mat data, const arma::mat labels, NewParam param);
+			void backpropagate(ResultModel& result_model,const arma::mat data, const arma::mat labels, NewParam param);
 			~RBM();
 		    void rand_data(arma::mat input, arma::mat* batches,int sample_num , int batch_size);
 			void  CD_k(int k,arma::mat& input_data, arma::mat& weightMat, arma::mat& h_bias, arma::mat& v_bias);
@@ -25,8 +26,8 @@ namespace dlpft{
 		    arma::mat propdown(arma::mat& h,arma::mat& weightMat, arma::mat& c_bias);
 		    void  gibbs_hvh(arma::mat& weightMat, arma::mat& h_bias, arma::mat& v_bias,arma::mat& h0_sample);
 		    double get_reconstruct_error(arma::mat& v);
-		    arma::mat RBM_VtoH(arma::mat& input,ResultModel& result_model);
 			arma::mat BiNomial(const arma::mat mean);
+			arma::mat forwardpropagate(const ResultModel result_model,const arma::mat data, const arma::mat labels);
 		};
 	};
 };

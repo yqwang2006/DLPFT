@@ -6,7 +6,6 @@ namespace dlpft{
 		class ResultModel{
 		public:
 			string algorithm_name;
-			arma::mat features;
 			arma::mat weightMatrix;
 			arma::mat bias;
 

@@ -24,9 +24,9 @@ namespace dlpft{
 			virtual void gradient(arma::mat&){}
 			virtual void hessian(arma::mat&, arma::mat&){}
 			arma::mat get_coefficient(){return coefficient;}
-			void set_coefficient(arma::mat& the){ coefficient = the;}
+			void set_coefficient(const arma::mat the){ coefficient = the;}
 			arma::mat get_data() const{return data;}
-			void set_data(arma::mat& d){ data = d;}
+			void set_data(const arma::mat d){ data = d;}
 			string get_func_name(){return function_name;}
 		};
 		

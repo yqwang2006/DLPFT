@@ -14,8 +14,7 @@ void PredictModel::predict(ResultModel* trainModel,arma::mat& testdata, arma::ma
 			arma::mat activation = trainModel[i].weightMatrix * features  + repmat(trainModel[i].bias,1,features.n_cols);
 			features = sigmoid(activation);
 		}else if(params[i].params["Algorithm"] == "SC"){
-			arma::mat activation = trainModel[i].weightMatrix * features;
-			features = sigmoid(activation);
+			features = trainModel[i].weightMatrix * features;
 		}else if(params[i].params["Algorithm"] == "SoftMax"){
 			pred_vals = trainModel[i].weightMatrix * features;
 			max_vals = max(pred_vals);

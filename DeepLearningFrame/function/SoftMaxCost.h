@@ -21,7 +21,7 @@ namespace dlpft{
 			}
 
 
-			SoftMaxCost(int v, int c,arma::mat& d,arma::mat&  l, const double lambda=3e-3,
+			SoftMaxCost(int v, int c,const arma::mat d,const arma::mat  l, const double lambda=3e-3,
 				const string func_name = "softmax function")
 				:visiableSize(v),classesNum(c),lambda(lambda){
 					labels = l;

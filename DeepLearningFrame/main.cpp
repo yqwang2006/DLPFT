@@ -23,7 +23,7 @@ int main(){
 	RegisterOptimizer();
 
 
-	dlpft::io::LoadParam load_param("SC.param");
+	dlpft::io::LoadParam load_param("AE.param");
 	vector<vector<NewParam>> params;
 	AllDataAddr data_addr;
 	load_param.load(params,data_addr);
@@ -36,7 +36,7 @@ int main(){
 	
 
 	TrainModel trainmodel(train_data,train_labels);
-	ResultModel* resultmodel_ptr = trainmodel.train(train_data,train_labels,params[0]);
+	ResultModel* resultmodel_ptr = trainmodel.pretrain(train_data,train_labels,params[0]);
 
 	arma::mat test_data = load_data(data_addr.test_data_addr);
 	arma::mat test_labels = load_data(data_addr.test_labels_addr);

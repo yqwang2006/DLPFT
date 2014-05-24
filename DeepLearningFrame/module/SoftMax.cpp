@@ -8,7 +8,7 @@ using namespace dlpft::function;
 using namespace dlpft::optimizer;
 using namespace dlpft::factory;
 using namespace dlpft::param;
-ResultModel SoftMax::run(arma::mat& data, arma::mat& labels, NewParam& param){
+ResultModel SoftMax::pretrain(const arma::mat data, const arma::mat labels, NewParam param){
 	ResultModel result_model;
 	typedef Creator<CostFunction> FuncFatory;
 	typedef Creator<Optimizer> OptFactory;
@@ -35,3 +35,11 @@ ResultModel SoftMax::run(arma::mat& data, arma::mat& labels, NewParam& param){
 	return result_model;
 
 } 
+void SoftMax::backpropagate( ResultModel& result_model,const arma::mat data, const arma::mat labels, NewParam param){
+	
+}
+arma::mat SoftMax::forwardpropagate(const ResultModel result_model,const arma::mat data, const arma::mat labels){
+	arma::mat features = result_model.weightMatrix * data;
+	features = sigmoid(features);
+	return features;
+}

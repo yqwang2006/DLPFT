@@ -17,8 +17,8 @@ namespace dlpft{
 				original_data = d;
 				original_labels = l;
 			}
-			ResultModel* train(arma::mat& data,arma::mat& labels, vector<NewParam> param);
-			ResultModel single_layer_train(arma::mat& data,arma::mat& labels, NewParam& param);
+			ResultModel* pretrain(arma::mat& data,arma::mat& labels, vector<NewParam> param);
+			Module* create_module(NewParam& param);
 		};
 	};
 };

@@ -3,7 +3,7 @@
 #include <assert.h>
 using namespace dlpft::module;
 using namespace dlpft::param;
-ResultModel RBM::run(arma::mat& data, arma::mat& labels, NewParam& param){
+ResultModel RBM::pretrain(const arma::mat data, const arma::mat labels, NewParam param){
 	ResultModel result_model;
 	int hid_size = atoi(param.params["Hid_num"].c_str());
 	int max_epoch = atoi(param.params["Max_epoch"].c_str());
@@ -56,13 +56,23 @@ ResultModel RBM::run(arma::mat& data, arma::mat& labels, NewParam& param){
 
 	}
 
-	result_model.features = RBM_VtoH(data, result_model);
+	//result_model.features = RBM_VtoH(data, result_model);
 
 	//delete minibatches;
 
 	return result_model;
 }
-void RBM::rand_data(arma::mat input, arma::mat* batches,int sample_num, int batch_size){
+void RBM::backpropagate(ResultModel& result_model,const arma::mat data, const arma::mat labels, NewParam param){
+	
+
+}
+arma::mat RBM::forwardpropagate(const ResultModel result_model,const arma::mat data, const arma::mat labels){
+	arma::mat features = result_model.weightMatrix * data + arma::repmat(result_model.bias,1,data.n_cols);
+	features = sigmoid(features);
+	return features;
+}
+
+void RBM::rand_data(const arma::mat input, arma::mat* batches,int sample_num, int batch_size){
 	
 	srand(unsigned(time(NULL)));
 	int batches_num = sample_num / batch_size;
@@ -126,12 +136,6 @@ void  RBM::gibbs_hvh(arma::mat& weightMat, arma::mat& h_bias, arma::mat& v_bias,
 double RBM::get_reconstruct_error(arma::mat& v){
 	return 0;
 }
-arma::mat RBM::RBM_VtoH(arma::mat& input,ResultModel& result_model){
-	arma::mat result = result_model.weightMatrix * input + arma::repmat(result_model.bias,1,input.n_cols);
-	result = sigmoid(result);
-	return result;
-}
-
 void  RBM::CD_k(int k,arma::mat& v, arma::mat& weightMat, arma::mat& h_bias, arma::mat& v_bias){
 	sample_h_given_v(v, h_means, h_samples,weightMat,h_bias);
 	for(int step = 0;step < k; step++){
