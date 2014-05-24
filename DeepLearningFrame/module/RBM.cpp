@@ -62,9 +62,13 @@ ResultModel RBM::pretrain(const arma::mat data, const arma::mat labels, NewParam
 
 	return result_model;
 }
-void RBM::backpropagate(ResultModel& result_model,const arma::mat data, const arma::mat labels, NewParam param){
-	
+arma::mat RBM::backpropagate(ResultModel& result_model,const arma::mat delta, const arma::mat features, arma::mat labels, NewParam param){
+	double errsum = 0;
+	arma::mat curr_delta;
+	errsum = sum(sum(result_model.weightMatrix.t() * delta));
 
+	curr_delta = features * (1-features) * errsum; 
+	return curr_delta;
 }
 arma::mat RBM::forwardpropagate(const ResultModel result_model,const arma::mat data, const arma::mat labels){
 	arma::mat features = result_model.weightMatrix * data + arma::repmat(result_model.bias,1,data.n_cols);
@@ -145,8 +149,4 @@ void  RBM::CD_k(int k,arma::mat& v, arma::mat& weightMat, arma::mat& h_bias, arm
 			gibbs_hvh(weightMat,h_bias,v_bias,nh_samples);
 		}
 	}
-
-
-
-
 }

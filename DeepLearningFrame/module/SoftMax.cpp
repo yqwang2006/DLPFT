@@ -35,8 +35,22 @@ ResultModel SoftMax::pretrain(const arma::mat data, const arma::mat labels, NewP
 	return result_model;
 
 } 
-void SoftMax::backpropagate( ResultModel& result_model,const arma::mat data, const arma::mat labels, NewParam param){
-	
+arma::mat SoftMax::backpropagate( ResultModel& result_model,const arma::mat delta,const arma::mat features, const arma::mat labels, NewParam param){
+	double errsum = 0;
+
+	arma::mat desired_out = zeros(features.n_rows,features.n_cols);
+	for(int i = 0;i < features.n_cols; i++){
+		if(labels(i) == features.n_rows)
+			desired_out(0,i) = 1;
+		else
+			desired_out(labels(i),i) = 1;
+	}
+
+	arma::mat curr_delta;
+	errsum = sum(sum(result_model.weightMatrix.t() * delta));
+
+	curr_delta = features * (1-features) * errsum; 
+	return curr_delta;
 }
 arma::mat SoftMax::forwardpropagate(const ResultModel result_model,const arma::mat data, const arma::mat labels){
 	arma::mat features = result_model.weightMatrix * data;

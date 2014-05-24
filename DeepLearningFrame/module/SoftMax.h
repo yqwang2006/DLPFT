@@ -2,12 +2,7 @@
 #define SOFTMAX_H
 #include "armadillo"
 #include "Module.h"
-#include "ResultModel.h"
 #include "../function/SoftMaxCost.h"
-#include "../optimizer/CgOptimizer.h"
-#include "../optimizer/LbfgsOptimizer.h"
-#include "../optimizer/SgdOptimizer.h"
-#include "../factory/Creator.h"
 
 namespace dlpft{
 	namespace module{
@@ -18,7 +13,7 @@ namespace dlpft{
 			}
 			~SoftMax(){}
 			ResultModel pretrain(const arma::mat data, const arma::mat labels, NewParam param);
-			void backpropagate( ResultModel& result_model,const arma::mat data, const arma::mat labels, NewParam param);
+			arma::mat backpropagate( ResultModel& result_model,const arma::mat delta,const arma::mat features,  const arma::mat labels, NewParam param);
 			arma::mat forwardpropagate(const ResultModel result_model,const arma::mat data, const arma::mat labels);
 		};
 	};

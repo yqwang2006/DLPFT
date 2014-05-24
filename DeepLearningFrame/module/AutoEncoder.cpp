@@ -1,11 +1,10 @@
 #include "AutoEncoder.h"
-
-#include "../param/AEParam.h"
 using namespace dlpft::param;
 using namespace dlpft::module;
 using namespace dlpft::function;
 using namespace dlpft::optimizer;
 using namespace dlpft::factory;
+
 ResultModel AutoEncoder::pretrain(const arma::mat data, const arma::mat labels, NewParam param){
 	
 	ResultModel result_model;
@@ -45,8 +44,11 @@ ResultModel AutoEncoder::pretrain(const arma::mat data, const arma::mat labels, 
 	return result_model;
 }
 
-void AutoEncoder::backpropagate( ResultModel& result_model,const arma::mat data, const arma::mat labels,NewParam param){
-	
+arma::mat AutoEncoder::backpropagate( ResultModel& result_model,const arma::mat delta, const arma::mat features, const arma::mat labels,NewParam param){
+	arma::mat curr_delta;
+
+
+	return curr_delta;
 
 }
 arma::mat AutoEncoder::forwardpropagate(const ResultModel result_model,const arma::mat data, const arma::mat labels){

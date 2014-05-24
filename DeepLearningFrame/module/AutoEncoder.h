@@ -2,11 +2,7 @@
 #define AUTOENCODER_H
 #include "armadillo"
 #include "Module.h"
-#include "ResultModel.h"
 #include "../function/SAECostFunction.h"
-#include "../optimizer/AllOptMethod.h"
-#include "../factory/Creator.h"
-
 namespace dlpft{
 	namespace module{
 		class AutoEncoder : public Module{
@@ -17,7 +13,7 @@ namespace dlpft{
 			~AutoEncoder(){
 			}
 			ResultModel pretrain(const arma::mat data, const arma::mat labels, NewParam param);
-			void backpropagate(ResultModel& result_model,const arma::mat data, const arma::mat labels,NewParam param);
+			arma::mat backpropagate(ResultModel& result_model,const arma::mat delta, const arma::mat features, const arma::mat labels,NewParam param);
 			arma::mat forwardpropagate(const ResultModel result_model,const arma::mat data, const arma::mat labels);
 		};
 	};

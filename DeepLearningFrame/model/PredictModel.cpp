@@ -6,30 +6,30 @@ void PredictModel::predict(ResultModel* trainModel,arma::mat& testdata, arma::ma
 	arma::mat pred_vals;
 	arma::mat pred_labels;
 	arma::mat max_vals;
+	Module* single_module;
 	for(int i = 0;i < layer_num;i++){
-		if(params[i].params["Algorithm"] == "AutoEncoder"){
-			arma::mat activation = trainModel[i].weightMatrix * features  + repmat(trainModel[i].bias,1,features.n_cols);
-			features = sigmoid(activation);
-		}else if(params[i].params["Algorithm"] == "RBM"){
-			arma::mat activation = trainModel[i].weightMatrix * features  + repmat(trainModel[i].bias,1,features.n_cols);
-			features = sigmoid(activation);
-		}else if(params[i].params["Algorithm"] == "SC"){
-			features = trainModel[i].weightMatrix * features;
-		}else if(params[i].params["Algorithm"] == "SoftMax"){
-			pred_vals = trainModel[i].weightMatrix * features;
-			max_vals = max(pred_vals);
+		 single_module = create_module(params[i]);
+		
+		features = single_module->forwardpropagate(trainModel[i],features,testlabels);
+	}
+	delete single_module;
+	single_module = NULL;
+	if(params[layer_num-1].params["Algorithm"] == "SoftMax"){
+			max_vals = max(features);
 			pred_labels = zeros(max_vals.size(),1);
 			for(int i = 0;i < pred_vals.n_cols;i++){
 				for(int j = 0;j < pred_vals.n_rows; j++){
 					if(max_vals(i) == pred_vals(j,i)){
-						pred_labels[i] = j + 1;
+						if(j == 0)
+							pred_labels[i] = features.n_rows;	//number of cases
+						else
+							pred_labels[i] = j;
 						continue;
 					}
 				}
 				
 			}
 		}
-	}
 	cout << "Predict error:" << endl;
 	cout << 100*(predict_acc(pred_labels,testlabels)) << "%" << endl;
 }

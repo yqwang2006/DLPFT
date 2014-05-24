@@ -15,7 +15,7 @@ namespace dlpft{
 			RBM() : Module(){}
 			
 			ResultModel pretrain(const arma::mat data, const arma::mat labels, NewParam param);
-			void backpropagate(ResultModel& result_model,const arma::mat data, const arma::mat labels, NewParam param);
+			arma::mat backpropagate(ResultModel& result_model,const arma::mat delta,const arma::mat features,  const arma::mat labels, NewParam param);
 			~RBM();
 		    void rand_data(arma::mat input, arma::mat* batches,int sample_num , int batch_size);
 			void  CD_k(int k,arma::mat& input_data, arma::mat& weightMat, arma::mat& h_bias, arma::mat& v_bias);

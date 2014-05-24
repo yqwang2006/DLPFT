@@ -35,13 +35,13 @@ int main(){
 	arma::mat train_labels = load_data(data_addr.train_labels_addr);
 	
 
-	TrainModel trainmodel(train_data,train_labels);
+	TrainModel trainmodel;
 	ResultModel* resultmodel_ptr = trainmodel.pretrain(train_data,train_labels,params[0]);
 
 	arma::mat test_data = load_data(data_addr.test_data_addr);
 	arma::mat test_labels = load_data(data_addr.test_labels_addr);
 	test_data = test_data.t();
-	PredictModel testmodel(test_data,test_labels,params[0]);
+	PredictModel testmodel;
 	testmodel.predict(resultmodel_ptr,test_data,test_labels,params[0]);
 
 

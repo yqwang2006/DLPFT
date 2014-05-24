@@ -1,27 +1,17 @@
 #ifndef PRED_MODEL_H
 #define PRED_MODEL_H
 #include "../module/AutoEncoder.h"
-#include "../module/ResultModel.h"
+#include "../model/ResultModel.h"
 #include "../module/SoftMax.h"
 #include "../param/AllParam.h"
+#include "Model.h"
 using namespace dlpft::module;
 namespace dlpft{
 	namespace model{
-		class PredictModel{
-		private:
-			arma::mat original_data;
-			arma::mat original_labels;
-			vector<NewParam> params;
+		class PredictModel:public Model{
 			
 		public:
-			PredictModel(){
-			}
-			PredictModel( arma::mat d, arma::mat l, vector<NewParam> param){
-				original_data = d;
-				original_labels = l;
-				params = param;
-				
-			}
+			PredictModel():Model(){}
 			void predict(ResultModel* trainModel,arma::mat& testdata, arma::mat& testlabels,vector<NewParam> params);
 			double predict_acc(const arma::mat predict_labels, const arma::mat testlabels);
 		};

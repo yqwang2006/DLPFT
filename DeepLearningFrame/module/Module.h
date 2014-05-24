@@ -2,8 +2,16 @@
 #include "armadillo"
 #include <string>
 #include "../param/NewParam.h"
-#include "ResultModel.h"
+#include "../model/ResultModel.h"
+
+#include "../optimizer/AllOptMethod.h"
+#include "../factory/Creator.h"
+
 using namespace dlpft::param;
+using namespace dlpft::model;
+using namespace dlpft::function;
+using namespace dlpft::optimizer;
+using namespace dlpft::factory;
 namespace dlpft{
 	namespace module{
 		class Module{
@@ -16,7 +24,7 @@ namespace dlpft{
 			}
 			
 			virtual ResultModel pretrain(const arma::mat data, const arma::mat labels, NewParam param)=0;
-			virtual void backpropagate(ResultModel& result_model,const arma::mat data, const arma::mat labels, NewParam param)=0;
+			virtual arma::mat backpropagate(ResultModel& result_model,const arma::mat delta, const arma::mat features, const arma::mat labels, NewParam param)=0;
 			virtual arma::mat forwardpropagate(const ResultModel result_model,const arma::mat data, const arma::mat labels)=0;
 		};
 	};
