@@ -1,6 +1,7 @@
 #pragma once
 #include "armadillo"
 #include <string>
+#include "../util/ActiveFunction.h"
 #include "../param/NewParam.h"
 #include "../model/ResultModel.h"
 
@@ -17,15 +18,18 @@ namespace dlpft{
 		class Module{
 		protected:
 			std::string name;
+			ActivationFunction active_func_choice;
 		public:
 			Module(){
+				name = "";
+				active_func_choice = SIGMOID;
 			}
 			~Module(){
 			}
 			
-			virtual ResultModel pretrain(const arma::mat data, const arma::mat labels, NewParam param)=0;
-			virtual arma::mat backpropagate(ResultModel& result_model,const arma::mat delta, const arma::mat features, const arma::mat labels, NewParam param)=0;
-			virtual arma::mat forwardpropagate(const ResultModel result_model,const arma::mat data, const arma::mat labels)=0;
+			virtual ResultModel pretrain(const arma::mat data, const arma::imat labels, NewParam param)=0;
+			virtual arma::mat backpropagate(ResultModel& result_model,const arma::mat delta, const arma::mat features, const arma::imat labels, NewParam param)=0;
+			virtual arma::mat forwardpropagate(const ResultModel result_model,const arma::mat data, const arma::imat labels)=0;
 		};
 	};
 };

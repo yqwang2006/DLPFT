@@ -1,7 +1,6 @@
 #ifndef SAECOST_H
 #define SAECOST_H
 #include "CostFunction.h"
-#include "../util/sigmoid.h" 
 using namespace arma;
 namespace dlpft{
 	namespace function{
@@ -14,6 +13,7 @@ namespace dlpft{
 			double lambda;
 			double sparsityParam;
 			double beta;
+			
 		public:
 			SAECostFunction(void):CostFunction(){
 				initialParam();

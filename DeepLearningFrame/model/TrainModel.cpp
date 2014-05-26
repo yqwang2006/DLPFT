@@ -1,7 +1,7 @@
 #include "TrainModel.h"
 using namespace dlpft::factory;
 using namespace dlpft::model;
-ResultModel* TrainModel::pretrain(arma::mat& data,arma::mat& labels, vector<NewParam> params){
+ResultModel* TrainModel::pretrain(arma::mat& data,arma::imat& labels, vector<NewParam> params){
 	int number_layer = params.size();
 
 	ResultModel *resultmodel_ptr = new ResultModel[number_layer];

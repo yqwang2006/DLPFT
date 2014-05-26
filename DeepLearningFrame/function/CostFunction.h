@@ -1,6 +1,7 @@
 #pragma once
 #include "armadillo"
 #include <vector>
+#include "../util/ActiveFunction.h"
 #include <string>
 using namespace std;
 namespace dlpft{
@@ -12,8 +13,11 @@ namespace dlpft{
 			string function_name;
 			arma::mat coefficient;
 			arma::mat data;
+			ActivationFunction active_func_choice;
 		public:
-			CostFunction(void):function_name(""){}
+			CostFunction(void):function_name(""){
+				active_func_choice = SIGMOID;
+			}
 			~CostFunction(void){
 				cout << "~CostFunction" << endl;
 			}

@@ -173,7 +173,7 @@ std::vector<std::string> dlpft::io::LoadParam::split(std::string str,std::string
     str+=pattern;//扩展字符串以方便操作
     int size=str.size();
 
-    for(int i=0; i<size; i++)
+    for(size_t i=0; i<size; i++)
     {
         pos=str.find(pattern,i);
         if(pos<size)

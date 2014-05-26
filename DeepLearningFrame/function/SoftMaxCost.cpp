@@ -13,7 +13,7 @@ double dlpft::function::SoftMaxCost::value_gradient(arma::mat& grad){
 	double numCases = data.n_cols;
 	arma::mat groundTruth = zeros(classesNum,numCases);
 	for(int i = 0;i < numCases; i++){
-		if(labels(i) == numCases)
+		if(labels(i) == classesNum)
 			groundTruth(0,i) = 1;
 		else
 			groundTruth(labels(i),i) = 1;

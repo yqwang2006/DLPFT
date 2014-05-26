@@ -12,9 +12,9 @@ namespace dlpft{
 				name = "SoftMax";
 			}
 			~SoftMax(){}
-			ResultModel pretrain(const arma::mat data, const arma::mat labels, NewParam param);
-			arma::mat backpropagate( ResultModel& result_model,const arma::mat delta,const arma::mat features,  const arma::mat labels, NewParam param);
-			arma::mat forwardpropagate(const ResultModel result_model,const arma::mat data, const arma::mat labels);
+			ResultModel pretrain(const arma::mat data, const arma::imat labels, NewParam param);
+			arma::mat backpropagate( ResultModel& result_model,const arma::mat delta,const arma::mat features,  const arma::imat labels, NewParam param);
+			arma::mat forwardpropagate(const ResultModel result_model,const arma::mat data, const arma::imat labels);
 		};
 	};
 };

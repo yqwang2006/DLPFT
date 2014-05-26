@@ -6,12 +6,12 @@ namespace dlpft{
 	namespace model{
 		class TrainModel : public Model{
 		private:
-			
+			bool finetune_switch;	
 			
 		public:
 			TrainModel(){
 			}
-			ResultModel* pretrain(arma::mat& data,arma::mat& labels, vector<NewParam> param);
+			ResultModel* pretrain(arma::mat& data,arma::imat& labels, vector<NewParam> param);
 			
 		};
 	};

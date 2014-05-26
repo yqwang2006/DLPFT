@@ -1,9 +1,8 @@
 #include "RBM.h"
-#include "../util/sigmoid.h"
 #include <assert.h>
 using namespace dlpft::module;
 using namespace dlpft::param;
-ResultModel RBM::pretrain(const arma::mat data, const arma::mat labels, NewParam param){
+ResultModel RBM::pretrain(const arma::mat data, const arma::imat labels, NewParam param){
 	ResultModel result_model;
 	int hid_size = atoi(param.params["Hid_num"].c_str());
 	int max_epoch = atoi(param.params["Max_epoch"].c_str());
@@ -62,17 +61,17 @@ ResultModel RBM::pretrain(const arma::mat data, const arma::mat labels, NewParam
 
 	return result_model;
 }
-arma::mat RBM::backpropagate(ResultModel& result_model,const arma::mat delta, const arma::mat features, arma::mat labels, NewParam param){
+arma::mat RBM::backpropagate(ResultModel& result_model,const arma::mat delta, const arma::mat features, arma::imat labels, NewParam param){
 	double errsum = 0;
 	arma::mat curr_delta;
 	errsum = sum(sum(result_model.weightMatrix.t() * delta));
 
-	curr_delta = features * (1-features) * errsum; 
+	curr_delta = active_function_inv(active_func_choice,features) * errsum; 
 	return curr_delta;
 }
-arma::mat RBM::forwardpropagate(const ResultModel result_model,const arma::mat data, const arma::mat labels){
+arma::mat RBM::forwardpropagate(const ResultModel result_model,const arma::mat data, const arma::imat labels){
 	arma::mat features = result_model.weightMatrix * data + arma::repmat(result_model.bias,1,data.n_cols);
-	features = sigmoid(features);
+	features = active_function(active_func_choice,features);
 	return features;
 }
 
@@ -123,14 +122,14 @@ void RBM::sample_v_given_h(arma::mat& h0_sample, arma::mat& mean, arma::mat& sam
 arma::mat RBM::propup(arma::mat& v,arma::mat& weightMat, arma::mat& h_bias){
 	assert(weightMat.n_cols == v.n_rows);
 	arma::mat negdata = weightMat * v + arma::repmat(h_bias,1,v.n_cols);
-	negdata = sigmoid(negdata);
+	negdata = active_function(active_func_choice,negdata);
 
 	return negdata;
 }
 arma::mat RBM::propdown(arma::mat& h,arma::mat& weightMat,arma::mat& v_bias){
 	assert(h.n_rows == weightMat.n_rows);
 	arma::mat negh = weightMat.t() * h + arma::repmat(v_bias,1,h.n_cols);
-	negh = sigmoid(negh);
+	negh = active_function(active_func_choice,negh);
 	return negh;
 }
 void  RBM::gibbs_hvh(arma::mat& weightMat, arma::mat& h_bias, arma::mat& v_bias,arma::mat& h0_sample){

@@ -1,7 +1,6 @@
 #ifndef SOFTMAXCOST_H
 #define SOFTMAXCOST_H
 #include "CostFunction.h"
-#include "../util/sigmoid.h" 
 using namespace arma;
 namespace dlpft{
 	namespace function{
@@ -9,7 +8,7 @@ namespace dlpft{
 			:public CostFunction
 		{
 		private:
-			arma::mat labels;
+			arma::imat labels;
 			int visiableSize;
 			int classesNum;
 			double lambda;
@@ -21,7 +20,7 @@ namespace dlpft{
 			}
 
 
-			SoftMaxCost(int v, int c,const arma::mat d,const arma::mat  l, const double lambda=3e-3,
+			SoftMaxCost(int v, int c,const arma::mat d,const arma::imat  l, const double lambda=3e-3,
 				const string func_name = "softmax function")
 				:visiableSize(v),classesNum(c),lambda(lambda){
 					labels = l;
@@ -36,7 +35,7 @@ namespace dlpft{
 
 			/*get and set*/
 			arma::mat get_coefficient(){return coefficient;}
-			arma::mat get_labels(){return labels;}
+			arma::imat get_labels(){return labels;}
 
 			int get_visiableSize() const {return visiableSize;}
 			void set_visiableSize(int& v){visiableSize = v;}
