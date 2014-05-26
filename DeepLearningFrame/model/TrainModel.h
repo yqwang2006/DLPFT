@@ -10,6 +10,7 @@ namespace dlpft{
 			
 		public:
 			TrainModel(){
+				finetune_switch = true;
 			}
 			ResultModel* pretrain(arma::mat& data,arma::imat& labels, vector<NewParam> param);
 			
