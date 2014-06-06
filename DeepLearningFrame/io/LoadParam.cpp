@@ -1,6 +1,9 @@
 #include "LoadParam.h"
 
 void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllDataAddr& data_addr){
+	
+	fill_param_map();
+	
 	ifstream infile;
 	MultiParam* multi_params;
 	char buf[1024];
@@ -21,17 +24,17 @@ void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllData
 			vector<string> words = split(line,":");
 			string varname = words[0];
 			string value = words[1];
-			if(varname == "Layer_num"){
+			if(varname == params_name[LAYERNUM]){
 				layer_num = atoi(value.c_str());
 				multi_params = new MultiParam[layer_num];
 				continue;
 			}
 				
-			if(varname == "Layer_order"){
+			if(varname == params_name[LAYERORDER]){
 				layer_order = atoi(value.c_str());
 				continue;
 			}
-			if(varname == "Algorithm"){
+			if(varname == params_name[ALGORITHM]){
 				multi_params[layer_order-1].algorithm_name = varname;
 				multi_params[layer_order-1].algorithm_value = value;
 				iter = 0;
@@ -39,20 +42,20 @@ void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllData
 			}
 
 			vector<string> values = split(value,",");
-			if(varname == "trainData"){
+			if(varname == params_name[TRAINDATA]){
 				
 				data_addr.train_data_addr = values[0].replace(value.find("%"),1,":");
 				continue;
 			}
-			if(varname == "trainLabels"){
+			if(varname == params_name[TRAINLABELS]){
 				data_addr.train_labels_addr = values[0].replace(value.find("%"),1,":");
 				continue;
 			}
-			if(varname == "testData"){
+			if(varname == params_name[TESTDATA]){
 				data_addr.test_data_addr = values[0].replace(value.find("%"),1,":");
 				continue;
 			}
-			if(varname == "testLabels"){
+			if(varname == params_name[TESTLABELS]){
 				data_addr.test_labels_addr = values[0].replace(value.find("%"),1,":");
 				continue;
 			}

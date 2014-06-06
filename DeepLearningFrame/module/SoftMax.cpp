@@ -17,11 +17,11 @@ ResultModel SoftMax::pretrain(const arma::mat data, const arma::imat labels, New
 
 	
 	int visiable_size = data.n_rows;
-	int n_classes = atoi(param.params["Num_classes"].c_str());
+	int n_classes = atoi(param.params[params_name[CLASSESNUM]].c_str());
 
 	SoftMaxCost* costfunc = new SoftMaxCost(visiable_size,n_classes,data,labels);
 	arma::mat grad;
-	Optimizer* testOpt = opt_factory.createProduct(param.params["Optimize_method"]);
+	Optimizer* testOpt = opt_factory.createProduct(param.params[params_name[OPTIMETHOD]]);
 
 
 	testOpt->set_func_ptr(costfunc);
@@ -36,23 +36,15 @@ ResultModel SoftMax::pretrain(const arma::mat data, const arma::imat labels, New
 
 } 
 arma::mat SoftMax::backpropagate( ResultModel& result_model,const arma::mat delta,const arma::mat features, const arma::imat labels, NewParam param){
-	double errsum = 0;
-
-	arma::mat desired_out = zeros(features.n_rows,features.n_cols);
-	for(int i = 0;i < features.n_cols; i++){
-		if(labels(i) == features.n_rows)
-			desired_out(0,i) = 1;
-		else
-			desired_out(labels(i),i) = 1;
-	}
+	arma::mat errsum;
 
 	arma::mat curr_delta;
-	errsum = sum(sum(result_model.weightMatrix.t() * delta));
+	errsum = result_model.weightMatrix.t() * delta;
 
-	curr_delta = active_function_inv(active_func_choice,features) * errsum; 
+	curr_delta = active_function_inv(active_func_choice,features) % errsum; 
 	return curr_delta;
 }
-arma::mat SoftMax::forwardpropagate(const ResultModel result_model,const arma::mat data, const arma::imat labels){
+arma::mat SoftMax::forwardpropagate(const ResultModel result_model,const arma::mat data, const arma::imat labels, NewParam param){
 	arma::mat features = result_model.weightMatrix * data;
 	features = active_function(active_func_choice,features);
 	return features;

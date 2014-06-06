@@ -1,18 +1,20 @@
-#ifndef SOFTMAX_H
-#define SOFTMAX_H
+#ifndef FULLCONNECTMODULE_H
+#define FULLCONNECTMODULE_H
 #include "armadillo"
 #include "Module.h"
-#include "../function/SoftMaxCost.h"
 
 namespace dlpft{
 	namespace module{
-		class SoftMax:public Module{
+		class FullConnectModule:public Module{
 		public:
-			SoftMax():Module(){
-				name = "SoftMax";
+			FullConnectModule():Module(){
+				name = "FullConnectModule";
 			}
-			~SoftMax(){}
-			ResultModel pretrain(const arma::mat data, const arma::imat labels, NewParam param);
+			~FullConnectModule(){}
+			ResultModel pretrain(const arma::mat data, const arma::imat labels, NewParam param){
+				ResultModel rm;
+				return rm;
+			}
 			arma::mat backpropagate( ResultModel& result_model,const arma::mat delta,const arma::mat features,  const arma::imat labels, NewParam param);
 			arma::mat forwardpropagate(const ResultModel result_model,const arma::mat data, const arma::imat labels, NewParam param);
 		};

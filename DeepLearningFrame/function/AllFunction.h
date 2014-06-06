@@ -4,5 +4,6 @@
 #include "ScWeightFunction.h"
 #include "SoftMaxCost.h"
 #include "TestFunction.h"
+#include "CNNCost.h"
 using namespace dlpft::function;
 #endif

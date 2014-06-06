@@ -4,11 +4,17 @@ using namespace dlpft::module;
 using namespace dlpft::param;
 ResultModel RBM::pretrain(const arma::mat data, const arma::imat labels, NewParam param){
 	ResultModel result_model;
-	int hid_size = atoi(param.params["Hid_num"].c_str());
-	int max_epoch = atoi(param.params["Max_epoch"].c_str());
-	int batch_size = atoi(param.params["Batch_size"].c_str());
-	double learn_rate = atof(param.params["Learning_rate"].c_str());
-	
+	int hid_size = atoi(param.params[params_name[HIDNUM]].c_str());
+	int max_epoch = atoi(param.params[params_name[MAXEPOCH]].c_str());
+	int batch_size = atoi(param.params[params_name[BATCHSIZE]].c_str());
+	double learn_rate = atof(param.params[params_name[LEARNRATE]].c_str());
+
+	double inittialmomentum = 0.5;
+	double finalmomentum = 0.9;
+	double momentum = 0;
+
+	double weightcost = 0.0002;
+
 	int sample_num = data.n_cols;
 	int visible_size = data.n_rows;
 	int num_batches = sample_num / batch_size;
@@ -28,7 +34,9 @@ ResultModel RBM::pretrain(const arma::mat data, const arma::imat labels, NewPara
 
 	rand_data(data,minibatches,sample_num,batch_size);
 
-
+	arma::mat deltaW = zeros(hid_size,visible_size);
+	arma::mat deltab = zeros(hid_size,1);
+	arma::mat deltac = zeros(visible_size,1);
 
 	double errsum = 0;
 
@@ -37,17 +45,28 @@ ResultModel RBM::pretrain(const arma::mat data, const arma::imat labels, NewPara
 		for(int batch = 0; batch < num_batches; batch++){
 			CD_k(1,minibatches[batch],result_model.weightMatrix,result_model.bias,c_bias);
 			
+			
+			if(batch < 5)
+				momentum = inittialmomentum;
+			else
+				momentum = finalmomentum;
+			
+			
 			//update W,b,c
 			
-			arma::mat deltaW = h_means * minibatches[batch].t() - nh_means * nv_samples.t();
-			arma::mat deltac = sum(minibatches[batch],1) - sum(nv_samples,1);
-			arma::mat deltab = sum(h_means,1) - sum(nh_means,1);
+			deltaW = momentum * deltaW + learn_rate *
+				((h_means * minibatches[batch].t() - nh_means * nv_samples.t())/batch_size - weightcost * result_model.weightMatrix);
+			deltac = momentum * deltac + (learn_rate/batch_size) * 
+				(sum(minibatches[batch],1) - sum(nv_samples,1));
+			deltab = momentum * deltab + (learn_rate/batch_size) *
+				(sum(h_means,1) - sum(nh_means,1));
 
-			result_model.weightMatrix = result_model.weightMatrix + learn_rate *(deltaW / batch_size);
-			result_model.bias = result_model.bias + learn_rate * (deltab / batch_size);
-			c_bias = c_bias + learn_rate * (deltac / batch_size);
 
-			double err = arma::sum(arma::sum(arma::pow((minibatches[batch]-nv_means),2)))/batch_size;
+			result_model.weightMatrix = result_model.weightMatrix + deltaW ;
+			result_model.bias = result_model.bias + deltab ;
+			c_bias = c_bias + deltac ;
+
+			double err = arma::sum(arma::sum(arma::pow((minibatches[batch]-nv_means),2)));
 			errsum += err;
 		}
 
@@ -61,46 +80,21 @@ ResultModel RBM::pretrain(const arma::mat data, const arma::imat labels, NewPara
 
 	return result_model;
 }
-arma::mat RBM::backpropagate(ResultModel& result_model,const arma::mat delta, const arma::mat features, arma::imat labels, NewParam param){
-	double errsum = 0;
+arma::mat RBM::backpropagate(ResultModel& result_model,const arma::mat delta, const arma::mat feature, arma::imat labels, NewParam param){
+	arma::mat errsum;
 	arma::mat curr_delta;
-	errsum = sum(sum(result_model.weightMatrix.t() * delta));
+	errsum = result_model.weightMatrix.t() * delta;
 
-	curr_delta = active_function_inv(active_func_choice,features) * errsum; 
+	curr_delta = active_function_inv(active_func_choice,feature) % errsum; 
 	return curr_delta;
 }
-arma::mat RBM::forwardpropagate(const ResultModel result_model,const arma::mat data, const arma::imat labels){
+arma::mat RBM::forwardpropagate(const ResultModel result_model,const arma::mat data, const arma::imat labels, NewParam param){
 	arma::mat features = result_model.weightMatrix * data + arma::repmat(result_model.bias,1,data.n_cols);
 	features = active_function(active_func_choice,features);
 	return features;
 }
 
-void RBM::rand_data(const arma::mat input, arma::mat* batches,int sample_num, int batch_size){
-	
-	srand(unsigned(time(NULL)));
-	int batches_num = sample_num / batch_size;
-	int visible_size = input.n_rows;
-	vector<int> groups;
-	for(int i = 0;i < batch_size; i++){
-		for(int j = 0;j < batches_num; j++){
-			groups.push_back(j);
-		}
-	}
 
-	random_shuffle(groups.begin(),groups.end());
-
-	arma::mat groups_mat = arma::zeros(groups.size(),1);
-	for(int i = 0;i < groups.size(); i++)
-	{
-		groups_mat(i) = groups[i];
-	}
-
-	for(int i = 0;i < batches_num; i++){
-		batches[i] = input.cols(find(groups_mat == i));
-	}
-
-
-}
 arma::mat RBM::BiNomial(const arma::mat mean){
 	arma::mat rand_vec = arma::randu(mean.n_rows,mean.n_cols);
 	arma::uvec indeies = find(mean>rand_vec);

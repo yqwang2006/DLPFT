@@ -4,7 +4,7 @@
 #include "../util/ActiveFunction.h"
 #include "../param/NewParam.h"
 #include "../model/ResultModel.h"
-
+#include "../param/AllParam.h"
 #include "../optimizer/AllOptMethod.h"
 #include "../factory/Creator.h"
 
@@ -29,7 +29,7 @@ namespace dlpft{
 			
 			virtual ResultModel pretrain(const arma::mat data, const arma::imat labels, NewParam param)=0;
 			virtual arma::mat backpropagate(ResultModel& result_model,const arma::mat delta, const arma::mat features, const arma::imat labels, NewParam param)=0;
-			virtual arma::mat forwardpropagate(const ResultModel result_model,const arma::mat data, const arma::imat labels)=0;
+			virtual arma::mat forwardpropagate(const ResultModel result_model,const arma::mat data, const arma::imat labels, NewParam param)=0;
 		};
 	};
 };

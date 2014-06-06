@@ -8,8 +8,9 @@
 #include "module/AutoEncoder.h"
 #include "param/AllParam.h"
 #include "io/AllDataAddr.h"
-#include "model\TrainModel.h"
+#include "model\UnsupervisedModel.h"
 #include "model\PredictModel.h"
+#include "util\convolve.h"
 using namespace std;
 using namespace arma;
 using namespace dlpft::factory;
@@ -24,6 +25,15 @@ int main(){
 	RegisterFunction();
 	RegisterOptimizer();
 
+	arma::mat A = "1,2,3;4,5,6;7,8,9";
+	cout << A;
+	arma::mat B = "0.1,0.2;0.3,0.4";
+	cout << B;
+
+	cout << convn(A,B,"full");
+	cout << arma::find(B==arma::max(arma::max(B)));
+	
+	cout << arma::kron(B,ones(2,2));
 
 	dlpft::io::LoadParam load_param("DBN.param");
 	vector<vector<NewParam>> params;
@@ -39,8 +49,8 @@ int main(){
 	load_data(data_addr.train_labels_addr,train_labels);
 	
 
-	TrainModel trainmodel;
-	ResultModel* resultmodel_ptr = trainmodel.pretrain(train_data,train_labels,params[0]);
+	UnsupervisedModel UnsupervisedModel;
+	ResultModel* resultmodel_ptr = UnsupervisedModel.pretrain(train_data,train_labels,params[0]);
 
 	arma::mat test_data;
 	arma::imat test_labels;
@@ -54,7 +64,7 @@ int main(){
 	testmodel.predict(resultmodel_ptr,test_data,test_labels,params[0]);
 
 
-	
+	delete []resultmodel_ptr;
 	return 0;
 }
 

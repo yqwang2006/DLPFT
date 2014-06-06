@@ -1,6 +1,6 @@
 #include "PredictModel.h"
 using namespace dlpft::model;
-void PredictModel::predict(ResultModel* trainModel,arma::mat& testdata, arma::imat& testlabels,vector<NewParam> params){
+void PredictModel::predict(ResultModel* UnsupervisedModel,arma::mat& testdata, arma::imat& testlabels,vector<NewParam> params){
 	int layer_num = params.size();
 	arma::mat features = testdata;
 
@@ -9,7 +9,7 @@ void PredictModel::predict(ResultModel* trainModel,arma::mat& testdata, arma::im
 	for(int i = 0;i < layer_num;i++){
 		single_module = create_module(params[i]);
 
-		features = single_module->forwardpropagate(trainModel[i],features,testlabels);
+		features = single_module->forwardpropagate(UnsupervisedModel[i],features,testlabels,params[i]);
 	}
 	delete single_module;
 	single_module = NULL;

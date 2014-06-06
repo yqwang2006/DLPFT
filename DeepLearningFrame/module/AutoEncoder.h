@@ -14,7 +14,7 @@ namespace dlpft{
 			}
 			ResultModel pretrain(const arma::mat data, const arma::imat labels, NewParam param);
 			arma::mat backpropagate(ResultModel& result_model,const arma::mat delta, const arma::mat features, const arma::imat labels,NewParam param);
-			arma::mat forwardpropagate(const ResultModel result_model,const arma::mat data, const arma::imat labels);
+			arma::mat forwardpropagate(const ResultModel result_model,const arma::mat data, const arma::imat labels, NewParam param);
 		};
 	};
 };

@@ -12,7 +12,7 @@ namespace dlpft{
 			
 		public:
 			PredictModel():Model(){}
-			void predict(ResultModel* trainModel,arma::mat& testdata, arma::imat& testlabels,vector<NewParam> params);
+			void predict(ResultModel* UnsupervisedModel,arma::mat& testdata, arma::imat& testlabels,vector<NewParam> params);
 			double predict_acc(const arma::imat predict_labels, const arma::imat testlabels);
 		};
 	};
