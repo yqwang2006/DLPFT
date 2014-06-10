@@ -1,9 +1,8 @@
 #include "LoadParam.h"
-
+#include "../util/params_name.h"
 void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllDataAddr& data_addr){
 	
-	fill_param_map();
-	
+	//fill_param_map();
 	ifstream infile;
 	MultiParam* multi_params;
 	char buf[1024];

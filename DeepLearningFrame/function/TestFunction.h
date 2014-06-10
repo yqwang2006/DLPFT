@@ -18,13 +18,13 @@ namespace dlpft{
 			}
 
 			~TestFunction(void){}
-			double value_gradient(arma::mat& grad) const{
+			double value_gradient(arma::mat& grad){
 				double x1 = data[0];
 				double x2 = data[1];
 				double obj = 100 * std::pow(x2-std::pow(x1,2),2) + std::pow(1-x1,2);
 				return obj;
 			}
-			void gradient(arma::mat& grad) const{
+			void gradient(arma::mat& grad){
 				double x1 = data[0];
 				double x2 = data[1];
 				grad.set_size(2,1);
@@ -32,7 +32,7 @@ namespace dlpft{
 				grad[1] = 200 * (x2 - std::pow(x1,2));
 				
 			}
-			void hessian(arma::mat& grad, arma::mat& hes) const{
+			void hessian(arma::mat& grad, arma::mat& hes){
 				
 			}
 			

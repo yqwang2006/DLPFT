@@ -1,25 +1,6 @@
 #include "SAECostFunction.h"
 
-void dlpft::function::SAECostFunction::initialParam(){
-	coefficient.set_size(hiddenSize * visiableSize * 2 + hiddenSize + visiableSize);
-	
-	double r = sqrt(6) / sqrt(hiddenSize + visiableSize + 1);
-	int h_v_size = hiddenSize * visiableSize;
-	
-	arma::mat W1 = arma::randu<arma::mat> (hiddenSize,visiableSize)*2*r-r;
-	arma::mat W2 = arma::randu<arma::mat> (visiableSize,hiddenSize)*2*r-r;
-	W1.reshape(h_v_size,1);
-	W2.reshape(h_v_size,1);
-	/*arma::mat W1 = arma::ones(hiddenSize,visiableSize)*2*r-r;
-	arma::mat W2 = arma::ones(visiableSize,hiddenSize)*r-r;
-	W1.reshape(h_v_size,1);
-	W2.reshape(h_v_size,1);*/
-	coefficient.rows(0,h_v_size-1) = W1;
-	coefficient.rows(h_v_size,2*h_v_size-1) = W2;
-	coefficient.rows(2*h_v_size,2 * h_v_size+hiddenSize-1) = arma::zeros(hiddenSize,1);
-	coefficient.rows(2*h_v_size+hiddenSize,coefficient.size()-1) = arma::zeros(visiableSize,1);
-	
-}
+
 double dlpft::function::SAECostFunction::value_gradient(arma::mat& grad){
 	/*clock_t start,end;
 	double dur;
@@ -45,9 +26,9 @@ double dlpft::function::SAECostFunction::value_gradient(arma::mat& grad){
 
 	arma::mat z2 = W1 * data + repmat(b1,1,m);
 	
-	arma::mat a2 = active_function(active_func_choice,z2);
+	arma::mat a2 = active_function(activeFuncChoice,z2);
 	arma::mat z3 = W2 * a2 + repmat(b2,1,m);
-	arma::mat a3 = active_function(active_func_choice,z3);
+	arma::mat a3 = active_function(activeFuncChoice,z3);
 	/*
 	
 	end = clock();
@@ -77,9 +58,9 @@ double dlpft::function::SAECostFunction::value_gradient(arma::mat& grad){
 	arma::mat W2grad(zeros(W2.n_rows,W2.n_cols));
 	arma::vec b1grad(zeros(b1.size()));
 	arma::vec b2grad(zeros(b2.size()));
-	arma::mat d3 = -(data - a3) % active_function_inv(active_func_choice,a3);
+	arma::mat d3 = -(data - a3) % active_function_inv(activeFuncChoice,a3);
 	arma::mat sterm = beta * (-sparsityParam/rho + (1-sparsityParam)/(1-rho));
-	arma::mat d2 = (W2.t()*d3 + repmat(sterm,1,m)) % active_function_inv(active_func_choice,a2);
+	arma::mat d2 = (W2.t()*d3 + repmat(sterm,1,m)) % active_function_inv(activeFuncChoice,a2);
 	/*
 	end = clock();
 	dur = (double)(end-start)/CLOCKS_PER_SEC;

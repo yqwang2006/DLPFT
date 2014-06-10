@@ -9,6 +9,7 @@ ResultModel RBM::pretrain(const arma::mat data, const arma::imat labels, NewPara
 	int batch_size = atoi(param.params[params_name[BATCHSIZE]].c_str());
 	double learn_rate = atof(param.params[params_name[LEARNRATE]].c_str());
 
+
 	double inittialmomentum = 0.5;
 	double finalmomentum = 0.9;
 	double momentum = 0;
@@ -85,12 +86,12 @@ arma::mat RBM::backpropagate(ResultModel& result_model,const arma::mat delta, co
 	arma::mat curr_delta;
 	errsum = result_model.weightMatrix.t() * delta;
 
-	curr_delta = active_function_inv(active_func_choice,feature) % errsum; 
+	curr_delta = active_function_inv(activeFuncChoice,feature) % errsum; 
 	return curr_delta;
 }
 arma::mat RBM::forwardpropagate(const ResultModel result_model,const arma::mat data, const arma::imat labels, NewParam param){
 	arma::mat features = result_model.weightMatrix * data + arma::repmat(result_model.bias,1,data.n_cols);
-	features = active_function(active_func_choice,features);
+	features = active_function(activeFuncChoice,features);
 	return features;
 }
 
@@ -116,14 +117,14 @@ void RBM::sample_v_given_h(arma::mat& h0_sample, arma::mat& mean, arma::mat& sam
 arma::mat RBM::propup(arma::mat& v,arma::mat& weightMat, arma::mat& h_bias){
 	assert(weightMat.n_cols == v.n_rows);
 	arma::mat negdata = weightMat * v + arma::repmat(h_bias,1,v.n_cols);
-	negdata = active_function(active_func_choice,negdata);
+	negdata = active_function(activeFuncChoice,negdata);
 
 	return negdata;
 }
 arma::mat RBM::propdown(arma::mat& h,arma::mat& weightMat,arma::mat& v_bias){
 	assert(h.n_rows == weightMat.n_rows);
 	arma::mat negh = weightMat.t() * h + arma::repmat(v_bias,1,h.n_cols);
-	negh = active_function(active_func_choice,negh);
+	negh = active_function(activeFuncChoice,negh);
 	return negh;
 }
 void  RBM::gibbs_hvh(arma::mat& weightMat, arma::mat& h_bias, arma::mat& v_bias,arma::mat& h0_sample){

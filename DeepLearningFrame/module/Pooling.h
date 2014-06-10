@@ -6,20 +6,23 @@ namespace dlpft{
 	namespace module{
 		class Pooling : public Module{
 		public:
-			int lastOutputDim;
-			int lastFilterNum;
-			arma::mat poolId;
-			bool is_convolve_next;
-			string pooling_type;
-			int pooling_dim;
+			int inputImageDim;
+			int inputImageNum;
+			arma::mat sampleLoc;
+			string poolingType;
+			int poolingDim;
+			int outputImageDim;
+			int outputImageNum;
 		public:
 			Pooling():Module(){
-				is_convolve_next = true;
 			}
-			Pooling(int last_filter_num,int last_output_dim){
-				lastOutputDim = last_output_dim;
-				lastFilterNum = last_filter_num;
-				
+			Pooling(int input_image_dim,int input_image_num,int pooling_dim, string pooling_type){
+				inputImageDim = input_image_dim;
+				inputImageNum = input_image_num;
+				poolingDim = pooling_dim;
+				poolingType = pooling_type;
+				outputImageDim = inputImageDim / poolingDim;
+				outputImageNum = inputImageNum;
 			}
 			~Pooling(){
 			}

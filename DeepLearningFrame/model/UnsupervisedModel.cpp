@@ -6,12 +6,10 @@ ResultModel* UnsupervisedModel::pretrain(const arma::mat data,const arma::imat l
 
 	ResultModel *resultmodel_ptr = new ResultModel[number_layer];
 	arma::mat features = data;
-	Module* single_module;
 
 	for(int i = 0;i < number_layer;i++){
-		single_module = create_module(params[i]);
-		resultmodel_ptr[i] = single_module->pretrain(features,labels,params[i]);
-		features = single_module->forwardpropagate(resultmodel_ptr[i],features,labels,params[i]);
+		resultmodel_ptr[i] = modules[i]->pretrain(features,labels,params[i]);
+		features = modules[i]->forwardpropagate(resultmodel_ptr[i],features,labels,params[i]);
 	}
 
 	if(finetune_switch){
@@ -19,8 +17,6 @@ ResultModel* UnsupervisedModel::pretrain(const arma::mat data,const arma::imat l
 		finetune_BP(resultmodel_ptr,data,labels,params);
 	}
 
-	delete single_module;
-	single_module = NULL;
 	return resultmodel_ptr;
 }
 void UnsupervisedModel::finetune_BP(ResultModel* result_model_ptr,const arma::mat data, const arma::imat labels, vector<NewParam> params){
@@ -28,17 +24,12 @@ void UnsupervisedModel::finetune_BP(ResultModel* result_model_ptr,const arma::ma
 	int samples_num = data.n_cols;
 	arma::mat* features = new arma::mat[number_layer];
 	arma::mat* delta = new arma::mat[number_layer+1];
-	Module** single_module = new Module*[number_layer];
 	ResultModel* prev_result_model = new ResultModel[number_layer];
 	for(int i = 0;i < number_layer;i++){
 		prev_result_model[i] = result_model_ptr[i];
 	}
 
 	int max_epoch = 5;
-
-	for(int i = 0;i < number_layer ;i++){
-		single_module[i] = create_module(params[i]);
-	}
 
 	int batch_size = 100;
 
@@ -57,9 +48,9 @@ void UnsupervisedModel::finetune_BP(ResultModel* result_model_ptr,const arma::ma
 			minibatch_labels = labels.rows(n*batch_size,upper_bound);
 			for(int i = 0;i < number_layer ;i++){
 				if(i == 0){
-					features[i] = single_module[i]->forwardpropagate(result_model_ptr[i],minibatch,minibatch_labels,params[i]);
+					features[i] = modules[i]->forwardpropagate(result_model_ptr[i],minibatch,minibatch_labels,params[i]);
 				}else{
-					features[i] = single_module[i]->forwardpropagate(result_model_ptr[i],features[i-1],minibatch_labels,params[i]);
+					features[i] = modules[i]->forwardpropagate(result_model_ptr[i],features[i-1],minibatch_labels,params[i]);
 				}
 			}
 
@@ -74,7 +65,7 @@ void UnsupervisedModel::finetune_BP(ResultModel* result_model_ptr,const arma::ma
 			delta[number_layer] = (features[number_layer-1] % (1-features[number_layer-1]))%(desired_out - features[number_layer-1]);
 
 			for(int i = number_layer-1;i >0 ;i--){	
-				delta[i] = single_module[i]->backpropagate(result_model_ptr[i],delta[i+1],features[i-1],minibatch_labels,params[i]);
+				delta[i] = modules[i]->backpropagate(result_model_ptr[i],delta[i+1],features[i-1],minibatch_labels,params[i]);
 			}
 
 			for(int i = 0;i < number_layer; i++){
@@ -97,13 +88,54 @@ void UnsupervisedModel::finetune_BP(ResultModel* result_model_ptr,const arma::ma
 
 	}
 
-	for(int i = 0;i < number_layer;i++){
-		delete single_module[i];
-	}
-	delete []single_module;
 	delete []features;
 	delete []delta;
 	delete []prev_result_model;
 	//delete []features;
-	single_module = NULL;
+}
+
+void UnsupervisedModel::predict(ResultModel* result_model,arma::mat& testdata, arma::imat& testlabels,vector<NewParam> params){
+	int layer_num = params.size();
+	arma::mat features = testdata;
+
+	arma::mat max_vals;
+	for(int i = 0;i < layer_num;i++){
+		features = modules[i]->forwardpropagate(result_model[i],features,testlabels,params[i]);
+	}
+	if(params[layer_num-1].params["Algorithm"] == "SoftMax"){
+
+		max_vals = max(features);
+		arma::imat pred_labels(max_vals.size(),1);
+		for(int i = 0;i < features.n_cols;i++){
+			pred_labels[i] = 0;
+			for(int j = 0;j < features.n_rows; j++){
+				if(max_vals(i) == features(j,i)){
+					if(j == 0)
+						pred_labels[i] = features.n_rows;	//number of cases
+					else
+						pred_labels[i] = j;
+					continue;
+				}
+			}
+
+		}
+		cout << "Predict error:" << endl;
+		cout << 100*(predict_acc(pred_labels,testlabels)) << "%" << endl;
+	}
+
+}
+
+double UnsupervisedModel::predict_acc(const arma::imat predict_labels, const arma::imat labels){
+	fstream ofs;
+	ofs.open("pred_labels.txt",fstream::out);
+	predict_labels.quiet_save(ofs,raw_ascii);
+	ofs.close();
+	int sum = 0;
+	for(int i = 0;i < predict_labels.size();i++){
+		if(predict_labels(i) == labels(i)){
+			sum ++;
+		}
+	}
+
+	return (double)sum/(double)labels.size();
 }

@@ -13,8 +13,16 @@ namespace dlpft{
 			arma::mat nh_means;
 			arma::mat nh_samples;
 
-			RBM() : Module(){}
 			
+			RBM() : Module(){}
+			RBM(int in_size,int out_size)
+				:Module(in_size,out_size){
+				name = "RBM";
+			}
+			RBM(int in_size,int out_size,ActivationFunction act_func)
+				:Module(in_size,out_size,act_func){
+				name = "RBM";
+			}
 			ResultModel pretrain(const arma::mat data, const arma::imat labels, NewParam param);
 			arma::mat backpropagate(ResultModel& result_model,const arma::mat delta,const arma::mat features,  const arma::imat labels, NewParam param);
 			~RBM();

@@ -13,10 +13,10 @@ namespace dlpft{
 			string function_name;
 			arma::mat coefficient;
 			arma::mat data;
-			ActivationFunction active_func_choice;
+			ActivationFunction activeFuncChoice;
 		public:
 			CostFunction(void):function_name(""){
-				active_func_choice = SIGMOID;
+				activeFuncChoice = SIGMOID;
 			}
 			~CostFunction(void){
 				cout << "~CostFunction" << endl;
@@ -25,13 +25,8 @@ namespace dlpft{
 				double a = 0;
 				return a;
 			}
-			virtual void gradient(arma::mat&){}
-			virtual void hessian(arma::mat&, arma::mat&){}
-			arma::mat get_coefficient(){return coefficient;}
-			void set_coefficient(const arma::mat the){ coefficient = the;}
-			arma::mat get_data() const{return data;}
-			void set_data(const arma::mat d){ data = d;}
-			string get_func_name(){return function_name;}
+			virtual void gradient(arma::mat&)=0;
+			virtual void hessian(arma::mat&, arma::mat&) = 0;
 		};
 		
 	};

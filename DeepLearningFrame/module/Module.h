@@ -7,7 +7,7 @@
 #include "../param/AllParam.h"
 #include "../optimizer/AllOptMethod.h"
 #include "../factory/Creator.h"
-
+#include "../util/params_name.h"
 using namespace dlpft::param;
 using namespace dlpft::model;
 using namespace dlpft::function;
@@ -18,11 +18,21 @@ namespace dlpft{
 		class Module{
 		protected:
 			std::string name;
-			ActivationFunction active_func_choice;
+			ActivationFunction activeFuncChoice;
+			int inputSize;
+			int outputSize;
 		public:
 			Module(){
 				name = "";
-				active_func_choice = SIGMOID;
+				activeFuncChoice = SIGMOID;
+			}
+			Module(int in_size,int out_size):inputSize(in_size),outputSize(out_size){
+				name = "";
+				activeFuncChoice = SIGMOID;
+			}
+			Module(int in_size,int out_size,ActivationFunction active_func):inputSize(in_size),outputSize(out_size){
+				name = "";
+				activeFuncChoice = active_func;
 			}
 			~Module(){
 			}

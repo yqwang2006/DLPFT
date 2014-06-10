@@ -14,7 +14,6 @@ namespace dlpft{
 			double lambda;
 		public:
 			SoftMaxCost(void):CostFunction(){
-				initialParam();
 				function_name = "softmax function";
 				cout << function_name << endl;
 			}
@@ -25,7 +24,6 @@ namespace dlpft{
 				:visiableSize(v),classesNum(c),lambda(lambda){
 					labels = l;
 					data = d;
-					initialParam();
 					function_name = func_name;
 			}
 
@@ -45,7 +43,6 @@ namespace dlpft{
 			void set_lambda(double& l) {lambda = l;}
 
 
-			void initialParam();
 			double value_gradient(arma::mat& grad);
 			void gradient(arma::mat& grad);
 			void hessian(arma::mat& grad, arma::mat& hess);

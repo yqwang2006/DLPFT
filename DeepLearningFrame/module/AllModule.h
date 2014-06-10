@@ -6,5 +6,6 @@
 #include "ConvolveModule.h"
 #include "SoftMax.h"
 #include "Pooling.h"
+#include "FullConnectModule.h"
 using namespace dlpft::module;
 #endif

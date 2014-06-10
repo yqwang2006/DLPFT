@@ -1,8 +1,8 @@
 #include "SgdOptimizer.h"
 
 double dlpft::optimizer::SgdOptimizer::optimize(string varname){
-	arma::mat x = function_ptr->get_coefficient();
-	arma::mat dat = function_ptr->get_data();
+	arma::mat& x = function_ptr->coefficient;
+	arma::mat dat = function_ptr->data;
 	size_t data_dim = size(dat,0);
 	size_t data_length = size(dat,1);
 	double mom = 0.5;
@@ -34,17 +34,17 @@ double dlpft::optimizer::SgdOptimizer::optimize(string varname){
 			
 
 
-			function_ptr->set_data(minibatch);
-			function_ptr->set_coefficient(x);
+			function_ptr->data = minibatch;
+			
 			
 			func_cost = function_ptr->value_gradient(grad);
 
 			velocity = mom * velocity + alpha*grad;
-			x = function_ptr->get_coefficient()-velocity;
+			x = x-velocity;
 			cout << "Epoch " << e << ": Cost on iteration " << it << " is " << func_cost << endl;
 		}
 		alpha = alpha/2;
 	}
-	function_ptr->set_coefficient(x);
+	function_ptr->coefficient = x;
 	return 0;
 }

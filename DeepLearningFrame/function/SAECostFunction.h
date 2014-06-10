@@ -16,7 +16,6 @@ namespace dlpft{
 			
 		public:
 			SAECostFunction(void):CostFunction(){
-				initialParam();
 				function_name = "sparse autoencoder function";
 				cout << function_name << endl;
 			}
@@ -25,8 +24,6 @@ namespace dlpft{
 			SAECostFunction(int v, int h, const double lambda=3e-3,
 				const double sparsityParam=0.1,const double beta = 3e-3,const string func_name = "sparse autoencoder function")
 				:visiableSize(v),hiddenSize(h),lambda(lambda),sparsityParam(sparsityParam),beta(beta){
-					coefficient.set_size(v*h*2+v+h,1);
-					initialParam();
 					function_name = func_name;
 			}
 			~SAECostFunction(void){
@@ -48,7 +45,6 @@ namespace dlpft{
 			void set_sparsityParam(double s){ sparsityParam = s;}
 
 
-			void initialParam();
 			double value_gradient(arma::mat& grad);
 			void gradient(arma::mat& grad);
 			void hessian(arma::mat& grad, arma::mat& hess);

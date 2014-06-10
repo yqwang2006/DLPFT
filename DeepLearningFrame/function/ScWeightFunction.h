@@ -26,14 +26,14 @@ namespace dlpft{
 			}
 
 			~ScWeightFunction(void){}
-			double value_gradient(arma::mat& grad) const{
+			double value_gradient(arma::mat& grad){
 				
 				return 0;
 			}
-			void gradient(arma::mat& grad) const{
+			void gradient(arma::mat& grad){
 				
 			}
-			void hessian(arma::mat& grad, arma::mat& hess) const{
+			void hessian(arma::mat& grad, arma::mat& hess){
 			
 			}
 		};

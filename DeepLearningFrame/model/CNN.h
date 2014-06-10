@@ -9,6 +9,7 @@ namespace dlpft{
 			CNN(){}
 			~CNN(){}
 			ResultModel* train(const arma::mat data,const arma::imat labels, vector<NewParam> param);
+			arma::mat cnnInitParams(Module** modules,int ori_image_dim,vector<NewParam> param);
 		};
 
 	};

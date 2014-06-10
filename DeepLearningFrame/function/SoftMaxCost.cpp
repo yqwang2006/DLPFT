@@ -1,10 +1,5 @@
 #include "SoftMaxCost.h"
 
-void dlpft::function::SoftMaxCost::initialParam(){
-	//coefficient->set_size(visiableSize*classesNum,1);
-	coefficient = 0.005*arma::randu<arma::mat> (classesNum,visiableSize);
-	//coefficient = 0.005* arma::ones(classesNum*visiableSize,1);
-}
 
 double dlpft::function::SoftMaxCost::value_gradient(arma::mat& grad){
 	

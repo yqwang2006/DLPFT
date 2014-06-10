@@ -48,8 +48,10 @@ ResultModel SparseCoding::pretrain(const arma::mat data, const arma::imat labels
 	}
 
 	SCFeatureCost* sc_cost_func = new SCFeatureCost(visible_size,feature_num,group_mat);
-	sc_cost_func->weightMatrix = arma::randu(feature_num,visible_size);
-	sc_cost_func->coefficient = arma::randu(feature_num,batch_size);
+	
+	sc_cost_func->weightMatrix = weightMatrix;
+	set_init_coefficient(sc_cost_func->coefficient,feature_num,batch_size);
+	
 
 
 	Optimizer *sc_opt = opt_factory.createProduct(param.params[params_name[OPTIMETHOD]]);
@@ -91,7 +93,7 @@ ResultModel SparseCoding::pretrain(const arma::mat data, const arma::imat labels
 			}
 			
 
-			sc_cost_func->set_data(minibatch);
+			sc_cost_func->data = minibatch;
 			sc_cost_func->coefficient.reshape(feature_num*batch_size,1);
 
 			sc_opt->set_func_ptr(sc_cost_func);
@@ -183,4 +185,13 @@ arma::mat SparseCoding::forwardpropagate(const ResultModel result_model,const ar
 	arma::mat features = result_model.weightMatrix * data;
 	return features;
 
+}
+void SparseCoding::initial_params(){
+
+	weightMatrix = arma::randu<arma::mat> (outputSize,inputSize);
+	featureMatrix = arma::randu<arma::mat> (inputSize,outputSize);
+
+}
+void SparseCoding::set_init_coefficient(arma::mat& coefficient,int rows, int cols){
+	coefficient = arma::randu<arma::mat> (rows,cols);
 }
