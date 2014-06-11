@@ -8,25 +8,25 @@ namespace dlpft{
 	namespace module{
 		class SoftMax:public Module{
 		public:
-			arma::mat weightMatrix;
-			arma::mat bias;
 			SoftMax():Module(){
 				name = "SoftMax";
 			}
 			SoftMax(int in_size,int out_size):Module(in_size,out_size){
 				name = "SoftMax";
-				initial_params();
+				activeFuncChoice = SOFTMAX;
+				initial_weights_bias();
 			}
 			SoftMax(int in_size,int out_size,ActivationFunction act_func)
 				:Module(in_size,out_size,act_func){
 				name = "SoftMax";
-				initial_params();
+				activeFuncChoice = SOFTMAX;
+				initial_weights_bias();
 			}
 			~SoftMax(){}
-			ResultModel pretrain(const arma::mat data, const arma::imat labels, NewParam param);
-			arma::mat backpropagate( ResultModel& result_model,const arma::mat delta,const arma::mat features,  const arma::imat labels, NewParam param);
-			arma::mat forwardpropagate(const ResultModel result_model,const arma::mat data, const arma::imat labels, NewParam param);
-			void initial_params();
+			void pretrain(const arma::mat data, const arma::imat labels, NewParam param);
+			arma::mat backpropagate(arma::mat next_layer_weight,const arma::mat next_delta, const arma::mat features, NewParam param);
+			arma::mat forwardpropagate(const arma::mat data,  NewParam param);
+			void initial_weights_bias();
 			void set_init_coefficient(arma::mat& coefficient);
 		};
 	};

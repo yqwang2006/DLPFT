@@ -29,6 +29,7 @@ namespace dlpft{
 					labels = l;
 					data = d;
 					modules = m;
+					layer_num = np.size();
 					initialParam();
 					function_name = func_name;
 			}
@@ -44,6 +45,7 @@ namespace dlpft{
 			double value_gradient(arma::mat& grad);
 			void gradient(arma::mat& grad);
 			void hessian(arma::mat& grad, arma::mat& hess);
+			void cnnParamsToStack();
 		};
 	};
 };

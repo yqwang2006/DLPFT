@@ -1,7 +1,7 @@
 #include "Pooling.h"
 using namespace dlpft::module;
 
-arma::mat Pooling::forwardpropagate(const ResultModel result_model,const arma::mat data, const arma::imat labels, NewParam param){
+arma::mat Pooling::forwardpropagate(const arma::mat data,  NewParam param){
 	const int samples_num = data.n_cols;
 	
 
@@ -64,34 +64,48 @@ arma::mat Pooling::forwardpropagate(const ResultModel result_model,const arma::m
 
 	return pooling_result;
 }
-
-arma::mat Pooling::backpropagate(ResultModel& result_model,const arma::mat delta, const arma::mat features, const arma::imat labels,NewParam param){
-	const int samples_num = delta.n_cols;
-	
-	arma::mat curr_delta = arma::zeros(inputImageDim*inputImageDim*outputImageNum,samples_num);
-
+arma::mat Pooling::process_delta(arma::mat curr_delta){
+	const int samples_num = curr_delta.n_cols;
+	arma::mat up_sampling_delta = arma::zeros(inputImageDim*inputImageDim*outputImageNum,samples_num);
 	arma::mat temp_delta = arma::zeros(inputImageDim,inputImageDim);
-	arma::mat temp_last_delta = arma::zeros(inputImageDim,inputImageDim);
+	arma::mat temp_curr_delta = arma::zeros(inputImageDim,inputImageDim);
 	for(int i = 0;i < samples_num;i++){
 		for(int j = 0;j < outputImageNum;j++){
-			temp_delta = curr_delta.col(i).rows(j*inputImageDim*inputImageDim,(j+1)*inputImageDim*inputImageDim-1);
-			temp_last_delta = delta.col(i).rows(j*outputImageDim*outputImageDim,(j+1)*outputImageDim*outputImageDim-1);
+			
+			temp_curr_delta = curr_delta.col(i).rows(j*outputImageDim*outputImageDim,(j+1)*outputImageDim*outputImageDim-1);
 			temp_delta.reshape(inputImageDim,inputImageDim);
-			temp_last_delta.reshape(outputImageDim,outputImageDim);
+			temp_curr_delta.reshape(outputImageDim,outputImageDim);
 			if(poolingType == "MEAN"){
-				temp_delta = kron(temp_last_delta,ones(poolingDim));
+				temp_delta = kron(temp_curr_delta,ones(poolingDim));
 				temp_delta /= (poolingDim*poolingDim);
 			}else{
-				for(int row = 0;row < temp_last_delta.n_rows; row ++){
-					for(int col = 0;col < temp_last_delta.n_cols;col++){
-						temp_delta(sampleLoc(row,col)) = temp_last_delta(row,col);
+				for(int row = 0;row < temp_curr_delta.n_rows; row ++){
+					for(int col = 0;col < temp_curr_delta.n_cols;col++){
+						temp_delta(sampleLoc(row,col)) = temp_curr_delta(row,col);
 					}
 				}
 
 
 			}
+			temp_delta.reshape(inputImageDim*inputImageDim,1);
+			up_sampling_delta.col(i).rows(j*inputImageDim*inputImageDim,(j+1)*inputImageDim*inputImageDim-1)= temp_delta;
 		}
 	}
+	return up_sampling_delta;
+	
+}
+arma::mat Pooling::backpropagate(arma::mat next_layer_weight,const arma::mat next_delta, const arma::mat features, NewParam param){
+	const int samples_num = next_delta.n_cols;
+	
+
+	//here, if next layer is conv_layer, next_delta will be convned(conv_layer'delta,filters).
+	//if next layer is full_layer, next_delta would be the full_layer's delta;
+	arma::mat curr_delta = active_function_dev(activeFuncChoice,features) % next_delta;
+
 	return curr_delta;
 
+}
+void Pooling::initial_weights_bias(){
+	weightMatrix = 0.005*arma::randu<arma::mat> (outputSize,inputSize);
+	bias = zeros(outputSize,1);
 }

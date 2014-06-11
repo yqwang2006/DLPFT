@@ -9,7 +9,7 @@
 #include "param/AllParam.h"
 #include "io/AllDataAddr.h"
 #include "model\UnsupervisedModel.h"
-#include "util\convolve.h"
+#include "model\CNN.h"
 using namespace std;
 using namespace arma;
 using namespace dlpft::factory;
@@ -23,6 +23,7 @@ int main(){
 
 	RegisterFunction();
 	RegisterOptimizer();
+
 
 	dlpft::io::LoadParam load_param("prj_21.param");
 	vector<vector<NewParam>> params;
@@ -41,7 +42,10 @@ int main(){
 	int input_size = train_data.n_rows;
 
 	UnsupervisedModel unsupervisedModel(input_size,params[0]);
-	ResultModel* resultmodel_ptr = unsupervisedModel.pretrain(train_data,train_labels,params[0]);
+	unsupervisedModel.pretrain(train_data,train_labels,params[0]);
+
+	/*CNN cnn(input_size,params[0]);
+	cnn.train(train_data,train_labels,params[0]);*/
 
 	arma::mat test_data;
 	arma::imat test_labels;
@@ -52,10 +56,9 @@ int main(){
 
 	
 	
-	unsupervisedModel.predict(resultmodel_ptr,test_data,test_labels,params[0]);
+	unsupervisedModel.predict(test_data,test_labels,params[0]);
 
 
-	delete []resultmodel_ptr;
 	return 0;
 }
 

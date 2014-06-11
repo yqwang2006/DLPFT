@@ -58,9 +58,9 @@ double dlpft::function::SAECostFunction::value_gradient(arma::mat& grad){
 	arma::mat W2grad(zeros(W2.n_rows,W2.n_cols));
 	arma::vec b1grad(zeros(b1.size()));
 	arma::vec b2grad(zeros(b2.size()));
-	arma::mat d3 = -(data - a3) % active_function_inv(activeFuncChoice,a3);
+	arma::mat d3 = -(data - a3) % active_function_dev(activeFuncChoice,a3);
 	arma::mat sterm = beta * (-sparsityParam/rho + (1-sparsityParam)/(1-rho));
-	arma::mat d2 = (W2.t()*d3 + repmat(sterm,1,m)) % active_function_inv(activeFuncChoice,a2);
+	arma::mat d2 = (W2.t()*d3 + repmat(sterm,1,m)) % active_function_dev(activeFuncChoice,a2);
 	/*
 	end = clock();
 	dur = (double)(end-start)/CLOCKS_PER_SEC;

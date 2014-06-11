@@ -23,16 +23,16 @@ namespace dlpft{
 				poolingType = pooling_type;
 				outputImageDim = inputImageDim / poolingDim;
 				outputImageNum = inputImageNum;
+				inputSize = outputImageDim*outputImageDim*outputImageNum;
+				outputSize = inputSize;
 			}
 			~Pooling(){
 			}
-			ResultModel pretrain(const arma::mat data, const arma::imat labels, NewParam param){
-				ResultModel rm;
-				return rm;
-			}
-			arma::mat backpropagate(ResultModel& result_model,const arma::mat delta, const arma::mat features, const arma::imat labels,NewParam param);
-			arma::mat forwardpropagate(const ResultModel result_model,const arma::mat data, const arma::imat labels, NewParam param);
-			
+			void pretrain(const arma::mat data, const arma::imat labels, NewParam param){}
+			arma::mat backpropagate(arma::mat next_layer_weight,const arma::mat next_delta, const arma::mat features, NewParam param);
+			arma::mat forwardpropagate(const arma::mat data,  NewParam param);
+			void initial_weights_bias();
+			arma::mat process_delta(arma::mat curr_delta); //up_sampling
 		};
 	};
 };

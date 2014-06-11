@@ -2,8 +2,7 @@
 #include <assert.h>
 using namespace dlpft::module;
 using namespace dlpft::param;
-ResultModel RBM::pretrain(const arma::mat data, const arma::imat labels, NewParam param){
-	ResultModel result_model;
+void RBM::pretrain(const arma::mat data, const arma::imat labels, NewParam param){
 	int hid_size = atoi(param.params[params_name[HIDNUM]].c_str());
 	int max_epoch = atoi(param.params[params_name[MAXEPOCH]].c_str());
 	int batch_size = atoi(param.params[params_name[BATCHSIZE]].c_str());
@@ -19,9 +18,7 @@ ResultModel RBM::pretrain(const arma::mat data, const arma::imat labels, NewPara
 	int sample_num = data.n_cols;
 	int visible_size = data.n_rows;
 	int num_batches = sample_num / batch_size;
-	
-	result_model.weightMatrix = 0.1 * arma::randn(hid_size,visible_size);
-	result_model.bias = arma::zeros(hid_size,1);
+
 	arma::mat c_bias = arma::zeros(visible_size,1);
 
 	nv_means = arma::zeros(visible_size,batch_size);
@@ -44,7 +41,7 @@ ResultModel RBM::pretrain(const arma::mat data, const arma::imat labels, NewPara
 	for(int epoch = 0; epoch < max_epoch; epoch++){
 		errsum = 0;
 		for(int batch = 0; batch < num_batches; batch++){
-			CD_k(1,minibatches[batch],result_model.weightMatrix,result_model.bias,c_bias);
+			CD_k(1,minibatches[batch],weightMatrix,bias,c_bias);
 			
 			
 			if(batch < 5)
@@ -56,15 +53,15 @@ ResultModel RBM::pretrain(const arma::mat data, const arma::imat labels, NewPara
 			//update W,b,c
 			
 			deltaW = momentum * deltaW + learn_rate *
-				((h_means * minibatches[batch].t() - nh_means * nv_samples.t())/batch_size - weightcost * result_model.weightMatrix);
+				((h_means * minibatches[batch].t() - nh_means * nv_samples.t())/batch_size - weightcost * weightMatrix);
 			deltac = momentum * deltac + (learn_rate/batch_size) * 
 				(sum(minibatches[batch],1) - sum(nv_samples,1));
 			deltab = momentum * deltab + (learn_rate/batch_size) *
 				(sum(h_means,1) - sum(nh_means,1));
 
 
-			result_model.weightMatrix = result_model.weightMatrix + deltaW ;
-			result_model.bias = result_model.bias + deltab ;
+			weightMatrix += deltaW ;
+			bias += deltab ;
 			c_bias = c_bias + deltac ;
 
 			double err = arma::sum(arma::sum(arma::pow((minibatches[batch]-nv_means),2)));
@@ -78,21 +75,19 @@ ResultModel RBM::pretrain(const arma::mat data, const arma::imat labels, NewPara
 	//result_model.features = RBM_VtoH(data, result_model);
 
 	//delete minibatches;
-
-	return result_model;
 }
-arma::mat RBM::backpropagate(ResultModel& result_model,const arma::mat delta, const arma::mat feature, arma::imat labels, NewParam param){
-	arma::mat errsum;
-	arma::mat curr_delta;
-	errsum = result_model.weightMatrix.t() * delta;
+arma::mat RBM:: backpropagate(arma::mat next_layer_weight,const arma::mat next_delta, const arma::mat features, NewParam param){
+	arma::mat curr_delta = next_layer_weight.t() * next_delta;
+	curr_delta = active_function_dev(activeFuncChoice,features) % curr_delta; 
 
-	curr_delta = active_function_inv(activeFuncChoice,feature) % errsum; 
 	return curr_delta;
 }
-arma::mat RBM::forwardpropagate(const ResultModel result_model,const arma::mat data, const arma::imat labels, NewParam param){
-	arma::mat features = result_model.weightMatrix * data + arma::repmat(result_model.bias,1,data.n_cols);
-	features = active_function(activeFuncChoice,features);
-	return features;
+arma::mat RBM::forwardpropagate(const arma::mat data,  NewParam param){
+	//weightMat: hidden_size * visible_size
+	//bias: (hidden_size,1)
+	arma::mat activation = weightMatrix * data + repmat(bias,1,data.n_cols);
+	activation = active_function(activeFuncChoice,activation);
+	return activation;
 }
 
 
@@ -143,4 +138,9 @@ void  RBM::CD_k(int k,arma::mat& v, arma::mat& weightMat, arma::mat& h_bias, arm
 			gibbs_hvh(weightMat,h_bias,v_bias,nh_samples);
 		}
 	}
+}
+void RBM::initial_weights_bias(){
+	srand(unsigned(time(NULL)));
+	weightMatrix = 0.1 * arma::randn(outputSize,inputSize);
+	bias = arma::zeros(outputSize,1);
 }

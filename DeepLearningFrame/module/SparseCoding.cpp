@@ -3,7 +3,7 @@ using namespace dlpft::module;
 using namespace dlpft::param;
 using namespace dlpft::function;
 using namespace dlpft::factory;
-ResultModel SparseCoding::pretrain(const arma::mat data, const arma::imat labels, NewParam param){
+void SparseCoding::pretrain(const arma::mat data, const arma::imat labels, NewParam param){
 	
 	typedef Creator<Optimizer> OptFactory;
 	OptFactory& opt_factory = OptFactory::Instance();
@@ -19,7 +19,6 @@ ResultModel SparseCoding::pretrain(const arma::mat data, const arma::imat labels
 	double gamma = atof(param.params[params_name[GAMMA]].c_str());
 	double epsilon = atof(param.params[params_name[EPSILON]].c_str());
 
-	ResultModel result_model;
 
 	
 	int donut_dim = sqrt(feature_num);
@@ -84,15 +83,8 @@ ResultModel SparseCoding::pretrain(const arma::mat data, const arma::imat labels
 			
 			rand_data(data,minibatch,samples_num,batch_size);
 			
+			sc_cost_func->coefficient = forwardpropagate(minibatch,param);
 			
-			sc_cost_func->coefficient = sc_cost_func->weightMatrix * minibatch;
-			arma::vec normWM = arma::sum(arma::pow(sc_cost_func->weightMatrix,2),1);
-
-			for(int i = 0;i < sc_cost_func->coefficient.n_cols;i++){
-				sc_cost_func->coefficient.col(i) /= normWM;
-			}
-			
-
 			sc_cost_func->data = minibatch;
 			sc_cost_func->coefficient.reshape(feature_num*batch_size,1);
 
@@ -102,6 +94,8 @@ ResultModel SparseCoding::pretrain(const arma::mat data, const arma::imat labels
 			//begin optimize
 			sc_opt->optimize("coefficient");
 			//end optimize
+
+
 			sc_cost_func->coefficient.reshape(feature_num,batch_size);
 
 			sc_cost_func->weightMatrix = ((minibatch*sc_cost_func->coefficient.t())
@@ -110,9 +104,8 @@ ResultModel SparseCoding::pretrain(const arma::mat data, const arma::imat labels
 
 		}
 	}
-	result_model.weightMatrix = sc_cost_func->weightMatrix;
+	weightMatrix = sc_cost_func->weightMatrix;
 
-	return result_model;
 }
 void SparseCoding::rand_data(const arma::mat input, arma::mat& batch,int sample_num, int batch_size){
 	
@@ -175,21 +168,23 @@ void SparseCoding::cirshift(arma::cube& group_cube,int dim, int dir){
 	}
 
 }
-arma::mat SparseCoding::backpropagate( ResultModel& result_model,const arma::mat delta, const arma::mat features, const arma::imat labels, NewParam param){
+arma::mat SparseCoding::backpropagate(arma::mat next_layer_weight,const arma::mat next_delta, const arma::mat features, NewParam param){
 	arma::mat curr_delta;
 	curr_delta.fill(1.0);
 	return curr_delta;
-	
 }
-arma::mat SparseCoding::forwardpropagate(const ResultModel result_model,const arma::mat data, const arma::imat labels, NewParam param){
-	arma::mat features = result_model.weightMatrix * data;
+arma::mat SparseCoding::forwardpropagate(const arma::mat data,NewParam param){
+	arma::mat features = weightMatrix * data;
+	arma::vec normWM = arma::sum(arma::pow(weightMatrix,2),1);
+	for(int i = 0;i < features.n_cols;i++){
+		features.col(i) /= normWM;
+	}
 	return features;
 
 }
-void SparseCoding::initial_params(){
-
+void SparseCoding::initial_weights_bias(){
+	srand(unsigned(time(0)));
 	weightMatrix = arma::randu<arma::mat> (outputSize,inputSize);
-	featureMatrix = arma::randu<arma::mat> (inputSize,outputSize);
 
 }
 void SparseCoding::set_init_coefficient(arma::mat& coefficient,int rows, int cols){

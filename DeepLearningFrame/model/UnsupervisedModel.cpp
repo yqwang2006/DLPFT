@@ -1,33 +1,26 @@
 #include "UnsupervisedModel.h"
 using namespace dlpft::factory;
 using namespace dlpft::model;
-ResultModel* UnsupervisedModel::pretrain(const arma::mat data,const arma::imat labels, vector<NewParam> params){
+void UnsupervisedModel::pretrain(const arma::mat data,const arma::imat labels, vector<NewParam> params){
 	int number_layer = params.size();
 
-	ResultModel *resultmodel_ptr = new ResultModel[number_layer];
 	arma::mat features = data;
 
 	for(int i = 0;i < number_layer;i++){
-		resultmodel_ptr[i] = modules[i]->pretrain(features,labels,params[i]);
-		features = modules[i]->forwardpropagate(resultmodel_ptr[i],features,labels,params[i]);
+		modules[i]->pretrain(features,labels,params[i]);
+		features = modules[i]->forwardpropagate(features,params[i]);
 	}
 
 	if(finetune_switch){
 		assert(params[number_layer-1].params[params_name[ALGORITHM]] == "SoftMax");
-		finetune_BP(resultmodel_ptr,data,labels,params);
+		finetune_BP(data,labels,params);
 	}
-
-	return resultmodel_ptr;
 }
-void UnsupervisedModel::finetune_BP(ResultModel* result_model_ptr,const arma::mat data, const arma::imat labels, vector<NewParam> params){
+void UnsupervisedModel::finetune_BP(const arma::mat data, const arma::imat labels, vector<NewParam> params){
 	int number_layer = params.size();
 	int samples_num = data.n_cols;
 	arma::mat* features = new arma::mat[number_layer];
 	arma::mat* delta = new arma::mat[number_layer+1];
-	ResultModel* prev_result_model = new ResultModel[number_layer];
-	for(int i = 0;i < number_layer;i++){
-		prev_result_model[i] = result_model_ptr[i];
-	}
 
 	int max_epoch = 5;
 
@@ -48,9 +41,9 @@ void UnsupervisedModel::finetune_BP(ResultModel* result_model_ptr,const arma::ma
 			minibatch_labels = labels.rows(n*batch_size,upper_bound);
 			for(int i = 0;i < number_layer ;i++){
 				if(i == 0){
-					features[i] = modules[i]->forwardpropagate(result_model_ptr[i],minibatch,minibatch_labels,params[i]);
+					features[i] = modules[i]->forwardpropagate(minibatch,params[i]);
 				}else{
-					features[i] = modules[i]->forwardpropagate(result_model_ptr[i],features[i-1],minibatch_labels,params[i]);
+					features[i] = modules[i]->forwardpropagate(features[i-1],params[i]);
 				}
 			}
 
@@ -62,25 +55,25 @@ void UnsupervisedModel::finetune_BP(ResultModel* result_model_ptr,const arma::ma
 					desired_out(minibatch_labels(i),i) = 1;
 			}
 			// compute the output delta
-			delta[number_layer] = (features[number_layer-1] % (1-features[number_layer-1]))%(desired_out - features[number_layer-1]);
-
-			for(int i = number_layer-1;i >0 ;i--){	
-				delta[i] = modules[i]->backpropagate(result_model_ptr[i],delta[i+1],features[i-1],minibatch_labels,params[i]);
+			delta[number_layer] = (desired_out - features[number_layer-1]);
+			arma::mat next_layer_weight;
+			for(int i = number_layer-1;i >=0 ;i--){
+				if(i == number_layer-1){
+					delta[i] = modules[i]->backpropagate(next_layer_weight,delta[i+1],features[i],params[i]);
+				}else{
+					delta[i] = modules[i]->backpropagate(modules[i+1]->weightMatrix,delta[i+1],features[i],params[i]);
+				}
 			}
 
 			for(int i = 0;i < number_layer; i++){
 				double learn_rate = atof(params[i].params["Learning_rate"].c_str());
 
 				if(i == 0){
-					prev_result_model[i].weightMatrix = learn_rate * delta[i+1]*minibatch.t()/batch_size;
-					prev_result_model[i].bias = (learn_rate / batch_size) * sum(delta[i+1],1);
+					modules[i]->weightMatrix += learn_rate * delta[i]*minibatch.t()/batch_size;
+					modules[i]->bias += (learn_rate / batch_size) * sum(delta[i],1);
 				}else{
-					prev_result_model[i].weightMatrix = learn_rate * delta[i+1]*features[i-1].t()/batch_size;
-					prev_result_model[i].bias = (learn_rate / batch_size) * sum(delta[i+1],1);
-				}
-				result_model_ptr[i].weightMatrix += prev_result_model[i].weightMatrix;
-				if(i != number_layer - 1){
-					result_model_ptr[i].bias += prev_result_model[i].bias;
+					modules[i]->weightMatrix += learn_rate * delta[i]*features[i-1].t()/batch_size;
+					modules[i]->bias += (learn_rate / batch_size) * sum(delta[i],1);
 				}
 			}
 		}
@@ -90,17 +83,16 @@ void UnsupervisedModel::finetune_BP(ResultModel* result_model_ptr,const arma::ma
 
 	delete []features;
 	delete []delta;
-	delete []prev_result_model;
 	//delete []features;
 }
 
-void UnsupervisedModel::predict(ResultModel* result_model,arma::mat& testdata, arma::imat& testlabels,vector<NewParam> params){
+void UnsupervisedModel::predict(arma::mat& testdata, arma::imat& testlabels,vector<NewParam> params){
 	int layer_num = params.size();
 	arma::mat features = testdata;
 
 	arma::mat max_vals;
 	for(int i = 0;i < layer_num;i++){
-		features = modules[i]->forwardpropagate(result_model[i],features,testlabels,params[i]);
+		features = modules[i]->forwardpropagate(features,params[i]);
 	}
 	if(params[layer_num-1].params["Algorithm"] == "SoftMax"){
 

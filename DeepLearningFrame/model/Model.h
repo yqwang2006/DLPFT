@@ -8,7 +8,7 @@ using namespace dlpft::module;
 namespace dlpft{
 	namespace model{
 		class Model{
-		protected:
+		public:
 			int layerNumber;
 			Module** modules;
 			int inputSize;
@@ -17,14 +17,6 @@ namespace dlpft{
 			Model(int input_size,vector<NewParam> module_params){
 				inputSize = input_size;
 				layerNumber = module_params.size();
-				modules = new Module* [layerNumber];
-				int in_size = input_size;
-				int out_size = 0;
-				for(int i = 0; i < layerNumber; i++){
-					out_size = atoi(module_params[i].params[params_name[HIDNUM]].c_str());
-					modules[i] = create_module(module_params[i],in_size,out_size);
-					in_size = out_size;
-				}
 			}
 			~Model(){
 				for(int i = 0;i < layerNumber;i++){
@@ -33,7 +25,7 @@ namespace dlpft{
 				}
 				delete []modules;
 			}
-			Module* create_module(NewParam& param,int in_size,int out_size){
+			Module* create_module(NewParam& param,int& in_size,int& out_size){
 				string m_name = param.params["Algorithm"];
 
 				Module* module;
@@ -45,19 +37,30 @@ namespace dlpft{
 					module = new SparseCoding(in_size,out_size);
 				}else if(m_name == "SoftMax"){
 					module = new SoftMax(in_size,out_size);
+				}else if(m_name == "ConvolveModule"){
+					int in_num = out_size;
+					int in_dim = sqrt(in_size / in_num);
+					int filter_dim = atoi(param.params[params_name[FILTERDIM]].c_str());
+					int out_num = atoi(param.params[params_name[FILTERNUM]].c_str());
+					module = new ConvolveModule(in_dim,in_num,filter_dim,out_num);
+					int out_dim = in_dim - filter_dim + 1;
+					in_size = out_dim*out_dim*out_num;
+					out_size = out_num;
+				}else if(m_name == "Pooling"){
+					int in_num = out_size;
+					int in_dim = sqrt(in_size/out_size);
+					int pool_dim = atoi(param.params[params_name[POOLINGDIM]].c_str());
+					string pool_type = param.params[params_name[POOLINGDIM]];
+					module = new Pooling(in_dim,in_num,pool_dim,pool_type);
+					int out_dim = in_dim/pool_dim;
+					in_size = out_dim * out_dim * in_num;
+					out_size = in_num;
+				}else if(m_name == "FullConnection"){
+					int o_size = atoi(param.params[params_name[HIDNUM]].c_str());
+					module = new FullConnectModule(in_size,o_size);
+					in_size = o_size;
 				}else{
 					module = NULL;
-				}
-				return module;
-			}
-			Module* create_module(NewParam& param){
-				string m_name = param.params["Algorithm"];
-
-				Module* module;
-				if(m_name == "ConvolveModule"){
-					module = new ConvolveModule();
-				}else if(m_name == "Pooling"){
-					module = new Pooling();
 				}
 				return module;
 			}

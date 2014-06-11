@@ -5,10 +5,8 @@ using namespace dlpft::module;
 using namespace dlpft::function;
 using namespace dlpft::optimizer;
 using namespace dlpft::factory;
-ResultModel AutoEncoder::pretrain(const arma::mat data, const arma::imat labels, NewParam param){
+void AutoEncoder::pretrain(const arma::mat data, const arma::imat labels, NewParam param){
 	
-	ResultModel result_model;
-
 	typedef Creator<Optimizer> OptFactory;
 	OptFactory& opt_factory = OptFactory::Instance();
 
@@ -33,48 +31,40 @@ ResultModel AutoEncoder::pretrain(const arma::mat data, const arma::imat labels,
 
 	//cout << "after opt:" << costfunc->get_coefficient()->n_rows<<";" << costfunc->get_coefficient()->n_cols << endl;
 	
-	result_model.algorithm_name = "AutoEncoder";
-	result_model.weightMatrix = (costfunc->coefficient).rows(0,h_v_size-1);
-	result_model.weightMatrix.reshape(outputSize,inputSize);
-	result_model.bias = (costfunc->coefficient).rows(2*h_v_size,2*h_v_size+outputSize-1);
-
 	
-	return result_model;
+	weightMatrix = reshape((costfunc->coefficient).rows(0,h_v_size-1),outputSize,inputSize);
+	bias = (costfunc->coefficient).rows(2*h_v_size,2*h_v_size+outputSize-1);
+
 }
 
-arma::mat AutoEncoder::backpropagate( ResultModel& result_model,const arma::mat delta, const arma::mat features, const arma::imat labels,NewParam param){
-	arma::mat curr_delta;
-
+arma::mat AutoEncoder::backpropagate(arma::mat next_layer_weight,const arma::mat next_delta, const arma::mat features, NewParam param){
+	arma::mat curr_delta = next_layer_weight.t() * next_delta;
+	curr_delta = active_function_dev(activeFuncChoice,features) % curr_delta; 
 
 	return curr_delta;
-
 }
-arma::mat AutoEncoder::forwardpropagate(const ResultModel result_model,const arma::mat data, const arma::imat labels, NewParam param){
-	arma::mat activation = result_model.weightMatrix * data + repmat(result_model.bias,1,data.n_cols);
+arma::mat AutoEncoder::forwardpropagate(const arma::mat data,  NewParam param){
+	//weightMat: hidden_size * visible_size
+	//bias: (hidden_size,1)
+	arma::mat activation = weightMatrix * data + repmat(bias,1,data.n_cols);
 	activation = active_function(activeFuncChoice,activation);
 	return activation;
 }
-void AutoEncoder::initial_params(){
-	
+void AutoEncoder::initial_weights_bias(){
+	srand(unsigned(time(NULL)));
 	double r = sqrt(6) / sqrt(outputSize + inputSize + 1);
 	int h_v_size = outputSize * inputSize;
 	
-	forwardWeight = arma::randu<arma::mat> (outputSize,inputSize)*2*r-r;
+	weightMatrix = arma::randu<arma::mat> (outputSize,inputSize)*2*r-r;
 	backwardWeight = arma::randu<arma::mat> (inputSize,outputSize)*2*r-r;
-	forwardBias = arma::zeros(outputSize,1);
+	bias = arma::zeros(outputSize,1);
 	backwardBias = arma::zeros(inputSize,1);
 }
 void AutoEncoder::set_init_coefficient(arma::mat& coefficient){
 	coefficient.set_size(outputSize * inputSize * 2 + outputSize + inputSize);
 	int h_v_size = inputSize * outputSize;
-	forwardWeight.reshape(h_v_size,1);
-	backwardWeight.reshape(h_v_size,1);
-	/*arma::mat W1 = arma::ones(hiddenSize,visiableSize)*2*r-r;
-	arma::mat W2 = arma::ones(visiableSize,hiddenSize)*r-r;
-	W1.reshape(h_v_size,1);
-	W2.reshape(h_v_size,1);*/
-	coefficient.rows(0,h_v_size-1) = forwardWeight;
-	coefficient.rows(h_v_size,2*h_v_size-1) = backwardWeight;
-	coefficient.rows(2*h_v_size,2 * h_v_size+outputSize-1) = forwardBias;
+	coefficient.rows(0,h_v_size-1) = reshape(weightMatrix,h_v_size,1);
+	coefficient.rows(h_v_size,2*h_v_size-1) = reshape(backwardWeight,h_v_size,1);
+	coefficient.rows(2*h_v_size,2 * h_v_size+outputSize-1) = bias;
 	coefficient.rows(2*h_v_size+outputSize,coefficient.size()-1) = backwardBias;
 }

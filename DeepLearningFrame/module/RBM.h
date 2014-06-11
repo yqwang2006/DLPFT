@@ -18,14 +18,17 @@ namespace dlpft{
 			RBM(int in_size,int out_size)
 				:Module(in_size,out_size){
 				name = "RBM";
+				initial_weights_bias();
 			}
 			RBM(int in_size,int out_size,ActivationFunction act_func)
 				:Module(in_size,out_size,act_func){
 				name = "RBM";
+				initial_weights_bias();
 			}
-			ResultModel pretrain(const arma::mat data, const arma::imat labels, NewParam param);
-			arma::mat backpropagate(ResultModel& result_model,const arma::mat delta,const arma::mat features,  const arma::imat labels, NewParam param);
 			~RBM();
+
+			void pretrain(const arma::mat data, const arma::imat labels, NewParam param);
+			
 		    void  CD_k(int k,arma::mat& input_data, arma::mat& weightMat, arma::mat& h_bias, arma::mat& v_bias);
 			
 			void sample_h_given_v(arma::mat& v0_sample, arma::mat& mean, arma::mat& sample,arma::mat& weightMat, arma::mat& h_bias);
@@ -35,7 +38,9 @@ namespace dlpft{
 		    void  gibbs_hvh(arma::mat& weightMat, arma::mat& h_bias, arma::mat& v_bias,arma::mat& h0_sample);
 		    double get_reconstruct_error(arma::mat& v);
 			arma::mat BiNomial(const arma::mat mean);
-			arma::mat forwardpropagate(const ResultModel result_model,const arma::mat data, const arma::imat labels, NewParam param);
+			arma::mat backpropagate(arma::mat next_layer_weight,const arma::mat next_delta, const arma::mat features, NewParam param);
+			arma::mat forwardpropagate(const arma::mat data,  NewParam param);
+			void initial_weights_bias();
 		};
 	};
 };
