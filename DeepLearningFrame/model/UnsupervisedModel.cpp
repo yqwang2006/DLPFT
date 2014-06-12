@@ -1,4 +1,5 @@
 #include "UnsupervisedModel.h"
+#include "../util/onehot.h"
 using namespace dlpft::factory;
 using namespace dlpft::model;
 void UnsupervisedModel::pretrain(const arma::mat data,const arma::imat labels, vector<NewParam> params){
@@ -47,22 +48,20 @@ void UnsupervisedModel::finetune_BP(const arma::mat data, const arma::imat label
 				}
 			}
 
-			arma::mat desired_out = zeros(features[number_layer-1].n_rows,features[number_layer-1].n_cols);
-			for(int i = 0;i < features[number_layer-1].n_cols; i++){
-				if(minibatch_labels(i) == features[number_layer-1].n_rows)
-					desired_out(0,i) = 1;
-				else
-					desired_out(minibatch_labels(i),i) = 1;
-			}
+			arma::mat desired_out = onehot(features[number_layer-1].n_rows,features[number_layer-1].n_cols,minibatch_labels);
+
 			// compute the output delta
 			delta[number_layer] = (desired_out - features[number_layer-1]);
 			arma::mat next_layer_weight;
+			arma::mat next_delta;
 			for(int i = number_layer-1;i >=0 ;i--){
+				
 				if(i == number_layer-1){
 					delta[i] = modules[i]->backpropagate(next_layer_weight,delta[i+1],features[i],params[i]);
 				}else{
-					delta[i] = modules[i]->backpropagate(modules[i+1]->weightMatrix,delta[i+1],features[i],params[i]);
+					delta[i] = modules[i]->backpropagate(modules[i+1]->weightMatrix,next_delta,features[i],params[i]);
 				}
+				next_delta = modules[i]->process_delta(delta[i]);
 			}
 
 			for(int i = 0;i < number_layer; i++){

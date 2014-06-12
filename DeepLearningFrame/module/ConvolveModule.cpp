@@ -23,8 +23,7 @@ arma::mat ConvolveModule::forwardpropagate(const arma::mat data,  NewParam param
 			}
 			features_filter = features_filter + b;
 			features_filter = active_function(activeFuncChoice,features_filter);
-			features_filter.reshape(features_filter.size(),1);
-			all_features.col(n).rows(nout*features_filter.size(),(nout+1)*features_filter.size()-1) = features_filter;
+			all_features.col(n).rows(nout*features_filter.size(),(nout+1)*features_filter.size()-1) = reshape(features_filter,features_filter.size(),1);
 		}
 		
 	}
@@ -52,18 +51,19 @@ arma::mat ConvolveModule::process_delta(arma::mat curr_delta){
 				single_delta.reshape(delta_dim,delta_dim);
 				delta_filter += convn(single_delta,W,"full");
 			}
-			delta_filter.reshape(delta_filter.size(),1);
-			convn_delta.col(n).rows(nin*delta_filter.size(),(nin+1)*delta_filter.size()-1) = delta_filter;
+			convn_delta.col(n).rows(nin*delta_filter.size(),(nin+1)*delta_filter.size()-1) = reshape(delta_filter,delta_filter.size(),1);
 		}
 		
 	}
 	return convn_delta;
 }
 arma::mat ConvolveModule::backpropagate(arma::mat next_layer_weight,const arma::mat next_delta, const arma::mat features, NewParam param){
-	
-	arma::mat curr_delta = active_function_dev(activeFuncChoice,features);
-	//for convinience, next_delta = as up_sampling(pooling_delta) which defines in pooling.cpp
-	curr_delta = next_layer_weight *(curr_delta % next_delta);
+	arma::mat curr_delta = zeros(outputSize,next_delta.n_cols);
+	for(int i = 0;i < outputImageNum;i ++){
+		curr_delta.rows(i*outputImageDim*outputImageDim,(i+1)*outputImageDim*outputImageDim-1) 
+			= next_layer_weight(i)*(active_function_dev(activeFuncChoice,features.rows(i*outputImageDim*outputImageDim,(i+1)*outputImageDim*outputImageDim-1)) 
+			% next_delta.rows(i*outputImageDim*outputImageDim,(i+1)*outputImageDim*outputImageDim-1));
+	}
 	
 	return curr_delta;
 	

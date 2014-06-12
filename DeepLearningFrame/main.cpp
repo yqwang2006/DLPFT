@@ -25,7 +25,7 @@ int main(){
 	RegisterOptimizer();
 
 
-	dlpft::io::LoadParam load_param("prj_21.param");
+	dlpft::io::LoadParam load_param("AE.param");
 	vector<vector<NewParam>> params;
 	AllDataAddr data_addr;
 	load_param.load(params,data_addr);

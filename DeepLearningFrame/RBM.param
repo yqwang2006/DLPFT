@@ -3,7 +3,7 @@ Layer_order:1
 Algorithm:RBM
 Optimize_method:1,CD
 Hid_num:1,200
-Max_epoch:1,10
+Max_epoch:1,5
 Batch_size:1,100
 Learning_rate:1,0.1
 Layer_order:2

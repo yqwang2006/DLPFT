@@ -33,6 +33,8 @@ void SoftMax::pretrain(const arma::mat data, const arma::imat labels, NewParam p
 	weightMatrix = costfunc->coefficient.rows(0,outputSize*inputSize-1);
 	weightMatrix.reshape(outputSize,inputSize);
 
+	 bias = costfunc->coefficient.rows(outputSize*inputSize,costfunc->coefficient.size()-1);
+
 
 } 
 arma::mat SoftMax::backpropagate(arma::mat next_layer_weight,const arma::mat next_delta, const arma::mat features, NewParam param){
@@ -43,7 +45,8 @@ arma::mat SoftMax::backpropagate(arma::mat next_layer_weight,const arma::mat nex
 }
 arma::mat SoftMax::forwardpropagate(const arma::mat data,  NewParam param){
 
-	arma::mat features = weightMatrix * data;
+	arma::mat features = weightMatrix * data + repmat(bias,1,data.n_cols);
+	//arma::mat features = weightMatrix * data;
 	features = active_function(activeFuncChoice,features);
 	return features;
 
@@ -54,6 +57,9 @@ void SoftMax::initial_weights_bias(){
 	bias = zeros(outputSize,1);
 }
 void SoftMax::set_init_coefficient(arma::mat& coefficient){
-	coefficient.set_size(outputSize,inputSize);
-	coefficient = weightMatrix;
+	coefficient.set_size(outputSize*inputSize + outputSize,1);
+	coefficient.rows(0,outputSize*inputSize-1) = reshape(weightMatrix,weightMatrix.size(),1);
+	coefficient.rows(outputSize*inputSize,coefficient.size()-1) = bias;
+	/*coefficient.set_size(outputSize*inputSize,1);
+	coefficient.rows(0,outputSize*inputSize-1) = reshape(weightMatrix,weightMatrix.size(),1);*/
 }

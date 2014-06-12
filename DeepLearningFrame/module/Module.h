@@ -40,12 +40,12 @@ namespace dlpft{
 			}
 			
 			virtual void pretrain(const arma::mat data, const arma::imat labels, NewParam param)=0;
-			virtual arma::mat backpropagate(arma::mat next_layer_weight,const arma::mat next_delta, const arma::mat features, NewParam param)=0;
+			
 			virtual arma::mat forwardpropagate(const arma::mat data,  NewParam param)=0;
 			virtual void initial_weights_bias() = 0;
-			arma::mat process_delta(arma::mat curr_delta){
-				return curr_delta;
-			}
+			virtual arma::mat backpropagate(arma::mat next_layer_weight,const arma::mat next_delta, const arma::mat features, NewParam param)=0;
+			
+			virtual arma::mat process_delta(arma::mat curr_delta) = 0;
 		};
 	};
 };

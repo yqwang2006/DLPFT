@@ -21,6 +21,10 @@ namespace dlpft{
 			arma::mat forwardpropagate(const arma::mat data, NewParam param);
 			void initial_weights_bias();
 			void set_init_coefficient(arma::mat& coefficeint,int rows, int cols);
+			arma::mat process_delta(arma::mat curr_delta)
+			{
+				return weightMatrix.t()*curr_delta;
+			}
 		};
 		
 	};

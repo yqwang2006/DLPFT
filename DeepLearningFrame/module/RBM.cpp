@@ -76,12 +76,6 @@ void RBM::pretrain(const arma::mat data, const arma::imat labels, NewParam param
 
 	//delete minibatches;
 }
-arma::mat RBM:: backpropagate(arma::mat next_layer_weight,const arma::mat next_delta, const arma::mat features, NewParam param){
-	arma::mat curr_delta = next_layer_weight.t() * next_delta;
-	curr_delta = active_function_dev(activeFuncChoice,features) % curr_delta; 
-
-	return curr_delta;
-}
 arma::mat RBM::forwardpropagate(const arma::mat data,  NewParam param){
 	//weightMat: hidden_size * visible_size
 	//bias: (hidden_size,1)
@@ -89,7 +83,10 @@ arma::mat RBM::forwardpropagate(const arma::mat data,  NewParam param){
 	activation = active_function(activeFuncChoice,activation);
 	return activation;
 }
-
+arma::mat RBM::backpropagate(arma::mat next_layer_weight,const arma::mat next_delta, const arma::mat features, NewParam param){
+	arma::mat curr_delta = active_function_dev(activeFuncChoice,features) % next_delta; 
+	return curr_delta;
+}
 
 arma::mat RBM::BiNomial(const arma::mat mean){
 	arma::mat rand_vec = arma::randu(mean.n_rows,mean.n_cols);

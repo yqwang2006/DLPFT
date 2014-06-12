@@ -53,8 +53,14 @@ arma::mat Pooling::forwardpropagate(const arma::mat data,  NewParam param){
 					
 				}
 			}
+			double W = weightMatrix(j);
+			double b = bias(j);
+			
 			temp_pooling_result.reshape(temp_pooling_result.size(),1);
 			temp_pool_id.reshape(temp_pool_id.size(),1);
+			
+			temp_pooling_result = W*temp_pooling_result + b;
+			temp_pooling_result = active_function(activeFuncChoice,temp_pooling_result);
 			pooling_result.col(i).rows(j*outputImageDim*outputImageDim,(j+1)*outputImageDim*outputImageDim-1) = temp_pooling_result;
 			sampleLoc.col(i).rows(j*outputImageDim*outputImageDim,(j+1)*outputImageDim*outputImageDim-1) = temp_pool_id;
 		}
@@ -95,17 +101,10 @@ arma::mat Pooling::process_delta(arma::mat curr_delta){
 	
 }
 arma::mat Pooling::backpropagate(arma::mat next_layer_weight,const arma::mat next_delta, const arma::mat features, NewParam param){
-	const int samples_num = next_delta.n_cols;
-	
-
-	//here, if next layer is conv_layer, next_delta will be convned(conv_layer'delta,filters).
-	//if next layer is full_layer, next_delta would be the full_layer's delta;
-	arma::mat curr_delta = active_function_dev(activeFuncChoice,features) % next_delta;
-
+	arma::mat curr_delta = active_function_dev(activeFuncChoice,features) % next_delta; 
 	return curr_delta;
-
 }
 void Pooling::initial_weights_bias(){
-	weightMatrix = 0.005*arma::randu<arma::mat> (outputSize,inputSize);
-	bias = zeros(outputSize,1);
+	weightMatrix = 0.005*arma::randu<arma::mat> (outputImageNum,1);
+	bias = zeros(outputImageNum,1);
 }
