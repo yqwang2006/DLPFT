@@ -30,6 +30,7 @@ namespace dlpft{
 					data = d;
 					modules = m;
 					layer_num = np.size();
+					params = np;
 					initialParam();
 					function_name = func_name;
 			}

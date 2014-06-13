@@ -1,7 +1,6 @@
 #include "Pooling.h"
 using namespace dlpft::module;
-
-arma::mat Pooling::forwardpropagate(const arma::mat data,  NewParam param){
+arma::mat Pooling::down_sample(arma::mat data){
 	const int samples_num = data.n_cols;
 	
 
@@ -53,22 +52,25 @@ arma::mat Pooling::forwardpropagate(const arma::mat data,  NewParam param){
 					
 				}
 			}
-			double W = weightMatrix(j);
-			double b = bias(j);
 			
-			temp_pooling_result.reshape(temp_pooling_result.size(),1);
-			temp_pool_id.reshape(temp_pool_id.size(),1);
-			
-			temp_pooling_result = W*temp_pooling_result + b;
-			temp_pooling_result = active_function(activeFuncChoice,temp_pooling_result);
-			pooling_result.col(i).rows(j*outputImageDim*outputImageDim,(j+1)*outputImageDim*outputImageDim-1) = temp_pooling_result;
-			sampleLoc.col(i).rows(j*outputImageDim*outputImageDim,(j+1)*outputImageDim*outputImageDim-1) = temp_pool_id;
+			pooling_result.col(i).rows(j*outputImageDim*outputImageDim,(j+1)*outputImageDim*outputImageDim-1) = reshape(temp_pooling_result,temp_pooling_result.size(),1);
+			sampleLoc.col(i).rows(j*outputImageDim*outputImageDim,(j+1)*outputImageDim*outputImageDim-1) = reshape(temp_pool_id,temp_pool_id.size(),1);
 		}
 
 
 	}
 
 	return pooling_result;
+}
+arma::mat Pooling::forwardpropagate(const arma::mat data,  NewParam param){
+	arma::mat sample_data = down_sample(data);
+	for(int j = 0;j < outputImageNum; j++){
+		double W = weightMatrix(j);
+		double b = bias(j);
+		sample_data.rows(j*outputImageDim*outputImageDim,(j+1)*outputImageDim*outputImageDim-1) = W*sample_data.rows(j*outputImageDim*outputImageDim,(j+1)*outputImageDim*outputImageDim-1) + b;
+		sample_data.rows(j*outputImageDim*outputImageDim,(j+1)*outputImageDim*outputImageDim-1) = active_function(activeFuncChoice,sample_data.rows(j*outputImageDim*outputImageDim,(j+1)*outputImageDim*outputImageDim-1));
+	}
+	return sample_data;
 }
 arma::mat Pooling::process_delta(arma::mat curr_delta){
 	const int samples_num = curr_delta.n_cols;
@@ -107,4 +109,16 @@ arma::mat Pooling::backpropagate(arma::mat next_layer_weight,const arma::mat nex
 void Pooling::initial_weights_bias(){
 	weightMatrix = 0.005*arma::randu<arma::mat> (outputImageNum,1);
 	bias = zeros(outputImageNum,1);
+}
+void Pooling::calculate_grad_using_delta(const arma::mat input_data,const arma::mat delta,NewParam param,arma::mat& Wgrad, arma::mat& bgrad){
+	bgrad.set_size(outputImageNum,1);
+	Wgrad.set_size(outputImageNum,1);
+	arma::mat down_sample_data = down_sample(input_data);
+
+	for(int i = 0;i < outputImageNum; i++){
+		
+		Wgrad(i) = sum(sum(delta.rows(i*outputImageDim*outputImageDim,(i+1)*outputImageDim*outputImageDim-1)%down_sample_data.rows(i*outputImageDim*outputImageDim,(i+1)*outputImageDim*outputImageDim-1)));
+		bgrad(i) = sum(sum(delta.rows(i*outputImageDim*outputImageDim,(i+1)*outputImageDim*outputImageDim-1)));
+	}
+
 }

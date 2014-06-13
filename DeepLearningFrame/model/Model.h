@@ -25,9 +25,9 @@ namespace dlpft{
 				}
 				delete []modules;
 			}
-			Module* create_module(NewParam& param,int& in_size,int& out_size){
+			Module* create_module(NewParam& param,int& in_size,int& in_num){
 				string m_name = param.params["Algorithm"];
-
+				int out_size = atoi(param.params[params_name[HIDNUM]].c_str());
 				Module* module;
 				if(m_name == "AutoEncoder"){
 					module = new AutoEncoder(in_size,out_size);
@@ -38,23 +38,21 @@ namespace dlpft{
 				}else if(m_name == "SoftMax"){
 					module = new SoftMax(in_size,out_size);
 				}else if(m_name == "ConvolveModule"){
-					int in_num = out_size;
 					int in_dim = sqrt(in_size / in_num);
 					int filter_dim = atoi(param.params[params_name[FILTERDIM]].c_str());
 					int out_num = atoi(param.params[params_name[FILTERNUM]].c_str());
 					module = new ConvolveModule(in_dim,in_num,filter_dim,out_num);
 					int out_dim = in_dim - filter_dim + 1;
 					in_size = out_dim*out_dim*out_num;
-					out_size = out_num;
+					in_num = out_num;
 				}else if(m_name == "Pooling"){
-					int in_num = out_size;
-					int in_dim = sqrt(in_size/out_size);
+					int in_dim = sqrt(in_size/in_num);
 					int pool_dim = atoi(param.params[params_name[POOLINGDIM]].c_str());
 					string pool_type = param.params[params_name[POOLINGDIM]];
 					module = new Pooling(in_dim,in_num,pool_dim,pool_type);
 					int out_dim = in_dim/pool_dim;
 					in_size = out_dim * out_dim * in_num;
-					out_size = in_num;
+					in_num = in_num;
 				}else if(m_name == "FullConnection"){
 					int o_size = atoi(param.params[params_name[HIDNUM]].c_str());
 					module = new FullConnectModule(in_size,o_size);

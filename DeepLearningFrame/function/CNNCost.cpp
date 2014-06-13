@@ -18,6 +18,7 @@ double CNNCost::value_gradient(arma::mat& grad){
 	double cost = 0;
 	//forward Propagation
 	int start_b_loc = 0;
+	
 	for(int i = 0;i < layer_num;i ++){
 		if(i == 0){
 			activations[i] = modules[i]->forwardpropagate(data,params[i]);
@@ -28,34 +29,55 @@ double CNNCost::value_gradient(arma::mat& grad){
 		start_b_loc += modules[i]->weightMatrix.size();
 	}
 
-
+	cout << "softmax features:" << activations[layer_num-1].n_rows << "; " << activations[layer_num-1].n_cols << endl;
 	arma::mat desired_out = onehot(activations[layer_num-1].n_rows,activations[layer_num-1].n_cols,labels);
 
-	arma::mat gm = desired_out.t()*arma::log(reshape(activations[layer_num-1],activations[layer_num-1].size(),1));
+
+	//desired_out is t, activations[layer_num-1] is y. here we compute 1/m*sum(t'*log(f(y)))
+	arma::mat gm = reshape(desired_out,desired_out.size(),1).t()*log(reshape(activations[layer_num-1],activations[layer_num-1].size(),1));
 
 	cost += ((double)-1/num_images)*gm(0);
 
 	//backward propagation to compute delta
 
 	delta[layer_num] = (desired_out - activations[layer_num-1]);
+	cout << delta[layer_num].n_rows << "; " << delta[layer_num].n_cols << endl;
 	arma::mat next_layer_weight;
+	int start_w_loc=0,end_w_loc=start_b_loc,end_b_loc=grad.size();
+	arma::mat next_delta;
 	for(int i = layer_num-1;i >=0 ;i--){
 		arma::mat w_grad = zeros(modules[i]->weightMatrix.n_rows,modules[i]->weightMatrix.n_cols);
 		arma::mat b_grad = zeros(modules[i]->bias.size(),1);
+		
+		cout << i << endl;
 		if(i == layer_num-1){
-			delta[i] = modules[i]->backpropagate(next_layer_weight,delta[i+1],activations[i],params[i]);
-			w_grad = ((double)1/num_images)*delta[i] * data.t();
-			
+			delta[i] = modules[i]->backpropagate(next_layer_weight,delta[layer_num],activations[i],params[i]);
+			//w_grad = ((double)1/num_images)*delta[i] * data.t();
+			modules[i]->calculate_grad_using_delta(activations[i-1],delta[i],params[i],w_grad,b_grad);
+		}else if(i == 0){
+			delta[i] = modules[i]->backpropagate(modules[i+1]->weightMatrix,next_delta,activations[i],params[i]);
+			modules[i]->calculate_grad_using_delta(data,delta[i],params[i],w_grad,b_grad);
 		}else{
-			delta[i] = modules[i]->backpropagate(modules[i+1]->weightMatrix,delta[i+1],activations[i],params[i]);
-			w_grad = ((double)1/num_images)*delta[i] * activations[i-1].t();
+			cout << modules[i]->weightMatrix.n_rows << ";" << modules[i]->weightMatrix.n_cols << endl;
+			cout << modules[i+1]->weightMatrix.n_rows << ";" << modules[i+1]->weightMatrix.n_cols << endl;
+			delta[i] = modules[i]->backpropagate(modules[i+1]->weightMatrix,next_delta,activations[i],params[i]);
+			modules[i]->calculate_grad_using_delta(activations[i-1],delta[i],params[i],w_grad,b_grad);
 		}
-		b_grad = ((double)1/num_images)*arma::sum(delta[i],1);
-
+		//b_grad = ((double)1/num_images)*arma::sum(delta[i],1);
+		next_delta = modules[i]->process_delta(delta[i]);
+		
+		start_w_loc = end_w_loc - modules[i]->weightMatrix.size();
+		start_b_loc = end_b_loc - modules[i]->bias.size();
+		grad.rows(start_w_loc,end_w_loc-1) = reshape(modules[i]->weightMatrix,modules[i]->weightMatrix.size(),1);
+		grad.rows(start_b_loc,end_b_loc-1) = reshape(modules[i]->bias,modules[i]->bias.size(),1);
+		end_w_loc -= modules[i]->weightMatrix.size();
+		end_b_loc -= modules[i]->bias.size();
+		
 	}
 	
 
 	delete[] activations;
+	delete[] delta;
 	return cost;
 }
 void CNNCost::gradient(arma::mat& grad){
@@ -80,12 +102,15 @@ void CNNCost::cnnParamsToStack(){
 			cols_num = filter_dim;
 
 		}else if(params[i].params[params_name[ALGORITHM]] == "FullConnection"){
-			rows_num = ((FullConnectModule*) modules[i])->inputSize;
-			cols_num = ((FullConnectModule*) modules[i])->outputSize;
+			rows_num = ((FullConnectModule*) modules[i])->outputSize;
+			cols_num = ((FullConnectModule*) modules[i])->inputSize;
 		}else if(params[i].params[params_name[ALGORITHM]] == "SoftMax"){
-			rows_num = ((SoftMax*) modules[i])->inputSize;
-			cols_num = ((SoftMax*) modules[i])->outputSize;
+			rows_num = ((SoftMax*) modules[i])->outputSize;
+			cols_num = ((SoftMax*) modules[i])->inputSize;
 
+		}else if(params[i].params[params_name[ALGORITHM]] == "Pooling"){
+			rows_num = ((Pooling*) modules[i])->outputImageNum;
+			cols_num = 1;
 		}
 		end_w_loc += modules[i]->weightMatrix.size();
 		modules[i]->weightMatrix = arma::reshape(coefficient.rows(start_w_loc,end_w_loc-1),rows_num,cols_num);

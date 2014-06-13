@@ -22,6 +22,8 @@ void UnsupervisedModel::finetune_BP(const arma::mat data, const arma::imat label
 	int samples_num = data.n_cols;
 	arma::mat* features = new arma::mat[number_layer];
 	arma::mat* delta = new arma::mat[number_layer+1];
+	arma::mat* Wgrad = new arma::mat[number_layer];
+	arma::mat* bgrad = new arma::mat[number_layer];
 
 	int max_epoch = 5;
 
@@ -58,8 +60,13 @@ void UnsupervisedModel::finetune_BP(const arma::mat data, const arma::imat label
 				
 				if(i == number_layer-1){
 					delta[i] = modules[i]->backpropagate(next_layer_weight,delta[i+1],features[i],params[i]);
+					modules[i]->calculate_grad_using_delta(features[i-1],delta[i],params[i],Wgrad[i],bgrad[i]);
+				}else if(i == 0){
+					delta[i] = modules[i]->backpropagate(modules[i+1]->weightMatrix,next_delta,features[i],params[i]);
+					modules[i]->calculate_grad_using_delta(minibatch,delta[i],params[i],Wgrad[i],bgrad[i]);
 				}else{
 					delta[i] = modules[i]->backpropagate(modules[i+1]->weightMatrix,next_delta,features[i],params[i]);
+					modules[i]->calculate_grad_using_delta(features[i-1],delta[i],params[i],Wgrad[i],bgrad[i]);
 				}
 				next_delta = modules[i]->process_delta(delta[i]);
 			}
@@ -67,13 +74,8 @@ void UnsupervisedModel::finetune_BP(const arma::mat data, const arma::imat label
 			for(int i = 0;i < number_layer; i++){
 				double learn_rate = atof(params[i].params["Learning_rate"].c_str());
 
-				if(i == 0){
-					modules[i]->weightMatrix += learn_rate * delta[i]*minibatch.t()/batch_size;
-					modules[i]->bias += (learn_rate / batch_size) * sum(delta[i],1);
-				}else{
-					modules[i]->weightMatrix += learn_rate * delta[i]*features[i-1].t()/batch_size;
-					modules[i]->bias += (learn_rate / batch_size) * sum(delta[i],1);
-				}
+				modules[i]->weightMatrix += learn_rate * Wgrad[i];
+				modules[i]->bias += learn_rate * bgrad[i];
 			}
 		}
 		cout << "Ended epoch " << epoch + 1 << "/" << max_epoch << " of fine-tunning." << endl;

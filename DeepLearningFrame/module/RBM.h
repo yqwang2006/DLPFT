@@ -47,6 +47,7 @@ namespace dlpft{
 				next_delta = weightMatrix.t()*curr_delta;
 				return next_delta;
 			}
+			void calculate_grad_using_delta(const arma::mat input_data,const arma::mat delta,NewParam param, arma::mat& Wgrad, arma::mat& bgrad);
 		};
 	};
 };

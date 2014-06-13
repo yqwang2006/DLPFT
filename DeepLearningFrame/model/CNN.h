@@ -18,9 +18,9 @@ namespace dlpft{
 				resultModelSize = 0;
 				for(int i = 0; i < layerNumber; i++){
 					modules[i] = create_module(module_params[i],input_size,in_num);
-					if(modules[i]->name != "Pooling"){
-						resultModelSize ++;
-					}
+					
+					resultModelSize ++;
+					
 				}
 			}
 			~CNN(){}

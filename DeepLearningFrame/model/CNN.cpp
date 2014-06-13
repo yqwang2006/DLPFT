@@ -34,6 +34,8 @@ ResultModel* CNN::train(const arma::mat data,const arma::imat labels, vector<New
 
 	testOpt->set_func_ptr(costfunc);
 
+	cout << "full connection weight:" << modules[4]->weightMatrix.n_rows << "; " << modules[4]->weightMatrix.n_cols << endl;
+
 	testOpt->optimize("cnn");
 
 
@@ -54,8 +56,8 @@ void CNN::cnnInitParams(arma::mat& theta,vector<NewParam> param){
 	int b_dim = 0;
 	for(int i = 0;i < layerNumber; i++){
 		string algorithm_name = param[i].params[params_name[ALGORITHM]];
-		W_dim += ((FullConnectModule *)modules[i])->weightMatrix.size();
-		b_dim +=  ((FullConnectModule *)modules[i])->bias.size();
+		W_dim += modules[i]->weightMatrix.size();
+		b_dim += modules[i]->bias.size();
 
 		//last_filter_num = atoi(param[i].params[params_name[FILTERNUM]].c_str());
 		//last_output_dim = last_output_dim - atoi(param[i].params[params_name[FILTERDIM]].c_str()) + 1;
@@ -71,11 +73,11 @@ void CNN::cnnInitParams(arma::mat& theta,vector<NewParam> param){
 	for(int i = 0;i < layerNumber; i++){
 		
 		arma::mat& weight = modules[i]->weightMatrix;
-		next_w_loc += weight.size()-1;
+		next_w_loc = curr_w_loc + weight.size()-1;
 		W.rows(curr_w_loc,next_w_loc) = reshape(weight,weight.size(),1);
 		curr_w_loc = next_w_loc;
 		arma::mat& bia = modules[i]->bias;
-		next_b_loc += bia.size()-1;
+		next_b_loc = curr_b_loc + bia.size()-1;
 		b.rows(curr_b_loc,next_b_loc) = reshape(bia,bia.size(),1);
 		curr_b_loc = next_b_loc;
 		//last_filter_num = atoi(param[i].params[params_name[FILTERNUM]].c_str());

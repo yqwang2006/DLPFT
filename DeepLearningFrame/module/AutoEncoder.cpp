@@ -66,3 +66,8 @@ void AutoEncoder::set_init_coefficient(arma::mat& coefficient){
 	coefficient.rows(2*h_v_size,2 * h_v_size+outputSize-1) = bias;
 	coefficient.rows(2*h_v_size+outputSize,coefficient.size()-1) = backwardBias;
 }
+void AutoEncoder::calculate_grad_using_delta(const arma::mat input_data,const arma::mat delta,NewParam param, arma::mat& Wgrad, arma::mat& bgrad){
+	int lambda = atoi(param.params[params_name[LAMBDA]].c_str());
+	Wgrad = ((double)1/input_data.n_cols)*delta * input_data.t() + lambda * weightMatrix;
+	bgrad = sum(delta,1)/input_data.n_cols;
+}

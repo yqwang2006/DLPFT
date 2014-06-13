@@ -141,3 +141,8 @@ void RBM::initial_weights_bias(){
 	weightMatrix = 0.1 * arma::randn(outputSize,inputSize);
 	bias = arma::zeros(outputSize,1);
 }
+void RBM::calculate_grad_using_delta(const arma::mat input_data,const arma::mat delta,NewParam param,arma::mat& Wgrad, arma::mat& bgrad){
+	int lambda = atoi(param.params[params_name[LAMBDA]].c_str());
+	Wgrad = ((double)1/input_data.n_cols)*delta * input_data.t() + lambda * weightMatrix;
+	bgrad = sum(delta,1)/input_data.n_cols;
+}

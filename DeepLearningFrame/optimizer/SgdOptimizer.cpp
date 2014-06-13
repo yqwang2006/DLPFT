@@ -45,6 +45,5 @@ double dlpft::optimizer::SgdOptimizer::optimize(string varname){
 		}
 		alpha = alpha/2;
 	}
-	function_ptr->coefficient = x;
 	return 0;
 }

@@ -21,3 +21,8 @@ arma::mat FullConnectModule::backpropagate(arma::mat next_layer_weight,const arm
 	arma::mat curr_delta = active_function_dev(activeFuncChoice,features) % next_delta; 
 	return curr_delta;
 }
+void FullConnectModule::calculate_grad_using_delta(const arma::mat input_data,const arma::mat delta,NewParam param, arma::mat& Wgrad, arma::mat& bgrad){
+	int lambda = atoi(param.params[params_name[LAMBDA]].c_str());
+	Wgrad = ((double)1/input_data.n_cols)*delta * input_data.t() + lambda * weightMatrix;
+	bgrad = sum(delta,1)/input_data.n_cols;
+}
