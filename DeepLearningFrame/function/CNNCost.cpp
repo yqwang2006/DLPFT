@@ -29,7 +29,6 @@ double CNNCost::value_gradient(arma::mat& grad){
 		start_b_loc += modules[i]->weightMatrix.size();
 	}
 
-	cout << "softmax features:" << activations[layer_num-1].n_rows << "; " << activations[layer_num-1].n_cols << endl;
 	arma::mat desired_out = onehot(activations[layer_num-1].n_rows,activations[layer_num-1].n_cols,labels);
 
 
@@ -41,7 +40,6 @@ double CNNCost::value_gradient(arma::mat& grad){
 	//backward propagation to compute delta
 
 	delta[layer_num] = (desired_out - activations[layer_num-1]);
-	cout << delta[layer_num].n_rows << "; " << delta[layer_num].n_cols << endl;
 	arma::mat next_layer_weight;
 	int start_w_loc=0,end_w_loc=start_b_loc,end_b_loc=grad.size();
 	arma::mat next_delta;
@@ -49,7 +47,6 @@ double CNNCost::value_gradient(arma::mat& grad){
 		arma::mat w_grad = zeros(modules[i]->weightMatrix.n_rows,modules[i]->weightMatrix.n_cols);
 		arma::mat b_grad = zeros(modules[i]->bias.size(),1);
 		
-		cout << i << endl;
 		if(i == layer_num-1){
 			delta[i] = modules[i]->backpropagate(next_layer_weight,delta[layer_num],activations[i],params[i]);
 			//w_grad = ((double)1/num_images)*delta[i] * data.t();
@@ -58,8 +55,6 @@ double CNNCost::value_gradient(arma::mat& grad){
 			delta[i] = modules[i]->backpropagate(modules[i+1]->weightMatrix,next_delta,activations[i],params[i]);
 			modules[i]->calculate_grad_using_delta(data,delta[i],params[i],w_grad,b_grad);
 		}else{
-			cout << modules[i]->weightMatrix.n_rows << ";" << modules[i]->weightMatrix.n_cols << endl;
-			cout << modules[i+1]->weightMatrix.n_rows << ";" << modules[i+1]->weightMatrix.n_cols << endl;
 			delta[i] = modules[i]->backpropagate(modules[i+1]->weightMatrix,next_delta,activations[i],params[i]);
 			modules[i]->calculate_grad_using_delta(activations[i-1],delta[i],params[i],w_grad,b_grad);
 		}

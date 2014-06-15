@@ -3,7 +3,11 @@
 using namespace dlpft::module;
 void ConvolveModule::initial_weights_bias(){
 	bias = zeros(outputImageNum,1);
-	weightMatrix = 0.1 * randu<arma::mat> (filterDim*filterNum,filterDim);
+	weightMatrix = zeros(filterDim*filterNum,filterDim);
+	cube tempW = 0.1 * randn(filterDim,filterDim,filterNum);
+	for(int i = 0; i < filterNum; i++){
+		weightMatrix.rows(i*filterDim,(i+1)*filterDim-1) = tempW.slice(i);
+	}
 }
 arma::mat ConvolveModule::forwardpropagate(const arma::mat data,  NewParam param){
 	const int samples_num = data.n_cols;

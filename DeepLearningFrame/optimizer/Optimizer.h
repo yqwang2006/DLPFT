@@ -9,7 +9,7 @@ using namespace dlpft::function;
 namespace dlpft{
 	namespace optimizer{
 		class Optimizer{
-		protected:
+		public:
 			string name;
 			CostFunction *function_ptr;
 			arma::mat opt_var;

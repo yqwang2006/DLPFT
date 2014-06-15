@@ -4,7 +4,7 @@ namespace dlpft{
 	namespace optimizer{
 		class SgdOptimizer : public Optimizer
 		{
-		private:
+		public:
 			double tolerance;
 			int batch_size;
 			double momentum;
@@ -12,9 +12,9 @@ namespace dlpft{
 		public:
 			SgdOptimizer(void){ 
 				name = "sgd";
-				max_iteration = 400;
+				max_iteration = 3;
 				tolerance = 1e-9;
-				batch_size = 100;
+				batch_size = 256;
 				momentum = 0.9;
 				alpha = 0.1;
 
@@ -25,7 +25,7 @@ namespace dlpft{
 							int& bs,
 							const double tol = 1e-9, 
 							const double mom = 0.9, 
-							const int max_iter = 400
+							const int max_iter = 3
 							)
 				:tolerance(tol){
 				max_iteration = max_iter;

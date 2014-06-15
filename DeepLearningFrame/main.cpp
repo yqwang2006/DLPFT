@@ -25,7 +25,7 @@ int main(){
 	RegisterOptimizer();
 
 
-	dlpft::io::LoadParam load_param("CNN.param");
+	dlpft::io::LoadParam load_param("CNN1.param");
 	vector<vector<NewParam>> params;
 	AllDataAddr data_addr;
 	load_param.load(params,data_addr);

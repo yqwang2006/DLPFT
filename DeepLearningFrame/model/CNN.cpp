@@ -5,14 +5,13 @@
 #include "..\factory\Creator.h"
 using namespace dlpft::factory;
 using namespace dlpft::model;
-ResultModel* CNN::train(const arma::mat data,const arma::imat labels, vector<NewParam> params){
+void CNN::train(const arma::mat data,const arma::imat labels, vector<NewParam> params){
 	
 	
 	
 	int max_epoch = atoi(params[0].params[params_name[MAXEPOCH]].c_str());
 	int sample_num = data.n_cols;
 	int batch_size = atoi(params[0].params[params_name[BATCHSIZE]].c_str());
-	ResultModel *resultmodel_ptr = new ResultModel[resultModelSize];
 	arma::mat features = data;
 	double error = 0;
 
@@ -34,13 +33,13 @@ ResultModel* CNN::train(const arma::mat data,const arma::imat labels, vector<New
 
 	testOpt->set_func_ptr(costfunc);
 
-	cout << "full connection weight:" << modules[4]->weightMatrix.n_rows << "; " << modules[4]->weightMatrix.n_cols << endl;
-
+	
 	testOpt->optimize("cnn");
 
 
+	cnnParamsToStack(costfunc->coefficient,params);
+
 	delete []minibatches;
-	return resultmodel_ptr;
 }
 /**
 *modules: the cnn net modules,including convolvemodule, pooling, softmax.
@@ -85,4 +84,91 @@ void CNN::cnnInitParams(arma::mat& theta,vector<NewParam> param){
 	}
 	theta.rows(0,W.size()-1) = W;
 	theta.rows(W_dim,theta_dim-1) = b;
+}
+void CNN::predict(arma::mat& testdata, arma::imat& testlabels,vector<NewParam> params){
+	int layer_num = params.size();
+	arma::mat features = testdata;
+
+	arma::mat max_vals;
+	for(int i = 0;i < layer_num;i++){
+		features = modules[i]->forwardpropagate(features,params[i]);
+	}
+	if(params[layer_num-1].params["Algorithm"] == "SoftMax"){
+
+		max_vals = max(features);
+		arma::imat pred_labels(max_vals.size(),1);
+		for(int i = 0;i < features.n_cols;i++){
+			pred_labels[i] = 0;
+			for(int j = 0;j < features.n_rows; j++){
+				if(max_vals(i) == features(j,i)){
+					if(j == 0)
+						pred_labels[i] = features.n_rows;	//number of cases
+					else
+						pred_labels[i] = j;
+					continue;
+				}
+			}
+
+		}
+		cout << "Predict error:" << endl;
+		cout << 100*(predict_acc(pred_labels,testlabels)) << "%" << endl;
+	}
+
+}
+
+double CNN::predict_acc(const arma::imat predict_labels, const arma::imat labels){
+	fstream ofs;
+	ofs.open("pred_labels.txt",fstream::out);
+	predict_labels.quiet_save(ofs,raw_ascii);
+	ofs.close();
+	int sum = 0;
+	for(int i = 0;i < predict_labels.size();i++){
+		if(predict_labels(i) == labels(i)){
+			sum ++;
+		}
+	}
+
+	return (double)sum/(double)labels.size();
+}
+void CNN::cnnParamsToStack(arma::mat theta,vector<NewParam> params){
+
+	int start_w_loc = 0;
+	int start_b_loc = 0;
+	int end_w_loc = 0;
+	int end_b_loc = 0;
+	for(int i = 0;i < layerNumber; i++){
+		int hiddenSize = 0;
+		int rows_num = 0,cols_num = 0;
+		if(params[i].params[params_name[ALGORITHM]] == "ConvolveModule"){
+			int number_filters = ((ConvolveModule*) modules[i])->filterNum;
+			int filter_dim = ((ConvolveModule*) modules[i])->filterDim;
+			rows_num = filter_dim*number_filters;
+			cols_num = filter_dim;
+
+		}else if(params[i].params[params_name[ALGORITHM]] == "FullConnection"){
+			rows_num = ((FullConnectModule*) modules[i])->outputSize;
+			cols_num = ((FullConnectModule*) modules[i])->inputSize;
+		}else if(params[i].params[params_name[ALGORITHM]] == "SoftMax"){
+			rows_num = ((SoftMax*) modules[i])->outputSize;
+			cols_num = ((SoftMax*) modules[i])->inputSize;
+
+		}else if(params[i].params[params_name[ALGORITHM]] == "Pooling"){
+			rows_num = ((Pooling*) modules[i])->outputImageNum;
+			cols_num = 1;
+		}
+		end_w_loc += modules[i]->weightMatrix.size();
+		modules[i]->weightMatrix = arma::reshape(theta.rows(start_w_loc,end_w_loc-1),rows_num,cols_num);
+		start_w_loc = end_w_loc;
+	}
+	start_b_loc = end_w_loc;
+	end_b_loc = end_w_loc;
+	for(int i = 0;i < layerNumber; i++){
+		int hiddenSize = 0;
+
+		end_b_loc += modules[i]->bias.size();
+		arma::mat b = arma::reshape(theta.rows(start_b_loc,end_b_loc-1),end_b_loc-start_b_loc,1);
+		modules[i]->bias = b;
+
+		start_b_loc = end_b_loc;
+	}
 }
