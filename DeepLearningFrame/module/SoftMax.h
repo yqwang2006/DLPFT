@@ -11,13 +11,8 @@ namespace dlpft{
 			SoftMax():Module(){
 				name = "SoftMax";
 			}
-			SoftMax(int in_size,int out_size):Module(in_size,out_size){
-				name = "SoftMax";
-				activeFuncChoice = SOFTMAX;
-				initial_weights_bias();
-			}
-			SoftMax(int in_size,int out_size,ActivationFunction act_func)
-				:Module(in_size,out_size,act_func){
+			SoftMax(int in_size,int out_size,const ActivationFunction active_func=SIGMOID,const double weightdecay = 3e-3)
+				:Module(in_size,out_size,active_func,weightdecay){
 				name = "SoftMax";
 				activeFuncChoice = SOFTMAX;
 				initial_weights_bias();
@@ -30,8 +25,7 @@ namespace dlpft{
 			void set_init_coefficient(arma::mat& coefficient);
 			arma::mat process_delta(arma::mat curr_delta)
 			{
-				arma::mat next_delta = zeros(weightMatrix.n_cols,curr_delta.n_cols);
-				next_delta = weightMatrix.t()*curr_delta;
+				arma::mat next_delta = weightMatrix.t()*curr_delta;
 				return next_delta;
 			}
 			void calculate_grad_using_delta(const arma::mat input_data,const arma::mat delta,NewParam param, arma::mat& Wgrad, arma::mat& bgrad);

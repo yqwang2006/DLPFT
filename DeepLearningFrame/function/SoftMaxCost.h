@@ -8,7 +8,6 @@ namespace dlpft{
 			:public CostFunction
 		{
 		private:
-			arma::imat labels;
 			int visiableSize;
 			int classesNum;
 			double lambda;

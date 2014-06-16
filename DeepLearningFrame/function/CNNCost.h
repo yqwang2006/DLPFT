@@ -11,7 +11,6 @@ namespace dlpft{
 			:public CostFunction
 		{
 		public:
-			arma::imat labels;
 			vector<NewParam> params;
 			Module** modules;
 			int layer_num;

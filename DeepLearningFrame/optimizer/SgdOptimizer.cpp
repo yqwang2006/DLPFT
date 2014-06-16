@@ -1,8 +1,9 @@
 #include "SgdOptimizer.h"
-
+#include "../module/AllModule.h"
 double dlpft::optimizer::SgdOptimizer::optimize(string varname){
 	arma::mat& x = function_ptr->coefficient;
 	arma::mat dat = function_ptr->data;
+	arma::imat labels_opt = function_ptr->labels;
 	size_t data_dim = size(dat,0);
 	size_t data_length = size(dat,1);
 	double mom = 0.5;
@@ -11,6 +12,7 @@ double dlpft::optimizer::SgdOptimizer::optimize(string varname){
 	int it = 0;
 	vector<int> randperm;
 	arma::mat minibatch(data_dim,batch_size);
+	arma::imat batchlabels(batch_size,1);
 	arma::mat grad = zeros(size(x,0),size(x,1));
 	double func_cost = 0;
 	for(int e = 0;e<max_iteration;e++){
@@ -30,12 +32,12 @@ double dlpft::optimizer::SgdOptimizer::optimize(string varname){
 			for(int j = 0;j<batch_size;j++,iter++){
 				minibatch.col(iter) = dat.col(randperm[s+j]);
 				//minibatch.col(iter) = dat.col(s+j);
+				batchlabels.row(iter) = labels_opt.row(randperm[s+j]);
 			}
-			
 
 
 			function_ptr->data = minibatch;
-			
+			function_ptr->labels = batchlabels;
 			
 			func_cost = function_ptr->value_gradient(grad);
 

@@ -15,13 +15,8 @@ namespace dlpft{
 
 			
 			RBM() : Module(){}
-			RBM(int in_size,int out_size)
-				:Module(in_size,out_size){
-				name = "RBM";
-				initial_weights_bias();
-			}
-			RBM(int in_size,int out_size,ActivationFunction act_func)
-				:Module(in_size,out_size,act_func){
+			RBM(int in_size,int out_size,const ActivationFunction active_func=SIGMOID,const double weightdecay = 3e-3)
+				:Module(in_size,out_size,active_func,weightdecay){
 				name = "RBM";
 				initial_weights_bias();
 			}

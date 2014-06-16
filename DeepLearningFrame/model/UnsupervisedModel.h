@@ -15,7 +15,7 @@ namespace dlpft{
 			UnsupervisedModel(int input_size,vector<NewParam> module_params)
 				:Model(input_size,module_params)
 			{
-				finetune_switch = false;
+				finetune_switch = true;
 				layerNumber = module_params.size();
 				modules = new Module* [layerNumber];
 				int in_size = input_size;

@@ -16,7 +16,7 @@ namespace dlpft{
 			ConvolveModule():Module(){
 				name = "ConvolveModule";
 			}
-			ConvolveModule(int input_image_dim,int input_image_num,int filter_dim, int output_num,const ActivationFunction act_func = SIGMOID){
+			ConvolveModule(int input_image_dim,int input_image_num,int filter_dim, int output_num,const ActivationFunction act_func = SIGMOID,const double weightdecay=3e-3){
 				inputImageDim = input_image_dim;
 				inputImageNum = input_image_num;
 				filterDim = filter_dim;
@@ -24,6 +24,7 @@ namespace dlpft{
 				outputImageDim = input_image_dim - filterDim + 1;
 				outputSize = outputImageDim*outputImageDim*outputImageNum;
 				filterNum = inputImageNum * outputImageNum;
+				weightDecay = weightdecay;
 				activeFuncChoice = act_func;
 				initial_weights_bias();
 			}

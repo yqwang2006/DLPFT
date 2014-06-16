@@ -72,18 +72,29 @@ void CNN::cnnInitParams(arma::mat& theta,vector<NewParam> param){
 	for(int i = 0;i < layerNumber; i++){
 		
 		arma::mat& weight = modules[i]->weightMatrix;
-		next_w_loc = curr_w_loc + weight.size()-1;
-		W.rows(curr_w_loc,next_w_loc) = reshape(weight,weight.size(),1);
+		next_w_loc = curr_w_loc + weight.size();
+		W.rows(curr_w_loc,next_w_loc-1) = reshape(weight,weight.size(),1);
 		curr_w_loc = next_w_loc;
 		arma::mat& bia = modules[i]->bias;
-		next_b_loc = curr_b_loc + bia.size()-1;
-		b.rows(curr_b_loc,next_b_loc) = reshape(bia,bia.size(),1);
+		next_b_loc = curr_b_loc + bia.size();
+		b.rows(curr_b_loc,next_b_loc-1) = reshape(bia,bia.size(),1);
 		curr_b_loc = next_b_loc;
 		//last_filter_num = atoi(param[i].params[params_name[FILTERNUM]].c_str());
 		//last_output_dim = last_output_dim - atoi(param[i].params[params_name[FILTERDIM]].c_str()) + 1;
 	}
 	theta.rows(0,W.size()-1) = W;
 	theta.rows(W_dim,theta_dim-1) = b;
+//#if DEBUG
+//	ofstream ofs;
+//	ofs.open("theta.txt");
+//	theta.quiet_save(ofs,raw_ascii);
+//	ofs.close();
+//	ofs.open("reshape.txt");
+//	arma::mat weight = reshape(theta.rows(0,1619),9*20,9);
+//	weight.quiet_save(ofs,raw_ascii);
+//	ofs.close();
+//#endif
+
 }
 void CNN::predict(arma::mat& testdata, arma::imat& testlabels,vector<NewParam> params){
 	int layer_num = params.size();
@@ -110,7 +121,7 @@ void CNN::predict(arma::mat& testdata, arma::imat& testlabels,vector<NewParam> p
 			}
 
 		}
-		cout << "Predict error:" << endl;
+		cout << "Predict accu:" << endl;
 		cout << 100*(predict_acc(pred_labels,testlabels)) << "%" << endl;
 	}
 

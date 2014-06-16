@@ -48,7 +48,7 @@ namespace dlpft{
 				}else if(m_name == "Pooling"){
 					int in_dim = sqrt(in_size/in_num);
 					int pool_dim = atoi(param.params[params_name[POOLINGDIM]].c_str());
-					string pool_type = param.params[params_name[POOLINGDIM]];
+					string pool_type = param.params[params_name[POOLINGTYPE]];
 					module = new Pooling(in_dim,in_num,pool_dim,pool_type);
 					int out_dim = in_dim/pool_dim;
 					in_size = out_dim * out_dim * in_num;

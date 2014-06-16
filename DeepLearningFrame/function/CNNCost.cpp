@@ -25,6 +25,20 @@ double CNNCost::value_gradient(arma::mat& grad){
 		}else{
 			activations[i] = modules[i]->forwardpropagate(activations[i-1],params[i]);
 		}
+
+		//if(params[i].params[params_name[ALGORITHM]] == "ConvolveModule"){
+		//	ofstream ifs;
+		//	ifs.open("convolve.txt");
+		//	activations[i].quiet_save(ifs,arma::raw_ascii);
+		//	ifs.close();
+		//}
+		//if(params[i].params[params_name[ALGORITHM]] == "ConvolveModule"){
+		//	ofstream ifs;
+		//	ifs.open("convolve_weight.txt");
+		//	modules[i]->weightMatrix.quiet_save(ifs,arma::raw_ascii);
+		//	ifs.close();
+		//}
+
 		cost += (lambda/2)*arma::sum(arma::sum(arma::pow(modules[i]->weightMatrix,2)));
 		start_b_loc += modules[i]->weightMatrix.size();
 	}
@@ -39,17 +53,17 @@ double CNNCost::value_gradient(arma::mat& grad){
 
 	//backward propagation to compute delta
 
-	delta[layer_num] = (desired_out - activations[layer_num-1]);
+	delta[layer_num] = -(desired_out - activations[layer_num-1]);
 	arma::mat next_layer_weight;
 	int start_w_loc=0,end_w_loc=start_b_loc,end_b_loc=grad.size();
 	arma::mat next_delta;
+
 	for(int i = layer_num-1;i >=0 ;i--){
 		arma::mat w_grad = zeros(modules[i]->weightMatrix.n_rows,modules[i]->weightMatrix.n_cols);
 		arma::mat b_grad = zeros(modules[i]->bias.size(),1);
 		
 		if(i == layer_num-1){
 			delta[i] = modules[i]->backpropagate(next_layer_weight,delta[layer_num],activations[i],params[i]);
-			//w_grad = ((double)1/num_images)*delta[i] * data.t();
 			modules[i]->calculate_grad_using_delta(activations[i-1],delta[i],params[i],w_grad,b_grad);
 		}else if(i == 0){
 			delta[i] = modules[i]->backpropagate(modules[i+1]->weightMatrix,next_delta,activations[i],params[i]);
@@ -58,18 +72,27 @@ double CNNCost::value_gradient(arma::mat& grad){
 			delta[i] = modules[i]->backpropagate(modules[i+1]->weightMatrix,next_delta,activations[i],params[i]);
 			modules[i]->calculate_grad_using_delta(activations[i-1],delta[i],params[i],w_grad,b_grad);
 		}
-		//b_grad = ((double)1/num_images)*arma::sum(delta[i],1);
-		next_delta = modules[i]->process_delta(delta[i]);
+
+		//ofstream ofs;
+		//ofs.open("delta.txt");
+		//delta[i].quiet_save(ofs,raw_ascii);
+		//ofs.close();
+		if(i > 0)
+			next_delta = modules[i]->process_delta(delta[i]);
 		
 		start_w_loc = end_w_loc - modules[i]->weightMatrix.size();
 		start_b_loc = end_b_loc - modules[i]->bias.size();
-		grad.rows(start_w_loc,end_w_loc-1) = reshape(modules[i]->weightMatrix,modules[i]->weightMatrix.size(),1);
-		grad.rows(start_b_loc,end_b_loc-1) = reshape(modules[i]->bias,modules[i]->bias.size(),1);
+		grad.rows(start_w_loc,end_w_loc-1) = reshape(w_grad,w_grad.size(),1);
+		grad.rows(start_b_loc,end_b_loc-1) = reshape(b_grad,b_grad.size(),1);
 		end_w_loc -= modules[i]->weightMatrix.size();
 		end_b_loc -= modules[i]->bias.size();
 		
 	}
-	
+
+	//ofstream ofs1;
+	//ofs1.open("grad.txt");
+	//grad.quiet_save(ofs1,arma::raw_ascii);
+	//ofs1.close();
 
 	delete[] activations;
 	delete[] delta;

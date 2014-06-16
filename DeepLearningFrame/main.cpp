@@ -41,8 +41,8 @@ int main(){
 	
 	int input_size = train_data.n_rows;
 
-	/*UnsupervisedModel unsupervisedModel(input_size,params[0]);
-	unsupervisedModel.pretrain(train_data,train_labels,params[0]);*/
+	//UnsupervisedModel unsupervisedModel(input_size,params[0]);
+	//unsupervisedModel.pretrain(train_data,train_labels,params[0]);
 
 	CNN cnn(input_size,params[0]);
 	cnn.train(train_data,train_labels,params[0]);
@@ -55,7 +55,7 @@ int main(){
 	load_data(data_addr.test_labels_addr,test_labels);
 
 	
-	
+	cnn.predict(test_data,test_labels,params[0]);
 	//unsupervisedModel.predict(test_data,test_labels,params[0]);
 
 

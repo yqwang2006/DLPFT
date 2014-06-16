@@ -13,13 +13,8 @@ namespace dlpft{
 			AutoEncoder():Module(){
 				name = "AutoEncoder";
 			}
-			AutoEncoder(int in_size,int out_size)
-				:Module(in_size,out_size){
-				name = "AutoEncoder";
-				initial_weights_bias();
-			}
-			AutoEncoder(int in_size,int out_size,ActivationFunction act_func)
-				:Module(in_size,out_size,act_func){
+			AutoEncoder(int in_size,int out_size,const ActivationFunction active_func=SIGMOID,const double weightdecay = 3e-3)
+				:Module(in_size,out_size,active_func,weightdecay){
 				name = "AutoEncoder";
 				initial_weights_bias();
 			}

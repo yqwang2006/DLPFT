@@ -25,7 +25,7 @@ void UnsupervisedModel::finetune_BP(const arma::mat data, const arma::imat label
 	arma::mat* Wgrad = new arma::mat[number_layer];
 	arma::mat* bgrad = new arma::mat[number_layer];
 
-	int max_epoch = 5;
+	int max_epoch = 10;
 
 	int batch_size = 100;
 

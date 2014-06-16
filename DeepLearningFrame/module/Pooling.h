@@ -16,13 +16,15 @@ namespace dlpft{
 		public:
 			Pooling():Module(){
 			}
-			Pooling(int input_image_dim,int input_image_num,int pooling_dim, string pooling_type){
+			Pooling(int input_image_dim,int input_image_num,int pooling_dim, string pooling_type,const ActivationFunction act = SIGMOID, const double weight = 3e-3){
 				inputImageDim = input_image_dim;
 				inputImageNum = input_image_num;
 				poolingDim = pooling_dim;
 				poolingType = pooling_type;
 				outputImageDim = inputImageDim / poolingDim;
 				outputImageNum = inputImageNum;
+				weightDecay = weight;
+				activeFuncChoice = act;
 				inputSize = inputImageDim*inputImageDim*outputImageNum;
 				outputSize = outputImageDim*outputImageDim*outputImageNum;;
 				initial_weights_bias();

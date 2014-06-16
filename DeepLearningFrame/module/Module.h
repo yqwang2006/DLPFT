@@ -8,6 +8,7 @@
 #include "../optimizer/AllOptMethod.h"
 #include "../factory/Creator.h"
 #include "../util/params_name.h"
+//#define DEBUG 1
 using namespace dlpft::param;
 using namespace dlpft::model;
 using namespace dlpft::function;
@@ -21,6 +22,7 @@ namespace dlpft{
 			ActivationFunction activeFuncChoice;
 			int inputSize;
 			int outputSize;
+			double weightDecay;
 			arma::mat weightMatrix;
 			arma::mat bias;
 		public:
@@ -28,12 +30,9 @@ namespace dlpft{
 				name = "";
 				activeFuncChoice = SIGMOID;
 			}
-			Module(int in_size,int out_size):inputSize(in_size),outputSize(out_size){
+			Module(int in_size,int out_size,const ActivationFunction active_func=SIGMOID,const double weightdecay = 3e-3):inputSize(in_size),outputSize(out_size){
 				name = "";
-				activeFuncChoice = SIGMOID;
-			}
-			Module(int in_size,int out_size,ActivationFunction active_func):inputSize(in_size),outputSize(out_size){
-				name = "";
+				weightDecay = weightdecay;
 				activeFuncChoice = active_func;
 			}
 			~Module(){
