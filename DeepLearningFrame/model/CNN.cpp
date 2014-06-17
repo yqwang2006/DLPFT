@@ -54,7 +54,7 @@ void CNN::cnnInitParams(arma::mat& theta,vector<NewParam> param){
 	int W_dim = 0;
 	int b_dim = 0;
 	for(int i = 0;i < layerNumber; i++){
-		string algorithm_name = param[i].params[params_name[ALGORITHM]];
+		
 		W_dim += modules[i]->weightMatrix.size();
 		b_dim += modules[i]->bias.size();
 

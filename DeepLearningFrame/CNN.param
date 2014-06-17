@@ -5,7 +5,7 @@ Optimize_method:1,sgd
 Max_epoch:1,2
 Batch_size:1,1000
 Filter_dim:1,5
-Features_num:1,6
+Features_num:1,10
 Layer_order:2
 Algorithm:Pooling
 Pooling_dim:1,2
@@ -16,7 +16,7 @@ Optimize_method:1,sgd
 Max_epoch:1,2
 Batch_size:1,1000
 Filter_dim:1,5
-Features_num:1,6
+Features_num:1,10
 Layer_order:4
 Algorithm:Pooling
 Pooling_dim:1,2

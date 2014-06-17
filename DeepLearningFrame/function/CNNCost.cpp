@@ -6,6 +6,11 @@ using namespace dlpft::function;
 void CNNCost::initialParam(){
 }
 double CNNCost::value_gradient(arma::mat& grad){
+	clock_t start_time = clock();
+	clock_t end_time;
+	double duration = 0;
+
+
 	int image_dim = sqrt(data.n_rows);
 	int num_images = data.n_cols;
 	double lambda = 3e-3;
@@ -33,10 +38,10 @@ double CNNCost::value_gradient(arma::mat& grad){
 		//	ifs.close();
 		//}
 		//if(params[i].params[params_name[ALGORITHM]] == "ConvolveModule"){
-		//	ofstream ifs;
-		//	ifs.open("convolve_weight.txt");
-		//	modules[i]->weightMatrix.quiet_save(ifs,arma::raw_ascii);
-		//	ifs.close();
+			/*ofstream ifs;
+			ifs.open("weight.txt");
+			modules[i]->weightMatrix.quiet_save(ifs,arma::raw_ascii);
+			ifs.close();*/
 		//}
 
 		cost += (lambda/2)*arma::sum(arma::sum(arma::pow(modules[i]->weightMatrix,2)));
@@ -93,6 +98,9 @@ double CNNCost::value_gradient(arma::mat& grad){
 	//ofs1.open("grad.txt");
 	//grad.quiet_save(ofs1,arma::raw_ascii);
 	//ofs1.close();
+	//end_time = clock();
+ //   duration = (double)(end_time-start_time)/CLOCKS_PER_SEC;
+	//cout << "CNN cost spent: " << duration << " s" << endl;		
 
 	delete[] activations;
 	delete[] delta;

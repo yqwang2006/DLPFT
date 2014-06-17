@@ -2,8 +2,8 @@ Layer_num:3
 Layer_order:1
 Algorithm:ConvolveModule
 Optimize_method:1,sgd
-Max_epoch:1,3
-Batch_size:1,256
+Max_epoch:1,5
+Batch_size:1,50
 Filter_dim:1,9
 Features_num:1,20
 Layer_order:2

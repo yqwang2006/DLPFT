@@ -1,6 +1,11 @@
 #include "Pooling.h"
 using namespace dlpft::module;
 arma::mat Pooling::down_sample(arma::mat data){
+	clock_t start_time = clock();
+	clock_t end_time;
+	double duration = 0;
+
+
 	const int samples_num = data.n_cols;
 	
 
@@ -61,9 +66,87 @@ arma::mat Pooling::down_sample(arma::mat data){
 
 
 	}
-
+	/*
+	end_time = clock();
+	duration = (double)(end_time-start_time)/CLOCKS_PER_SEC;
+	cout << "pooling forward spent: " << duration << " s" << endl;
+	*/
 	return pooling_result;
 }
+//arma::mat Pooling::down_sample(arma::mat data){
+//	clock_t start_time = clock();
+//	clock_t end_time;
+//	double duration = 0;
+//	const int samples_num = data.n_cols;
+//	
+//
+//	arma::mat pooling_result = arma::zeros(outputImageDim*outputImageDim*inputImageNum,samples_num);
+//	arma::cube temp_pooling_result = arma::zeros(outputImageDim,outputImageDim,samples_num);
+//	arma::mat temp_pool_id = arma::zeros(outputImageDim,outputImageDim); 
+//	sampleLoc = arma::zeros(outputImageDim*outputImageDim*inputImageNum,samples_num);
+//	
+//		for(int j = 0;j < inputImageNum;j++){
+//			arma::mat images = data.rows(j*inputImageDim*inputImageDim,(j+1)*inputImageDim*inputImageDim-1);
+//			cube all_images = zeros(inputImageDim*inputImageDim,samples_num,1);
+//			all_images.slice(0) = images;
+//			all_images.reshape(inputImageDim,inputImageDim,samples_num);
+//			for(int poolrow = 0; poolrow < outputImageDim; poolrow ++){
+//				int offsetrow = poolrow*poolingDim;
+//				for(int poolcol = 0;poolcol < outputImageDim; poolcol++){
+//					int offsetcol = poolcol*poolingDim;
+//					arma::cube patch = all_images.tube(offsetrow,offsetcol,offsetrow+poolingDim-1,offsetcol+poolingDim-1);
+//					patch.reshape(poolingDim*poolingDim,samples_num,1);
+//					arma::mat patches = patch.slice(0);
+//					if(poolingType == "MEAN"){
+//						arma::cube temp_pooling = zeros(1,samples_num,1);
+//						temp_pooling.slice(0) = arma::mean(patches,0);
+//						temp_pooling_result.tube(poolrow,poolcol) = reshape(temp_pooling,1,1,samples_num);
+//						
+//					}else if(poolingType == "STOCHASTIC"){
+//						arma::mat sto_patches = zeros(poolingDim*poolingDim,samples_num);
+//						sto_sum 用于保存各个点所属于的区间
+//						arma::mat sto_sum = arma::zeros(poolingDim*poolingDim,samples_num);
+//						for(int i = 0;i < poolingDim*poolingDim;i++){
+//							sto_patches.row(i) = patches.row(i)/sum(patches,0);
+//							if(i>0)
+//								sto_patches.row(i) = sto_patches.row(i) + sto_patches.row(i-1);
+//						}
+//						
+//						arma::mat rand_num = arma::randu(1,samples_num);
+//						arma::uvec loc;
+//						for(int k = 0;k < sto_patches.n_rows;k++){
+//							if(k == 0){
+//								loc = arma::find(rand_num < sto_patches.row(k) && rand_num >= 0);
+//
+//							}else{
+//								loc = arma::find(rand_num < sto_patches.row(k) && rand_num >= sto_patches.row(k-1));
+//								
+//							}
+//							arma::cube temp_pooling = zeros(1,samples_num,1);
+//							temp_pooling.slice(0) = loc % patches.row(k);
+//							temp_pooling_result.tube(poolrow,poolcol) += reshape(temp_pooling,1,1,samples_num);
+//						}
+//
+//					
+//					}else{//default max
+//						arma::cube temp_pooling = zeros(1,samples_num,1);
+//						temp_pooling.slice(0) = arma::max(patches,0);
+//						temp_pooling_result.tube(poolrow,poolcol) = reshape(temp_pooling,1,1,samples_num);
+//					}
+//
+//					
+//				}
+//			}
+//			arma::cube result = reshape(temp_pooling_result,outputImageDim*outputImageDim,samples_num,1);
+//			pooling_result.rows(j*outputImageDim*outputImageDim,(j+1)*outputImageDim*outputImageDim-1) = result.slice(0);
+//			
+//	}
+//
+//	end_time = clock();
+//	duration = (double)(end_time-start_time)/CLOCKS_PER_SEC;
+//	cout << "pooling forward spent: " << duration << " s" << endl;
+//	return pooling_result;
+//}
 arma::mat Pooling::forwardpropagate(const arma::mat data,  NewParam param){
 	arma::mat sample_data = down_sample(data);
 	

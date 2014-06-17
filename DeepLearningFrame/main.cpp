@@ -10,11 +10,14 @@
 #include "io/AllDataAddr.h"
 #include "model\UnsupervisedModel.h"
 #include "model\CNN.h"
+#include "util\convolve.h"
 using namespace std;
 using namespace arma;
 using namespace dlpft::factory;
 using namespace dlpft::model;
 using namespace dlpft::io;
+
+#define UNSUPERVISEDMODEL 0
 
 void load_data(string ,arma::mat&);
 void load_data(string ,arma::imat&);
@@ -23,9 +26,35 @@ int main(){
 
 	RegisterFunction();
 	RegisterOptimizer();
+	//mat image = zeros(16,5);
+	//
+	//for(int i=0;i<image.n_cols;i++){
+	//	image.col(i) = (1+i)*ones(16,1);
+	//}
+	//cout << image;
+
+	//cube images = arma::zeros(16,5,1);
+	//images.slice(0) = image;
+	//images.reshape(4,4,5);
+	//cout << images;
+
+	//cube patch = images.tube(1,1,2,2);
+	//cout << images;
+	//cout << patch;
+
+	//mat weight = 0.7*ones(2,2);
+	//cout << weight;
+
+	//
+	//cout << convn_cube(images,weight,"full");
 
 
+
+#if UNSUPERVISEDMODEL
+	dlpft::io::LoadParam load_param("DBN.param");
+#else
 	dlpft::io::LoadParam load_param("CNN1.param");
+#endif
 	vector<vector<NewParam>> params;
 	AllDataAddr data_addr;
 	load_param.load(params,data_addr);
@@ -41,12 +70,15 @@ int main(){
 	
 	int input_size = train_data.n_rows;
 
-	//UnsupervisedModel unsupervisedModel(input_size,params[0]);
-	//unsupervisedModel.pretrain(train_data,train_labels,params[0]);
-
-	CNN cnn(input_size,params[0]);
-	cnn.train(train_data,train_labels,params[0]);
-
+#if UNSUPERVISEDMODEL
+		UnsupervisedModel unsupervisedModel(input_size,params[0]);
+		unsupervisedModel.pretrain(train_data,train_labels,params[0]);
+	
+#else
+		CNN cnn(input_size,params[0]);
+		cnn.train(train_data,train_labels,params[0]);
+	
+#endif
 	arma::mat test_data;
 	arma::imat test_labels;
 
@@ -54,9 +86,15 @@ int main(){
 	test_data = test_data.t();
 	load_data(data_addr.test_labels_addr,test_labels);
 
+#if UNSUPERVISEDMODEL 
+		unsupervisedModel.predict(test_data,test_labels,params[0]);
 	
-	cnn.predict(test_data,test_labels,params[0]);
-	//unsupervisedModel.predict(test_data,test_labels,params[0]);
+#else
+		cnn.predict(test_data,test_labels,params[0]);
+	
+
+#endif
+	//
 
 
 	return 0;

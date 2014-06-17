@@ -14,8 +14,8 @@ namespace dlpft{
 				name = "sgd";
 				max_iteration = 3;
 				tolerance = 1e-9;
-				batch_size = 256;
-				momentum = 0.9;
+				batch_size = 50;
+				momentum = 0.95;
 				alpha = 0.1;
 
 			}
@@ -24,7 +24,7 @@ namespace dlpft{
 							double& alp,
 							int& bs,
 							const double tol = 1e-9, 
-							const double mom = 0.9, 
+							const double mom = 0.95, 
 							const int max_iter = 3
 							)
 				:tolerance(tol){
