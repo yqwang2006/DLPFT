@@ -17,7 +17,7 @@ using namespace dlpft::factory;
 using namespace dlpft::model;
 using namespace dlpft::io;
 
-#define UNSUPERVISEDMODEL 0
+#define UNSUPERVISEDMODEL 1
 
 void load_data(string ,arma::mat&);
 void load_data(string ,arma::imat&);
@@ -51,7 +51,7 @@ int main(){
 
 
 #if UNSUPERVISEDMODEL
-	dlpft::io::LoadParam load_param("DBN.param");
+	dlpft::io::LoadParam load_param("CRBM.param");
 #else
 	dlpft::io::LoadParam load_param("CNN1.param");
 #endif

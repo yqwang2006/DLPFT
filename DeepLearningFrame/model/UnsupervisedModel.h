@@ -19,11 +19,9 @@ namespace dlpft{
 				layerNumber = module_params.size();
 				modules = new Module* [layerNumber];
 				int in_size = input_size;
-				int out_size = 0;
+				int input_maps = 1;
 				for(int i = 0; i < layerNumber; i++){
-					out_size = atoi(module_params[i].params[params_name[HIDNUM]].c_str());
-					modules[i] = create_module(module_params[i],in_size,out_size);
-					in_size = out_size;
+					modules[i] = create_module(module_params[i],in_size,input_maps);
 				}
 			}
 			void pretrain(const arma::mat data,const arma::imat labels, vector<NewParam> param);

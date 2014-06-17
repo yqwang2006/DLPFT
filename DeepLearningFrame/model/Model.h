@@ -31,17 +31,29 @@ namespace dlpft{
 				Module* module;
 				if(m_name == "AutoEncoder"){
 					module = new AutoEncoder(in_size,out_size);
+					in_size = out_size;
 				}else if(m_name == "RBM"){
 					module = new RBM(in_size,out_size);
+					in_size = out_size;
 				}else if(m_name == "SC"){
 					module = new SparseCoding(in_size,out_size);
+					in_size = out_size;
 				}else if(m_name == "SoftMax"){
 					module = new SoftMax(in_size,out_size);
+					in_size = out_size;
 				}else if(m_name == "ConvolveModule"){
 					int in_dim = sqrt(in_size / in_num);
 					int filter_dim = atoi(param.params[params_name[FILTERDIM]].c_str());
 					int out_num = atoi(param.params[params_name[FILTERNUM]].c_str());
 					module = new ConvolveModule(in_dim,in_num,filter_dim,out_num);
+					int out_dim = in_dim - filter_dim + 1;
+					in_size = out_dim*out_dim*out_num;
+					in_num = out_num;
+				}else if(m_name == "CRBM"){
+					int in_dim = sqrt(in_size / in_num);
+					int filter_dim = atoi(param.params[params_name[FILTERDIM]].c_str());
+					int out_num = atoi(param.params[params_name[FILTERNUM]].c_str());
+					module = new ConvolutionRBM(in_dim,in_num,filter_dim,out_num);
 					int out_dim = in_dim - filter_dim + 1;
 					in_size = out_dim*out_dim*out_num;
 					in_num = out_num;

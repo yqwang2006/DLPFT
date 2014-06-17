@@ -7,5 +7,6 @@
 #include "SoftMax.h"
 #include "Pooling.h"
 #include "FullConnectModule.h"
+#include "ConvolutionRBM.h"
 using namespace dlpft::module;
 #endif
