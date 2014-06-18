@@ -37,7 +37,7 @@ namespace dlpft{
 			void CD_k(int k,arma::mat& v, double v_bias, mat& h0_mean, mat& h0_samples, mat& nv_means,mat& nv_samples,mat& nh_means,mat& nh_samples);
 			void sample_h_given_v(arma::mat& v0_sample, arma::mat& mean, arma::mat& sample);
 		    void sample_v_given_h(arma::mat& h, arma::mat& v, arma::mat& sample, double v_bias);
-		    arma::mat propup(arma::mat& v);
+		    arma::mat propup(const arma::mat v);
 		    arma::mat propdown(arma::mat& h,double v_bias);
 			void  gibbs_hvh(double v_bias,arma::mat& h0_sample, arma::mat& nv_means, arma::mat& nv_samples, arma::mat& nh_means, arma::mat& nh_samples);
 			arma::mat BiNomial(const arma::mat mean);

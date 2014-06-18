@@ -6,7 +6,7 @@ void ConvolutionRBM::initial_weights_bias(){
 	weightMatrix = zeros(filterDim*filterNum,filterDim);
 #if DEBUG
 	for(int i = 0; i < filterNum; i++){
-		weightMatrix.rows(i*filterDim,(i+1)*filterDim-1) = (i+1)*0.1*ones(filterDim,filterDim);
+		weightMatrix.rows(i*filterDim,(i+1)*filterDim-1) = (i+1)*ones(filterDim,filterDim);
 	}
 #else
 	cube tempW = 5 * randu(filterDim,filterDim,filterNum);
@@ -34,20 +34,43 @@ void ConvolutionRBM::pretrain(const arma::mat data, const arma::imat labels, New
 	for(int epoch = 1; epoch <=  max_epoch; epoch++){
 		double errsum = 0;
 		for(int batch = 0; batch < num_batches; batch++){
+
+
+
 			double error = 0;
 			arma::mat Wgrad = zeros(weightMatrix.n_rows,weightMatrix.n_cols);
 			arma::mat hgrad = zeros(outputImageNum,1);
 			double vgrad = 0;
 			crbmGradients(1,minibatches[batch],param,v_bias,Wgrad,hgrad,vgrad,error);
 
+			//ofstream ofs;
+			//ofs.open("weightMatrix.txt");
+			//weightMatrix.quiet_save(ofs,raw_ascii);
+			//ofs.close();
+
+			//ofs.open("hbias.txt");
+			//bias.quiet_save(ofs,raw_ascii);
+			//ofs.close();
+
+
+
 			weightMatrix += learn_rate * Wgrad;
 			bias += learn_rate * hgrad;
 			v_bias += learn_rate * vgrad;
+
+			//ofs.open("weightMatrix1.txt");
+			//weightMatrix.quiet_save(ofs,raw_ascii);
+			//ofs.close();
+			//ofs.open("hbias1.txt");
+			//bias.quiet_save(ofs,raw_ascii);
+			//ofs.close();
+
+
 			cout << "Ended batch " << batch+1 << "/" << num_batches << ". Reconstruction error is " << error << endl;
 			errsum += error;
 		}
 
-		cout << "Ended epoch " << epoch+1 << "/" << max_epoch << ". Reconstruction error is " << errsum << endl;
+		cout << "Ended epoch " << epoch << "/" << max_epoch << ". Reconstruction error is " << errsum << endl;
 
 	}
 
@@ -59,16 +82,34 @@ void ConvolutionRBM::crbmGradients(int k,arma::mat minibatch,NewParam param,doub
 	
 	CD_k(1,minibatch,v_bias, h_means, h_samples,nv_means,nv_samples,nh_means,nh_samples);
 
-	error = sum(sum(pow(minibatch - nv_means,2)))/minibatch.n_cols;
+	arma::mat error_mat = arma::mean(pow(minibatch - nv_means,2),0);
+	error = error_mat(0);
+	
 	arma::mat W2grad = zeros(weightMatrix.n_rows,weightMatrix.n_cols);
 	arma::mat h2grad = zeros(outputImageNum,1);
 	calculate_grad_using_delta(minibatch,h_means,param,Wgrad,hgrad);
 	calculate_grad_using_delta(nv_means,nh_means,param,W2grad,h2grad);
 	
+	//ofstream ofs;
+	//ofs.open("Wgrad.txt");
+	//Wgrad.quiet_save(ofs,raw_ascii);
+	//ofs.close();
+	//ofs.open("Wgrad2.txt");
+	//W2grad.quiet_save(ofs,raw_ascii);
+	//ofs.close();
+
 	Wgrad = Wgrad - W2grad;
 	hgrad = hgrad - h2grad;
 
-	vgrad = ((double)1/minibatch.n_cols)*sum(sum(minibatch-nv_means));
+	//ofs.open("Wgrad3.txt");
+	//Wgrad.quiet_save(ofs,raw_ascii);
+	//ofs.close();
+
+	//ofs.open("hgrad.txt");
+	//hgrad.quiet_save(ofs,raw_ascii);
+	//ofs.close();
+
+	vgrad = ((double)1/minibatch.size())*sum(sum(minibatch-nv_means));
 
 
 
@@ -96,20 +137,16 @@ arma::mat ConvolutionRBM::BiNomial(const arma::mat mean){
 	return result;
 }
 void ConvolutionRBM::sample_h_given_v(arma::mat& v0_sample, arma::mat& mean, arma::mat& sample){
-	mean = propup(v0_sample);/*
-	ofstream ofs("mean.txt");
-	mean.quiet_save(ofs,raw_ascii);
-	ofs.close();*/
-	sample = BiNomial(mean);/*
-	ofs.open("sample.txt");
-	sample.quiet_save(ofs,raw_ascii);
-	ofs.close();*/
+	mean = propup(v0_sample);
+	sample = BiNomial(mean);
 }
 void ConvolutionRBM::sample_v_given_h(arma::mat& h0_sample, arma::mat& mean, arma::mat& sample, double v_bias){
 	mean = propdown(h0_sample,v_bias);
+	
 	sample = BiNomial(mean);
+	
 }
-arma::mat ConvolutionRBM::propup(arma::mat& v){
+arma::mat ConvolutionRBM::propup(const arma::mat v){
 	//assert(weightMat.n_cols == v.n_rows);
 	int samples_num = v.n_cols;
 	int filter_size = filterDim * filterDim;
@@ -123,19 +160,24 @@ arma::mat ConvolutionRBM::propup(arma::mat& v){
 			arma::mat W = weightMatrix.rows((i*inputImageNum+j)*filterDim,(i*inputImageNum+j+1)*filterDim-1);
 			
 			arma::mat images = v.rows(j*inputSize,(j+1)*inputSize-1);
+
+
+
 			cube all_images = zeros(inputSize,samples_num,1);
 			all_images.slice(0) = images;
 			all_images.reshape(inputImageDim,inputImageDim,samples_num);
 			features_filter += convn_cube(all_images,W,"valid");
 		}
+
+		
+
 		features_filter = features_filter + b;
-		features_filter = 1/(1+exp(-features_filter));
 		features_filter.reshape(outputMapSize,samples_num,1);
 		arma::mat temp_filter = features_filter.slice(0);
 		h_expected.rows(i*outputMapSize,(i+1)*outputMapSize-1) = temp_filter;
 
 	}
-
+	h_expected = active_function(activeFuncChoice,h_expected);
 	return h_expected;
 }
 arma::mat ConvolutionRBM::propdown(arma::mat& h,double v_bias){
@@ -155,17 +197,27 @@ arma::mat ConvolutionRBM::propdown(arma::mat& h,double v_bias){
 				arma::mat W = weightMatrix.rows(filterDim * (nout*inputImageNum + nin),filterDim * (nout*inputImageNum + nin + 1)-1);
 				
 				arma::mat single_delta = h.rows(nout*delta_dim*delta_dim,(nout+1)*delta_dim*delta_dim-1);
+
+				//ofstream ofs;
+				//ofs.open("W.txt");
+				//W.quiet_save(ofs,raw_ascii);
+				//ofs.close();
+				//ofs.open("himages.txt");
+				//single_delta.quiet_save(ofs,raw_ascii);
+				//ofs.close();
+
 				arma::cube all_deltas = zeros(delta_dim*delta_dim,samples_num,1);
 				all_deltas.slice(0) = single_delta;
 				all_deltas.reshape(delta_dim,delta_dim,samples_num);
 				delta_filter += convn_cube(all_deltas,W,"full");
 			}
+
 			delta_filter.reshape(outputImageDim*outputImageDim,samples_num,1);
 			arma::mat temp_delta = delta_filter.slice(0);
 			v_expected.rows(nin*outputImageDim*outputImageDim,(nin+1)*outputImageDim*outputImageDim-1) =temp_delta;
 		}
 		
-	
+		v_expected = active_function(activeFuncChoice,v_expected);
 	return v_expected;
 }
 void  ConvolutionRBM::gibbs_hvh(double v_bias,arma::mat& h0_sample, arma::mat& nv_means, arma::mat& nv_samples, arma::mat& nh_means, arma::mat& nh_samples){
@@ -173,33 +225,7 @@ void  ConvolutionRBM::gibbs_hvh(double v_bias,arma::mat& h0_sample, arma::mat& n
 	sample_h_given_v(nv_means, nh_means, nh_samples);
 }
 arma::mat ConvolutionRBM::forwardpropagate(const arma::mat data,  NewParam param){
-	const int samples_num = data.n_cols;
-
-	arma::mat all_features = arma::zeros(outputImageDim*outputImageDim*outputImageNum,samples_num);
-	mat features_filter = zeros(outputImageDim,outputImageDim);
-	mat W = zeros(filterDim,filterDim);
-	mat image = zeros(inputImageDim*inputImageDim,1);
-	for(int n = 0;n < samples_num; n++){
-		
-		
-		for(int nout = 0; nout < outputImageNum; nout ++){
-			features_filter = zeros(outputImageDim,outputImageDim);
-			int fmInBase = 0;
-			double b = (bias.row(nout))(0);
-			for(int nin = 0; nin < inputImageNum; nin++){
-				W = weightMatrix.rows(filterDim * (nout*inputImageNum + nin),filterDim * (nout*inputImageNum + nin + 1)-1);
-				image = data.col(n).rows(nin*inputImageDim*inputImageDim,(nin+1)*inputImageDim*inputImageDim-1);
-				image.reshape(inputImageDim,inputImageDim);
-				features_filter += convn(image,W,"valid");
-			}
-			features_filter = features_filter + b;
-			features_filter = active_function(activeFuncChoice,features_filter);
-			all_features.col(n).rows(nout*features_filter.size(),(nout+1)*features_filter.size()-1) = reshape(features_filter,features_filter.size(),1);
-		}
-		
-	}
-
-	return all_features;
+	return propup(data);
 }
 arma::mat ConvolutionRBM::process_delta(arma::mat curr_delta){
 	const int samples_num = curr_delta.n_cols;
@@ -261,7 +287,9 @@ void ConvolutionRBM::calculate_grad_using_delta(const arma::mat input_data,const
 	double lambda = 3e-3;
 	Wgrad.set_size(filterDim*filterNum,filterDim);
 	bgrad.set_size(outputImageNum,1);
-	
+	int n_bias = delta.size() / outputImageNum;
+
+
 	for(int i = 0; i < outputImageNum; i++){
 		for(int j = 0;j < inputImageNum;j++){
 			mat Wgrad_j_i = zeros(filterDim,filterDim);
@@ -279,17 +307,18 @@ void ConvolutionRBM::calculate_grad_using_delta(const arma::mat input_data,const
 
 			cube temp_wgrad = convn_cube(all_images,all_delta,"valid");
 
+			
 			for(int k = 0;k < temp_wgrad.n_slices; k++){
 				Wgrad_j_i += temp_wgrad.slice(i);
 			}
 			
 			
 			Wgrad.rows(filterDim * (i*inputImageNum + j),filterDim * (i*inputImageNum+j+1)-1) 
-				= ((double)1/mbSize)*Wgrad_j_i +
-				lambda*weightMatrix.rows(filterDim * (i*inputImageNum + j),filterDim * (i*inputImageNum + j + 1)-1);
+				= ((double)1/mbSize)*Wgrad_j_i;
+			//+lambda*weightMatrix.rows(filterDim * (i*inputImageNum + j),filterDim * (i*inputImageNum + j + 1)-1);
 		}
 
-		bgrad(i) = ((double)1/mbSize)*sum(sum(delta.rows(i*outputImageDim*outputImageDim,(i+1)*outputImageDim*outputImageDim-1)));
+		bgrad(i) = ((double)1/n_bias)*sum(sum(delta.rows(i*outputImageDim*outputImageDim,(i+1)*outputImageDim*outputImageDim-1)));
 	}
 
 	//end_time = clock();
