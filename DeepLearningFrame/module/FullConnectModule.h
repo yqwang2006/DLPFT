@@ -11,7 +11,7 @@ namespace dlpft{
 			FullConnectModule():Module(){
 				name = "FullConnection";
 			}
-			FullConnectModule(int in_size,int out_size,const ActivationFunction active_func=SIGMOID,const double weightdecay = 3e-3)
+			FullConnectModule(int in_size,int out_size,const ActivationFunction active_func=LINEAR,const double weightdecay = 3e-3)
 				:Module(in_size,out_size,active_func,weightdecay){
 				name = "FullConnection";
 				initial_weights_bias();

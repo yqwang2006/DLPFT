@@ -35,13 +35,6 @@ double dlpft::optimizer::SgdOptimizer::optimize(string varname){
 				batchlabels.row(iter) = labels_opt.row(randperm[s+j]);
 			}
 
-			//ofstream ofs;
-			//ofs.open("minibatch.txt");
-			//minibatch.quiet_save(ofs,raw_ascii);
-			//ofs.close();
-
-
-
 			function_ptr->data = minibatch;
 			function_ptr->labels = batchlabels;
 			
@@ -55,7 +48,7 @@ double dlpft::optimizer::SgdOptimizer::optimize(string varname){
 			cout << "Epoch " << e << ": Cost on iteration " << it << " is " << func_cost << endl;
 		}
 		alpha = 0.98*alpha;
-		cout << "Epoch " << e << ": Cost on iteration is " << func_cost << endl;
+		//cout << "Epoch " << e << ": Cost on iteration is " << epoch_cost << endl;
 	}
 	return 0;
 }

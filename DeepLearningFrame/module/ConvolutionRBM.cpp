@@ -212,9 +212,9 @@ arma::mat ConvolutionRBM::propdown(arma::mat& h,double v_bias){
 				delta_filter += convn_cube(all_deltas,W,"full");
 			}
 
-			delta_filter.reshape(outputImageDim*outputImageDim,samples_num,1);
+			delta_filter.reshape(inputImageDim*inputImageDim,samples_num,1);
 			arma::mat temp_delta = delta_filter.slice(0);
-			v_expected.rows(nin*outputImageDim*outputImageDim,(nin+1)*outputImageDim*outputImageDim-1) =temp_delta;
+			v_expected.rows(nin*inputImageDim*inputImageDim,(nin+1)*inputImageDim*inputImageDim-1) =temp_delta;
 		}
 		
 		v_expected = active_function(activeFuncChoice,v_expected);
@@ -235,23 +235,26 @@ arma::mat ConvolutionRBM::process_delta(arma::mat curr_delta){
 
 	//arma::mat curr_delta = arma::zeros(inputImageDim*inputImageDim*inputImageNum,samples_num);
 	
-	for(int n = 0;n < samples_num; n++){
 		
 		for(int nin = 0; nin < inputImageNum; nin++){
 			int fmInBase = 0;
-			arma::mat delta_filter = zeros(inputImageDim,inputImageDim);
+			arma::cube delta_filter = zeros(inputImageDim,inputImageDim,samples_num);
 			for(int nout = 0; nout < outputImageNum; nout ++){
 				double b = (bias.row(nout))(0);
 				arma::mat W = weightMatrix.rows(filterDim * (nout*inputImageNum + nin),filterDim * (nout*inputImageNum + nin + 1)-1);
 				
-				arma::mat single_delta = curr_delta.col(n).rows(nout*delta_dim*delta_dim,(nout+1)*delta_dim*delta_dim-1);
-				single_delta.reshape(delta_dim,delta_dim);
-				delta_filter += convn(single_delta,W,"full");
+				arma::mat single_delta = curr_delta.rows(nout*delta_dim*delta_dim,(nout+1)*delta_dim*delta_dim-1);
+				arma::cube all_deltas = zeros(delta_dim*delta_dim,samples_num,1);
+				all_deltas.slice(0) = single_delta;
+				all_deltas.reshape(delta_dim,delta_dim,samples_num);
+				delta_filter += convn_cube(all_deltas,W,"full");
 			}
-			convn_delta.col(n).rows(nin*delta_filter.size(),(nin+1)*delta_filter.size()-1) = reshape(delta_filter,delta_filter.size(),1);
+			delta_filter.reshape(inputImageDim*inputImageDim,samples_num,1);
+			arma::mat temp_delta = delta_filter.slice(0);
+			convn_delta.rows(nin*inputImageDim*inputImageDim,(nin+1)*inputImageDim*inputImageDim-1) =temp_delta;
 		}
 		
-	}
+	
 	return convn_delta;
 }
 arma::mat ConvolutionRBM::backpropagate(arma::mat next_layer_weight,const arma::mat next_delta, const arma::mat features, NewParam param){
@@ -260,25 +263,14 @@ arma::mat ConvolutionRBM::backpropagate(arma::mat next_layer_weight,const arma::
 	//之后再输出多个maps
 	
 	arma::mat curr_delta = zeros(outputSize,next_delta.n_cols);
-	for(int i = 0;i < outputImageNum;i ++){
-//#if DEBUG
-		curr_delta.rows(i*outputImageDim*outputImageDim,(i+1)*outputImageDim*outputImageDim-1) 
-			= (active_function_dev(activeFuncChoice,features.rows(i*outputImageDim*outputImageDim,(i+1)*outputImageDim*outputImageDim-1)) 
-			% next_delta.rows(i*outputImageDim*outputImageDim,(i+1)*outputImageDim*outputImageDim-1));
-//#else 
-//		curr_delta.rows(i*outputImageDim*outputImageDim,(i+1)*outputImageDim*outputImageDim-1) 
-//			= next_layer_weight(i)
-//			*(active_function_dev(activeFuncChoice,features.rows(i*outputImageDim*outputImageDim,(i+1)*outputImageDim*outputImageDim-1)) 
-//			% next_delta.rows(i*outputImageDim*outputImageDim,(i+1)*outputImageDim*outputImageDim-1));
-//#endif
-	}
+	curr_delta = active_function_dev(activeFuncChoice,features) % next_delta;
 	
 	return curr_delta;
 	
 
 }
 void ConvolutionRBM::calculate_grad_using_delta(const arma::mat input_data,const arma::mat delta, NewParam param,arma::mat& Wgrad, arma::mat& bgrad){
-	//compute bgrad
+//compute bgrad
 	clock_t start_time = clock();
 	clock_t end_time;
 	double duration = 0;
@@ -287,9 +279,7 @@ void ConvolutionRBM::calculate_grad_using_delta(const arma::mat input_data,const
 	double lambda = 3e-3;
 	Wgrad.set_size(filterDim*filterNum,filterDim);
 	bgrad.set_size(outputImageNum,1);
-	int n_bias = delta.size() / outputImageNum;
-
-
+	
 	for(int i = 0; i < outputImageNum; i++){
 		for(int j = 0;j < inputImageNum;j++){
 			mat Wgrad_j_i = zeros(filterDim,filterDim);
@@ -307,21 +297,16 @@ void ConvolutionRBM::calculate_grad_using_delta(const arma::mat input_data,const
 
 			cube temp_wgrad = convn_cube(all_images,all_delta,"valid");
 
-			
 			for(int k = 0;k < temp_wgrad.n_slices; k++){
-				Wgrad_j_i += temp_wgrad.slice(i);
+				Wgrad_j_i += temp_wgrad.slice(k);
 			}
 			
 			
 			Wgrad.rows(filterDim * (i*inputImageNum + j),filterDim * (i*inputImageNum+j+1)-1) 
 				= ((double)1/mbSize)*Wgrad_j_i;
-			//+lambda*weightMatrix.rows(filterDim * (i*inputImageNum + j),filterDim * (i*inputImageNum + j + 1)-1);
+				//+lambda*weightMatrix.rows(filterDim * (i*inputImageNum + j),filterDim * (i*inputImageNum + j + 1)-1);
 		}
 
-		bgrad(i) = ((double)1/n_bias)*sum(sum(delta.rows(i*outputImageDim*outputImageDim,(i+1)*outputImageDim*outputImageDim-1)));
+		bgrad(i) = ((double)1/mbSize)*sum(sum(delta.rows(i*outputImageDim*outputImageDim,(i+1)*outputImageDim*outputImageDim-1)));
 	}
-
-	//end_time = clock();
- //   duration = (double)(end_time-start_time)/CLOCKS_PER_SEC;
-	//cout << "convolve grad compute spent: " << duration << " s" << endl;
 }

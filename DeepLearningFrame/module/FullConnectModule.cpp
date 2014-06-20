@@ -22,6 +22,7 @@ void FullConnectModule::initial_weights_bias(){
 #else
 	weightMatrix = arma::randu<arma::mat> (outputSize,inputSize)*2*r-r;
 #endif
+	//weightMatrix = 0.01 * (arma::randu<arma::mat> (outputSize,inputSize) - 0.5);
 	bias = zeros(outputSize,1);
 }
 arma::mat FullConnectModule::backpropagate(arma::mat next_layer_weight,const arma::mat next_delta, const arma::mat features, NewParam param){

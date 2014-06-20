@@ -14,7 +14,7 @@ namespace dlpft{
 				name = "sgd";
 				max_iteration = 3;
 				tolerance = 1e-9;
-				batch_size = 50;
+				batch_size = 64;
 				momentum = 0.95;
 				alpha = 0.05;
 
