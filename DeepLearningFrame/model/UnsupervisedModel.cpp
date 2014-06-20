@@ -87,42 +87,40 @@ void UnsupervisedModel::finetune_BP(const arma::mat data, const arma::imat label
 	//delete []features;
 }
 
-void UnsupervisedModel::predict(arma::mat& testdata, arma::imat& testlabels,vector<NewParam> params){
+double UnsupervisedModel::predict(const arma::mat testdata, const arma::imat testlabels,vector<NewParam> params,arma::imat& pred_labels ){
 	int layer_num = params.size();
 	arma::mat features = testdata;
 
 	arma::mat max_vals;
+	pred_labels.set_size(testlabels.size(),1);
+
+	double pred_accu = 0;
 	for(int i = 0;i < layer_num;i++){
 		features = modules[i]->forwardpropagate(features,params[i]);
 	}
 	if(params[layer_num-1].params["Algorithm"] == "SoftMax"){
 
 		max_vals = max(features);
-		arma::imat pred_labels(max_vals.size(),1);
+		
 		for(int i = 0;i < features.n_cols;i++){
 			pred_labels[i] = 0;
 			for(int j = 0;j < features.n_rows; j++){
 				if(max_vals(i) == features(j,i)){
-					if(j == 0)
-						pred_labels[i] = features.n_rows;	//number of cases
-					else
-						pred_labels[i] = j;
+					pred_labels[i] = j+1;
 					continue;
 				}
 			}
 
 		}
-		cout << "Predict error:" << endl;
-		cout << 100*(predict_acc(pred_labels,testlabels)) << "%" << endl;
+		cout << "Predict accu:" << endl;
+		pred_accu = 100*(predict_acc(pred_labels,testlabels));
+		cout << pred_accu << "%" << endl;
 	}
-
+	return pred_accu;
 }
 
 double UnsupervisedModel::predict_acc(const arma::imat predict_labels, const arma::imat labels){
-	fstream ofs;
-	ofs.open("pred_labels.txt",fstream::out);
-	predict_labels.quiet_save(ofs,raw_ascii);
-	ofs.close();
+
 	int sum = 0;
 	for(int i = 0;i < predict_labels.size();i++){
 		if(predict_labels(i) == labels(i)){

@@ -1,7 +1,7 @@
 #include "SgdOptimizer.h"
 #include "../module/AllModule.h"
 double dlpft::optimizer::SgdOptimizer::optimize(string varname){
-	arma::mat& x = function_ptr->coefficient;
+	arma::mat &x = function_ptr->coefficient;
 	arma::mat dat = function_ptr->data;
 	arma::imat labels_opt = function_ptr->labels;
 	size_t data_dim = size(dat,0);
@@ -20,14 +20,14 @@ double dlpft::optimizer::SgdOptimizer::optimize(string varname){
 			randperm.push_back(i);
 		}
 		random_shuffle(randperm.begin(),randperm.end());
-		
+		double epoch_cost = 0;
 		
 		
 		for(int s = 0;s <= data_length-batch_size;s += batch_size){
 			it ++;
-			if(it == momIncrease){
+			/*if(it == momIncrease){
 				mom = momentum;
-			}
+			}*/
 			int iter = 0;
 			for(int j = 0;j<batch_size;j++,iter++){
 				minibatch.col(iter) = dat.col(randperm[s+j]);
@@ -35,17 +35,27 @@ double dlpft::optimizer::SgdOptimizer::optimize(string varname){
 				batchlabels.row(iter) = labels_opt.row(randperm[s+j]);
 			}
 
+			//ofstream ofs;
+			//ofs.open("minibatch.txt");
+			//minibatch.quiet_save(ofs,raw_ascii);
+			//ofs.close();
+
+
 
 			function_ptr->data = minibatch;
 			function_ptr->labels = batchlabels;
 			
 			func_cost = function_ptr->value_gradient(grad);
 
-			velocity = mom * velocity + alpha*grad;
-			x = x-velocity;
+			epoch_cost += func_cost;
+			
+
+			velocity = mom * velocity - alpha*grad;
+			x = x+velocity;
 			cout << "Epoch " << e << ": Cost on iteration " << it << " is " << func_cost << endl;
 		}
-		alpha = alpha/2;
+		alpha = 0.98*alpha;
+		cout << "Epoch " << e << ": Cost on iteration is " << func_cost << endl;
 	}
 	return 0;
 }

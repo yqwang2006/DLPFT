@@ -22,79 +22,61 @@ using namespace dlpft::io;
 void load_data(string ,arma::mat&);
 void load_data(string ,arma::imat&);
 
-int main(){
+int main(int argc, char**argv){
+
+	if(argc < 3){
+		exit(-1);
+	}
+
+	string modelInfo = argv[1];
+	string paramFileName = argv[2];
+	string paramFullName = paramFileName + ".param";
 
 	RegisterFunction();
 	RegisterOptimizer();
-	//mat image = zeros(16,5);
-	//
-	//for(int i=0;i<image.n_cols;i++){
-	//	image.col(i) = (1+i)*ones(16,1);
-	//}
-	//cout << image;
 
-	//cube images = arma::zeros(16,5,1);
-	//images.slice(0) = image;
-	//images.reshape(4,4,5);
-	//cout << images;
-
-	//cube patch = images.tube(1,1,2,2);
-	//cout << images;
-	//cout << patch;
-
-	//mat weight = 0.7*ones(2,2);
-	//cout << weight;
-
-	//
-	//cout << convn_cube(images,weight,"full");
-
-
-
-#if UNSUPERVISEDMODEL
-	dlpft::io::LoadParam load_param("CRBM.param");
-#else
-	dlpft::io::LoadParam load_param("CNN.param");
-#endif
+	//load param file
+	dlpft::io::LoadParam load_param(paramFullName);
 	vector<vector<NewParam>> params;
 	AllDataAddr data_addr;
 	load_param.load(params,data_addr);
 	
+	arma::mat train_data,test_data;
+	arma::imat train_labels,test_labels;
 
-	arma::mat train_data;
-	arma::imat train_labels;
 
+	//load train data
 	load_data(data_addr.train_data_addr,train_data);
 	train_data = train_data.t();
 	load_data(data_addr.train_labels_addr,train_labels);
-	
-	
-	int input_size = train_data.n_rows;
 
-#if UNSUPERVISEDMODEL
-		UnsupervisedModel unsupervisedModel(input_size,params[0]);
-		unsupervisedModel.pretrain(train_data,train_labels,params[0]);
-	
-#else
-		CNN cnn(input_size,params[0]);
-		cnn.train(train_data,train_labels,params[0]);
-	
-#endif
-	arma::mat test_data;
-	arma::imat test_labels;
-
+	//load test data
 	load_data(data_addr.test_data_addr,test_data);
 	test_data = test_data.t();
 	load_data(data_addr.test_labels_addr,test_labels);
 
-#if UNSUPERVISEDMODEL 
-		unsupervisedModel.predict(test_data,test_labels,params[0]);
-	
-#else
-		cnn.predict(test_data,test_labels,params[0]);
-	
+	int input_size = train_data.n_rows;
 
-#endif
-	//
+	arma::imat pred_labels;
+	double pred_acc;
+
+	if(modelInfo == "unSupervisedModel"){
+		UnsupervisedModel unsupervisedModel(input_size,params[0]);
+		unsupervisedModel.pretrain(train_data,train_labels,params[0]);
+		pred_acc = unsupervisedModel.predict(test_data,test_labels,params[0],pred_labels);
+
+	}
+	else{
+		CNN cnn(input_size,params[0]);
+		cnn.train(train_data,train_labels,params[0]);
+		pred_acc = cnn.predict(test_data,test_labels,params[0],pred_labels);
+	}
+	
+	string result_file_name = paramFileName + "_result.txt";
+	ofstream ofs(result_file_name);
+	ofs << pred_acc << endl;
+	pred_labels.quiet_save(ofs,raw_ascii);
+	ofs.close();
 
 
 	return 0;

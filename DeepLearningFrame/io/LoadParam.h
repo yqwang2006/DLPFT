@@ -13,6 +13,7 @@ namespace dlpft{
 		public:
 			LoadParam(){file_name = "";}
 			LoadParam(std::string fname):file_name(fname){}
+			void setname(const string fileName){file_name = fileName;}
 			void load(vector<vector<NewParam>>&, AllDataAddr&);
 			std::vector<std::string> split(std::string str,std::string pattern);
 		};

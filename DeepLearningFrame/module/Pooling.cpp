@@ -18,12 +18,12 @@ arma::mat Pooling::down_sample(arma::mat data){
 			arma::mat image = data.col(i).rows(j*inputImageDim*inputImageDim,(j+1)*inputImageDim*inputImageDim-1);
 			image.reshape(inputImageDim,inputImageDim);
 
+
 			for(int poolrow = 0; poolrow < outputImageDim; poolrow ++){
 				int offsetrow = poolrow*poolingDim;
 				for(int poolcol = 0;poolcol < outputImageDim; poolcol++){
 					int offsetcol = poolcol*poolingDim;
 					arma::mat patch = image.submat(offsetrow,offsetcol,offsetrow+poolingDim-1,offsetcol+poolingDim-1);
-
 					
 					if(poolingType == "MEAN"){
 						temp_pooling_result(poolrow,poolcol) = arma::sum(arma::sum(patch))/patch.size();
@@ -54,18 +54,31 @@ arma::mat Pooling::down_sample(arma::mat data){
 					}else{//default max
 						temp_pooling_result(poolrow,poolcol) = arma::max(arma::max(patch));
 						arma::uvec id = arma::find(patch==arma::max(arma::max(patch)));
-						temp_pool_id(poolrow,poolcol) = id(0);
+						int max_in_patch_col = id(0)/patch.n_rows;
+						int max_in_patch_row = id(0)-patch.n_rows*max_in_patch_col;
+						int max_in_image_col = offsetcol + max_in_patch_col;
+						int max_in_image_row = offsetrow + max_in_patch_row;
+						int max_id_in_image = max_in_image_col * inputImageDim + max_in_image_row;
+						temp_pool_id(poolrow,poolcol) = max_id_in_image;
 					}
-
+					
 					
 				}
 			}
+			
 			pooling_result.col(i).rows(j*outputImageDim*outputImageDim,(j+1)*outputImageDim*outputImageDim-1) = reshape(temp_pooling_result,temp_pooling_result.size(),1);
 			sampleLoc.col(i).rows(j*outputImageDim*outputImageDim,(j+1)*outputImageDim*outputImageDim-1) = reshape(temp_pool_id,temp_pool_id.size(),1);
 		}
 
 
 	}
+
+	//ofstream ofs;
+	//ofs.open("poolingId.txt");
+	//sampleLoc.quiet_save(ofs,raw_ascii);
+	//ofs.close();
+
+
 	/*
 	end_time = clock();
 	duration = (double)(end_time-start_time)/CLOCKS_PER_SEC;
@@ -165,24 +178,34 @@ arma::mat Pooling::process_delta(arma::mat curr_delta){
 	arma::mat up_sampling_delta = arma::zeros(inputImageDim*inputImageDim*outputImageNum,samples_num);
 	arma::mat temp_delta = arma::zeros(inputImageDim,inputImageDim);
 	arma::mat temp_curr_delta = arma::zeros(inputImageDim,inputImageDim);
+	
+	
 	for(int i = 0;i < samples_num;i++){
 		for(int j = 0;j < outputImageNum;j++){
 			
+
 			temp_curr_delta = curr_delta.col(i).rows(j*outputImageDim*outputImageDim,(j+1)*outputImageDim*outputImageDim-1);
-			temp_delta.reshape(inputImageDim,inputImageDim);
+			temp_delta = arma::zeros(inputImageDim,inputImageDim);
 			temp_curr_delta.reshape(outputImageDim,outputImageDim);
+
+
 			if(poolingType == "MEAN"){
-				temp_delta = kron(temp_curr_delta,ones(poolingDim));
+				temp_delta = kron(temp_curr_delta,ones(poolingDim,poolingDim));
 				temp_delta /= (poolingDim*poolingDim);
 			}else{
+
+				arma::mat temp_pool_id = sampleLoc.col(i).rows(j*outputImageDim*outputImageDim,(j+1)*outputImageDim*outputImageDim-1);
+				temp_pool_id.reshape(outputImageDim,outputImageDim);
 				for(int row = 0;row < temp_curr_delta.n_rows; row ++){
 					for(int col = 0;col < temp_curr_delta.n_cols;col++){
-						temp_delta(sampleLoc(row,col)) = temp_curr_delta(row,col);
+						temp_delta(temp_pool_id(row,col)) = temp_curr_delta(row,col);
 					}
 				}
 
 
 			}
+
+
 			temp_delta.reshape(inputImageDim*inputImageDim,1);
 			up_sampling_delta.col(i).rows(j*inputImageDim*inputImageDim,(j+1)*inputImageDim*inputImageDim-1)= temp_delta;
 		}

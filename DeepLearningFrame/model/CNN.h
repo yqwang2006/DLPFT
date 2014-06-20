@@ -26,7 +26,7 @@ namespace dlpft{
 			~CNN(){}
 			void train(const arma::mat data,const arma::imat labels, vector<NewParam> param);
 			void cnnInitParams(arma::mat& theta,vector<NewParam> param);
-			void predict(arma::mat& testdata, arma::imat& testlabels,vector<NewParam> params);
+			double predict(const arma::mat testdata, const arma::imat testlabels,vector<NewParam> params,arma::imat& pred_labels );
 			double predict_acc(const arma::imat predict_labels, const arma::imat testlabels);
 			void cnnParamsToStack(arma::mat theta,vector<NewParam> params);
 		};

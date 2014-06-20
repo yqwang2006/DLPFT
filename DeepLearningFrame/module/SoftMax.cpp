@@ -38,18 +38,14 @@ void SoftMax::pretrain(const arma::mat data, const arma::imat labels, NewParam p
 
 } 
 arma::mat SoftMax::backpropagate(arma::mat next_layer_weight,const arma::mat next_delta, const arma::mat features, NewParam param){
-//#if DEBUG
 	arma::mat curr_delta = next_delta;
-//#else
-//	arma::mat curr_delta = active_function_dev(activeFuncChoice,features) % next_delta;
-//#endif
 	return curr_delta;
 }
 arma::mat SoftMax::forwardpropagate(const arma::mat data,  NewParam param){
 
 	arma::mat features = weightMatrix * data + repmat(bias,1,data.n_cols);
 	//arma::mat features = weightMatrix * data;
-	features = active_function(activeFuncChoice,features);
+	features = active_function(SIGMOID,features);
 	return features;
 
 }
@@ -62,7 +58,9 @@ void SoftMax::initial_weights_bias(){
 #else
 	weightMatrix = arma::randu<arma::mat> (outputSize,inputSize)*2*r-r;
 #endif
-	
+	weightMatrix = 0.01 * (arma::randu<arma::mat> (outputSize,inputSize) - 0.5);
+
+
 	bias = arma::zeros(outputSize,1);
 }
 void SoftMax::set_init_coefficient(arma::mat& coefficient){
@@ -74,6 +72,6 @@ void SoftMax::set_init_coefficient(arma::mat& coefficient){
 }
 void SoftMax::calculate_grad_using_delta(const arma::mat input_data,const arma::mat delta,NewParam param, arma::mat& Wgrad, arma::mat& bgrad){
 	int lambda = atoi(param.params[params_name[LAMBDA]].c_str());
-	Wgrad = ((double)1/input_data.n_cols)*delta * input_data.t() + 3e-3 * weightMatrix;
+	Wgrad = ((double)1/input_data.n_cols)*delta * input_data.t();// + 3e-3 * weightMatrix;
 	bgrad = sum(delta,1)/input_data.n_cols;
 }

@@ -16,7 +16,7 @@ namespace dlpft{
 				tolerance = 1e-9;
 				batch_size = 50;
 				momentum = 0.95;
-				alpha = 0.1;
+				alpha = 0.05;
 
 			}
 			SgdOptimizer(CostFunction* func,
