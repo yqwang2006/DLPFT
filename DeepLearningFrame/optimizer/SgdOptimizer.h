@@ -12,7 +12,7 @@ namespace dlpft{
 		public:
 			SgdOptimizer(void){ 
 				name = "sgd";
-				max_iteration = 3;
+				max_iteration = 10;
 				tolerance = 1e-9;
 				batch_size = 100;
 				momentum = 0.95;
