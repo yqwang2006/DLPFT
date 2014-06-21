@@ -9,7 +9,7 @@ void ConvolutionRBM::initial_weights_bias(){
 		weightMatrix.rows(i*filterDim,(i+1)*filterDim-1) = (i+1)*ones(filterDim,filterDim);
 	}
 #else
-	cube tempW = 5 * randu(filterDim,filterDim,filterNum);
+	cube tempW = 0.1 * randn(filterDim,filterDim,filterNum);
 	for(int i = 0; i < filterNum; i++){
 		weightMatrix.rows(i*filterDim,(i+1)*filterDim-1) = tempW.slice(i);
 	}
@@ -303,8 +303,8 @@ void ConvolutionRBM::calculate_grad_using_delta(const arma::mat input_data,const
 			
 			
 			Wgrad.rows(filterDim * (i*inputImageNum + j),filterDim * (i*inputImageNum+j+1)-1) 
-				= ((double)1/mbSize)*Wgrad_j_i;
-				//+lambda*weightMatrix.rows(filterDim * (i*inputImageNum + j),filterDim * (i*inputImageNum + j + 1)-1);
+				= ((double)1/mbSize)*Wgrad_j_i
+				+lambda*weightMatrix.rows(filterDim * (i*inputImageNum + j),filterDim * (i*inputImageNum + j + 1)-1);
 		}
 
 		bgrad(i) = ((double)1/mbSize)*sum(sum(delta.rows(i*outputImageDim*outputImageDim,(i+1)*outputImageDim*outputImageDim-1)));

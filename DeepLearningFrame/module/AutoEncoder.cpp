@@ -18,7 +18,7 @@ void AutoEncoder::pretrain(const arma::mat data, const arma::imat labels, NewPar
 	Optimizer* testOpt = opt_factory.createProduct(param.params[params_name[OPTIMETHOD]]);
 
 	costfunc->data = data;
-
+	costfunc->labels = labels;
 	set_init_coefficient(costfunc->coefficient);
 	
 	testOpt->set_func_ptr(costfunc);

@@ -67,11 +67,11 @@ double CNNCost::value_gradient(arma::mat& grad){
 
 
 	//desired_out is t, activations[layer_num-1] is y. here we compute 1/m*sum(t'*log(f(y)))
-	//arma::mat gm = reshape(desired_out,desired_out.size(),1).t()*log(reshape(activations[layer_num-1],activations[layer_num-1].size(),1));
+	arma::mat gm = reshape(desired_out,desired_out.size(),1).t()*log(reshape(activations[layer_num-1],activations[layer_num-1].size(),1));
 
 	//cout << "gm = " << gm(0) << endl;
 
-	//cost += ((double)-1/num_images)*gm(0);
+	cost += ((double)-1/num_images)*gm(0);
 
 	//backward propagation to compute delta
 

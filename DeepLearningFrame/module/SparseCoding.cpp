@@ -86,6 +86,7 @@ void SparseCoding::pretrain(const arma::mat data, const arma::imat labels, NewPa
 			sc_cost_func->coefficient = forwardpropagate(minibatch,param);
 			
 			sc_cost_func->data = minibatch;
+			sc_cost_func->labels = labels.rows(0,batch_size-1);
 			sc_cost_func->coefficient.reshape(feature_num*batch_size,1);
 
 			sc_opt->set_func_ptr(sc_cost_func);

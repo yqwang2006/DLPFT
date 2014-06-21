@@ -18,7 +18,7 @@ namespace dlpft{
 			ConvolutionRBM():Module(){
 				name = "ConvolveModule";
 			}
-			ConvolutionRBM(int input_image_dim,int input_image_num,int filter_dim, int output_num,const ActivationFunction act_func = SIGMOID,const double weightdecay=3e-3){
+			ConvolutionRBM(int input_image_dim,int input_image_num,int filter_dim, int output_num,const ActivationFunction act_func = LINEAR,const double weightdecay=3e-3){
 				inputImageDim = input_image_dim;
 				inputImageNum = input_image_num;
 				inputSize = inputImageDim * inputImageDim;

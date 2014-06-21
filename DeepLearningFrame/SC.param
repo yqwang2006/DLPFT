@@ -1,10 +1,10 @@
 Layer_num:2
 Layer_order:1
 Algorithm:SC
-Optimize_method:1,cg
+Optimize_method:1,sgd
 Hid_num:1,256
 Max_epoch:1,2
-Batch_size:1,1000
+Batch_size:1,100
 Learning_rate:1,0.1
 Pooling_type:1,SUM
 Pooling_dim:1,3
