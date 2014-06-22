@@ -11,6 +11,7 @@
 #include "model\UnsupervisedModel.h"
 #include "model\CNN.h"
 #include "util\convolve.h"
+#include "util\onehot.h"
 using namespace std;
 using namespace arma;
 using namespace dlpft::factory;
@@ -27,6 +28,8 @@ int main(int argc, char**argv){
 	if(argc < 3){
 		exit(-1);
 	}
+
+
 
 	string modelInfo = argv[1];
 	string paramFileName = argv[2];
@@ -54,6 +57,7 @@ int main(int argc, char**argv){
 	load_data(data_addr.test_data_addr,test_data);
 	test_data = test_data.t();
 	load_data(data_addr.test_labels_addr,test_labels);
+
 
 	int input_size = train_data.n_rows;
 

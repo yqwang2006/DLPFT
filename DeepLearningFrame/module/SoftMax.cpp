@@ -1,7 +1,6 @@
 #include "SoftMax.h"
 
-#include "../param/SMParam.h"
-
+#include "../util/create_optimizer.h"
 
 using namespace dlpft::module;
 using namespace dlpft::function;
@@ -22,12 +21,7 @@ void SoftMax::pretrain(const arma::mat data, const arma::imat labels, NewParam p
 	set_init_coefficient(costfunc->coefficient);
 
 	arma::mat grad;
-	Optimizer* testOpt = opt_factory.createProduct(param.params[params_name[OPTIMETHOD]]);
-
-
-
-	testOpt->set_func_ptr(costfunc);
-
+	Optimizer* testOpt = create_optimizer(param,costfunc);
 	testOpt->optimize("theta");
 
 	weightMatrix = costfunc->coefficient.rows(0,outputSize*inputSize-1);

@@ -43,12 +43,12 @@ double dlpft::optimizer::SgdOptimizer::optimize(string varname){
 			epoch_cost += func_cost;
 			
 
-			velocity = mom * velocity - alpha*grad;
+			velocity = mom * velocity - learning_rate*grad;
 			x = x+velocity;
-			cout << "Epoch " << e << ": Cost on iteration " << it << " is " << func_cost << endl;
+			//cout << "Epoch " << e << ": Cost on iteration " << it << " is " << func_cost << endl;
 		}
-		alpha = 0.98*alpha;
-		//cout << "Epoch " << e << ": Cost on iteration is " << epoch_cost << endl;
+		learning_rate = 0.98*learning_rate;
+		cout << "Epoch " << e << ": Cost on iteration is " << epoch_cost << endl;
 	}
 	return 0;
 }

@@ -49,6 +49,11 @@ arma::mat ConvolveModule::forwardpropagate(const arma::mat data,  NewParam param
 			arma::mat temp_filter = features_filter.slice(0);
 			all_features.rows(nout*outputMapSize,(nout+1)*outputMapSize-1) = temp_filter;
 		}
+	//ofstream ofs;
+	//ofs.open("before_sigm.txt");
+	//all_features.quiet_save(ofs,raw_ascii);
+	//ofs.close();
+
 	all_features = active_function(activeFuncChoice,all_features);
 	return all_features;
 }

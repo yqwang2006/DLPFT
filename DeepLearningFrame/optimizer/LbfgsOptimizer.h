@@ -5,7 +5,10 @@ namespace dlpft{
 		class LbfgsOptimizer : public Optimizer
 		{
 		public:
-			LbfgsOptimizer(void){ name = "lbfgs";cout << name << endl;}
+			LbfgsOptimizer(void){ name = "lbfgs";}
+			LbfgsOptimizer(CostFunction* func,int max_iter):Optimizer(func,max_iter){
+				name = "lbfgs";
+			}
 			~LbfgsOptimizer(void);
 			double optimize(string );
 		};//class sgdopt

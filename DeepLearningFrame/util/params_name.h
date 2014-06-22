@@ -1,3 +1,5 @@
+#ifndef PARAMSNAME_H
+#define PARAMSNAME_H
 #include <map>
 using namespace std;
 static enum PARAMSNAME { 
@@ -6,7 +8,7 @@ static enum PARAMSNAME {
 	POOLINGTYPE,POOLINGDIM,SPARSITY,GAMMA,EPSILON,
 	LAMBDA,CLASSESNUM,
 	FILTERNUM,FILTERDIM,
-	TRAINDATA,TRAINLABELS,TESTDATA,TESTLABELS
+	TRAINDATA,TRAINLABELS,TESTDATA,TESTLABELS,ACTIVEFUNCTION
 };
 
 static map<PARAMSNAME,string> fill_param_map(){
@@ -32,6 +34,8 @@ static map<PARAMSNAME,string> fill_param_map(){
 	params_name[TESTLABELS] = "testLabels";
 	params_name[FILTERNUM] = "Features_num";
 	params_name[FILTERDIM] = "Filter_dim";
+	params_name[ACTIVEFUNCTION]="Active_function";
 	return params_name;
 }
 static map<PARAMSNAME,string> params_name = fill_param_map();
+#endif

@@ -3,10 +3,21 @@
 
 #include "armadillo"
 
-namespace dlpft{
 
 	enum ActivationFunction {SIGMOID, TANH, RECTIFIER, LINEAR,SOFTMAX};
-
+	static ActivationFunction get_activation_function(std::string name){
+		if(name == "LINEAR"){
+			return LINEAR;
+		}else if(name == "TANH"){
+			return TANH;
+		}else if(name == "RECTIFIER"){
+			return RECTIFIER;
+		}else if(name == "SOFTMAX"){
+			return SOFTMAX;
+		}else{
+			return SIGMOID;
+		}
+	}
 
 	static void sigmoid(const arma::mat x, arma::mat& y){
 		y = 1/(1+arma::exp(-x));
@@ -102,7 +113,6 @@ namespace dlpft{
 		return g;
 	}
 
-};
 
 
 #endif

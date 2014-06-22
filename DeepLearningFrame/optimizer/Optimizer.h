@@ -16,7 +16,7 @@ namespace dlpft{
 			int max_iteration;
 		public:
 			Optimizer(void):name(""){}
-			Optimizer(string n, CostFunction* func):name(n),function_ptr(func){}
+			Optimizer(CostFunction* func,int max_iter):name(""),function_ptr(func),max_iteration(max_iter){}
 			~Optimizer(){
 				
 				cout << "~Optimizer()" << endl;

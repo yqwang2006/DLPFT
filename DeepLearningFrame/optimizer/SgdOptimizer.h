@@ -8,7 +8,7 @@ namespace dlpft{
 			double tolerance;
 			int batch_size;
 			double momentum;
-			double alpha;
+			double learning_rate;
 		public:
 			SgdOptimizer(void){ 
 				name = "sgd";
@@ -16,27 +16,33 @@ namespace dlpft{
 				tolerance = 1e-9;
 				batch_size = 100;
 				momentum = 0.95;
-				alpha = 0.05;
+				learning_rate = 0.05;
 
 			}
 			SgdOptimizer(CostFunction* func,
-							double& s_size,  
-							double& alp,
-							int& bs,
+							int max_iter,
+							double learnrate,
+							int batch_s,
 							const double tol = 1e-9, 
-							const double mom = 0.95, 
-							const int max_iter = 3
+							const double mom = 0.95
 							)
-				:tolerance(tol){
-				max_iteration = max_iter;
+							:Optimizer(func,max_iter){
 				name = "sgd";
 				function_ptr = func;
 				tolerance = tol;
-				batch_size = bs;
+				batch_size = batch_s;
 				momentum = mom;
-				alpha = alp;
+				learning_rate = learnrate;
+
+				if(batch_size == 0)
+					batch_size = 100;
+				if(learning_rate == 0)
+					learning_rate = 0.05;
+				if(max_iteration == 0)
+					max_iteration = 10;
+
 			}
-			~SgdOptimizer(void){cout << "~SgdOptimizer()" << endl;}
+			~SgdOptimizer(void){}
 			
 			double optimize(string varname);
 			double get_tolerance() const{return tolerance;}

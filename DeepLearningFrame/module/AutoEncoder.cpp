@@ -1,5 +1,5 @@
 #include "AutoEncoder.h"
-
+#include "../util/create_optimizer.h"
 using namespace dlpft::param;
 using namespace dlpft::module;
 using namespace dlpft::function;
@@ -15,18 +15,12 @@ void AutoEncoder::pretrain(const arma::mat data, const arma::imat labels, NewPar
 
 	SAECostFunction* costfunc = new SAECostFunction(inputSize,outputSize);
 	arma::mat grad;
-	Optimizer* testOpt = opt_factory.createProduct(param.params[params_name[OPTIMETHOD]]);
-
 	costfunc->data = data;
 	costfunc->labels = labels;
 	set_init_coefficient(costfunc->coefficient);
 	
+	Optimizer* testOpt = create_optimizer(param,costfunc);
 	testOpt->set_func_ptr(costfunc);
-
-
-	//cout << "before opt:" << costfunc->get_coefficient()->n_rows<<";" << costfunc->get_coefficient()->n_cols << endl;
-	//cout << ((AEParam*)param)->get_max_epoch() << endl;
-	testOpt->set_max_iteration(atoi(param.params[params_name[MAXEPOCH]].c_str()));
 	testOpt->optimize("theta"); 
 
 	//cout << "after opt:" << costfunc->get_coefficient()->n_rows<<";" << costfunc->get_coefficient()->n_cols << endl;

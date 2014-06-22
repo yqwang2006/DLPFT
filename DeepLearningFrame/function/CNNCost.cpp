@@ -23,11 +23,16 @@ double CNNCost::value_gradient(arma::mat& grad){
 	double cost = 0;
 	//forward Propagation
 	int start_b_loc = 0;
-	//
+	
+
+	//arma::mat onehot_labels = onehot(10,labels.n_elem,labels);
 	//ofstream ofs;
 	//ofs.open("mblabels.txt");
-	//labels.quiet_save(ofs,raw_ascii);
+	//onehot_labels.quiet_save(ofs,raw_ascii);
 	//ofs.close();
+
+
+
 	//ofs.open("mbdata.txt");
 	//data.quiet_save(ofs,arma::raw_ascii);
 	//ofs.close();

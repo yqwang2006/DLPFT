@@ -1,4 +1,5 @@
 #include "SparseCoding.h"
+#include "../util/create_optimizer.h"
 using namespace dlpft::module;
 using namespace dlpft::param;
 using namespace dlpft::function;
@@ -53,9 +54,8 @@ void SparseCoding::pretrain(const arma::mat data, const arma::imat labels, NewPa
 	
 
 
-	Optimizer *sc_opt = opt_factory.createProduct(param.params[params_name[OPTIMETHOD]]);
-	sc_opt->set_max_iteration(20);
-
+	Optimizer *sc_opt = create_optimizer(param,sc_cost_func);
+	
 	arma::mat minibatch = arma::zeros(visible_size,batch_size);
 	rand_data(data,minibatch,samples_num,batch_size);
 	
@@ -89,7 +89,7 @@ void SparseCoding::pretrain(const arma::mat data, const arma::imat labels, NewPa
 			sc_cost_func->labels = labels.rows(0,batch_size-1);
 			sc_cost_func->coefficient.reshape(feature_num*batch_size,1);
 
-			sc_opt->set_func_ptr(sc_cost_func);
+			
 			
 			
 			//begin optimize

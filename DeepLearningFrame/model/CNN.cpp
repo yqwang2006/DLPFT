@@ -1,8 +1,9 @@
 #include "CNN.h"
 #include "..\function\AllFunction.h"
 #include "..\optimizer\AllOptMethod.h"
-#include "../module/AllModule.h"d
+#include "../module/AllModule.h"
 #include "..\factory\Creator.h"
+#include "../util/create_optimizer.h"
 using namespace dlpft::factory;
 using namespace dlpft::model;
 void CNN::train(const arma::mat data,const arma::imat labels, vector<NewParam> params){
@@ -25,7 +26,7 @@ void CNN::train(const arma::mat data,const arma::imat labels, vector<NewParam> p
 	CNNCost* costfunc = new CNNCost(modules,data,labels,params);
 	arma::mat grad;
 	
-	Optimizer* testOpt = opt_factory.createProduct(params[0].params[params_name[OPTIMETHOD]]);
+	Optimizer* testOpt = create_optimizer(params[0],costfunc);
 
 	costfunc->data = data;
 

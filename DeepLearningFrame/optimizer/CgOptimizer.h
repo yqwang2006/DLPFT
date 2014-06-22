@@ -11,6 +11,9 @@ namespace dlpft{
 			CgOptimizer(void);
 			
 			CgOptimizer(const int);
+			CgOptimizer(CostFunction* func,int max_iter):Optimizer(func,max_iter){
+				name = "cg";
+			}
 			~CgOptimizer(void);
 		
 			double optimize(string varname);
