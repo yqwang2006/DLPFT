@@ -76,8 +76,9 @@ int main(int argc, char**argv){
 		pred_acc = cnn.predict(test_data,test_labels,params[0],pred_labels);
 	}
 	
-	string result_file_name = paramFileName + "_result.txt";
-	ofstream ofs(result_file_name);
+	string result_file_name = "result/"+paramFileName + "_result.txt";
+	ofstream ofs;
+	ofs.open(result_file_name);
 	ofs << pred_acc << endl;
 	pred_labels.quiet_save(ofs,raw_ascii);
 	ofs.close();

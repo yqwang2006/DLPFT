@@ -216,7 +216,7 @@ arma::mat ConvolutionRBM::propdown(arma::mat& h,double v_bias){
 			arma::mat temp_delta = delta_filter.slice(0);
 			v_expected.rows(nin*inputImageDim*inputImageDim,(nin+1)*inputImageDim*inputImageDim-1) =temp_delta;
 		}
-		
+		v_expected = v_expected + v_bias;
 		v_expected = active_function(activeFuncChoice,v_expected);
 	return v_expected;
 }

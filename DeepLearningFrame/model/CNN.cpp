@@ -132,10 +132,10 @@ double CNN::predict(const arma::mat testdata, const arma::imat testlabels,vector
 }
 
 double CNN::predict_acc(const arma::imat predict_labels, const arma::imat labels){
-	fstream ofs;
-	ofs.open("pred_labels.txt",fstream::out);
-	predict_labels.quiet_save(ofs,raw_ascii);
-	ofs.close();
+	//fstream ofs;
+	//ofs.open("pred_labels.txt",fstream::out);
+	//predict_labels.quiet_save(ofs,raw_ascii);
+	//ofs.close();
 	int sum = 0;
 	for(int i = 0;i < predict_labels.size();i++){
 		if(predict_labels(i) == labels(i)){

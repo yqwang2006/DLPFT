@@ -22,7 +22,7 @@ namespace dlpft{
 
 
 			SAECostFunction(int v, int h, const double lambda=3e-3,
-				const double sparsityParam=0.1,const double beta = 3e-3,const string func_name = "sparse autoencoder function")
+				const double sparsityParam=0.05,const double beta = 3e-3,const string func_name = "sparse autoencoder function")
 				:visiableSize(v),hiddenSize(h),lambda(lambda),sparsityParam(sparsityParam),beta(beta){
 					function_name = func_name;
 			}
