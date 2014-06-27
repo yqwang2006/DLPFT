@@ -22,7 +22,7 @@ namespace dlpft{
 			}
 			~RBM();
 
-			void pretrain(const arma::mat data, const arma::imat labels, NewParam param);
+			void pretrain(const arma::mat data, NewParam param);
 			
 		    void  CD_k(int k,arma::mat& input_data, arma::mat& weightMat, arma::mat& h_bias, arma::mat& v_bias);
 			

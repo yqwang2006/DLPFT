@@ -22,7 +22,7 @@ Batch_size:1,100
 Learning_rate:1,0.1
 Layer_order:4
 Algorithm:SoftMax
-Max_epoch:1,400
+Max_epoch:1,100
 Hid_num:1,10
 Optimize_method:1,cg
 Lambda:1,1e-3

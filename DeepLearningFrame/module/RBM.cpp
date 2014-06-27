@@ -2,7 +2,7 @@
 #include <assert.h>
 using namespace dlpft::module;
 using namespace dlpft::param;
-void RBM::pretrain(const arma::mat data, const arma::imat labels, NewParam param){
+void RBM::pretrain(const arma::mat data,NewParam param){
 	int hid_size = atoi(param.params[params_name[HIDNUM]].c_str());
 	int max_epoch = atoi(param.params[params_name[MAXEPOCH]].c_str());
 	int batch_size = atoi(param.params[params_name[BATCHSIZE]].c_str());
@@ -53,9 +53,9 @@ void RBM::pretrain(const arma::mat data, const arma::imat labels, NewParam param
 			//update W,b,c
 			
 			deltaW = momentum * deltaW + learn_rate *
-				((h_means * minibatches[batch].t() - nh_means * nv_samples.t())/batch_size - weightcost * weightMatrix);
+				((h_means * minibatches[batch].t() - nh_means * nv_means.t())/batch_size - weightcost * weightMatrix);
 			deltac = momentum * deltac + (learn_rate/batch_size) * 
-				(sum(minibatches[batch],1) - sum(nv_samples,1));
+				(sum(minibatches[batch],1) - sum(nv_means,1));
 			deltab = momentum * deltab + (learn_rate/batch_size) *
 				(sum(h_means,1) - sum(nh_means,1));
 
@@ -74,7 +74,7 @@ void RBM::pretrain(const arma::mat data, const arma::imat labels, NewParam param
 
 	//result_model.features = RBM_VtoH(data, result_model);
 
-	//delete minibatches;
+	delete []minibatches;
 }
 arma::mat RBM::forwardpropagate(const arma::mat data,  NewParam param){
 	//weightMat: hidden_size * visible_size
@@ -108,20 +108,20 @@ void RBM::sample_v_given_h(arma::mat& h0_sample, arma::mat& mean, arma::mat& sam
 }
 arma::mat RBM::propup(arma::mat& v,arma::mat& weightMat, arma::mat& h_bias){
 	assert(weightMat.n_cols == v.n_rows);
-	arma::mat negdata = weightMat * v + arma::repmat(h_bias,1,v.n_cols);
-	negdata = active_function(activeFuncChoice,negdata);
+	arma::mat negh = weightMat * v + arma::repmat(h_bias,1,v.n_cols);
+	negh = active_function(activeFuncChoice,negh);
 
-	return negdata;
+	return negh;
 }
 arma::mat RBM::propdown(arma::mat& h,arma::mat& weightMat,arma::mat& v_bias){
 	assert(h.n_rows == weightMat.n_rows);
-	arma::mat negh = weightMat.t() * h + arma::repmat(v_bias,1,h.n_cols);
-	negh = active_function(activeFuncChoice,negh);
-	return negh;
+	arma::mat negdata = weightMat.t() * h + arma::repmat(v_bias,1,h.n_cols);
+	negdata = active_function(activeFuncChoice,negdata);
+	return negdata;
 }
 void  RBM::gibbs_hvh(arma::mat& weightMat, arma::mat& h_bias, arma::mat& v_bias,arma::mat& h0_sample){
 	sample_v_given_h(h0_sample, nv_means, nv_samples,weightMat, v_bias);
-	sample_h_given_v(nv_samples, nh_means, nh_samples,weightMat,h_bias);
+	sample_h_given_v(nv_means, nh_means, nh_samples,weightMat,h_bias);
 }
 double RBM::get_reconstruct_error(arma::mat& v){
 	return 0;
@@ -143,6 +143,6 @@ void RBM::initial_weights_bias(){
 }
 void RBM::calculate_grad_using_delta(const arma::mat input_data,const arma::mat delta,NewParam param,arma::mat& Wgrad, arma::mat& bgrad){
 	int lambda = atoi(param.params[params_name[LAMBDA]].c_str());
-	Wgrad = ((double)1/input_data.n_cols)*delta * input_data.t() + lambda * weightMatrix;
+	Wgrad = ((double)1/input_data.n_cols)*delta * input_data.t();// + lambda * weightMatrix;
 	bgrad = sum(delta,1)/input_data.n_cols;
 }

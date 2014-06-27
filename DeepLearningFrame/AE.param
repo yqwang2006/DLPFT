@@ -1,9 +1,9 @@
 Layer_num:2
 Layer_order:1
 Algorithm:AutoEncoder
-Optimize_method:1,sgd
+Optimize_method:1,cg
 Hid_num:1,400
-Max_epoch:1,3
+Max_epoch:1,10
 Layer_order:2
 Algorithm:SoftMax
 Max_epoch:1,100

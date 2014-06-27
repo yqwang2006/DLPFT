@@ -3,14 +3,12 @@
 #include <string>
 #include "../util/ActiveFunction.h"
 #include "../param/NewParam.h"
-#include "../model/ResultModel.h"
 #include "../param/AllParam.h"
 #include "../optimizer/AllOptMethod.h"
 #include "../factory/Creator.h"
 #include "../util/params_name.h"
 //#define DEBUG 1
 using namespace dlpft::param;
-using namespace dlpft::model;
 using namespace dlpft::function;
 using namespace dlpft::optimizer;
 using namespace dlpft::factory;
@@ -31,6 +29,8 @@ namespace dlpft{
 				activeFuncChoice = SIGMOID;
 			}
 			Module(int in_size,int out_size,const ActivationFunction active_func=SIGMOID,const double weightdecay = 3e-3):inputSize(in_size),outputSize(out_size){
+				inputSize = in_size;
+				outputSize = out_size;
 				name = "";
 				weightDecay = weightdecay;
 				activeFuncChoice = active_func;
@@ -38,7 +38,7 @@ namespace dlpft{
 			~Module(){
 			}
 			
-			virtual void pretrain(const arma::mat data, const arma::imat labels, NewParam param)=0;
+			virtual void pretrain(const arma::mat data, NewParam param)=0;
 			
 			virtual arma::mat forwardpropagate(const arma::mat data,  NewParam param)=0;
 			virtual void initial_weights_bias() = 0;

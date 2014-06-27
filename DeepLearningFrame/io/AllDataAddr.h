@@ -10,6 +10,8 @@ namespace dlpft{
 			string train_labels_addr;
 			string test_data_addr;
 			string test_labels_addr;
+			string finetune_data_addr;
+			string finetune_labels_addr;
 			AllDataAddr(){}
 			~AllDataAddr(){}
 		};

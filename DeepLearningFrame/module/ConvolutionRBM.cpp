@@ -17,7 +17,7 @@ void ConvolutionRBM::initial_weights_bias(){
 	
 	
 }
-void ConvolutionRBM::pretrain(const arma::mat data, const arma::imat labels, NewParam param){
+void ConvolutionRBM::pretrain(const arma::mat data, NewParam param){
 	int max_epoch = atoi(param.params[params_name[MAXEPOCH]].c_str());
 	int batch_size = atoi(param.params[params_name[BATCHSIZE]].c_str());
 	double learn_rate = atof(param.params[params_name[LEARNRATE]].c_str());

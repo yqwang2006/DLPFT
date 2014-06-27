@@ -8,7 +8,7 @@ static enum PARAMSNAME {
 	POOLINGTYPE,POOLINGDIM,SPARSITY,GAMMA,EPSILON,
 	LAMBDA,CLASSESNUM,
 	FILTERNUM,FILTERDIM,
-	TRAINDATA,TRAINLABELS,TESTDATA,TESTLABELS,ACTIVEFUNCTION
+	TRAINDATA,TRAINLABELS,TESTDATA,TESTLABELS,FINETUNEDATA,FINETUNELABELS,ACTIVEFUNCTION
 };
 
 static map<PARAMSNAME,string> fill_param_map(){
@@ -34,6 +34,8 @@ static map<PARAMSNAME,string> fill_param_map(){
 	params_name[TESTLABELS] = "testLabels";
 	params_name[FILTERNUM] = "Features_num";
 	params_name[FILTERDIM] = "Filter_dim";
+	params_name[FINETUNEDATA]="Finetune_data";
+	params_name[FINETUNELABELS] = "Finetune_labels";
 	params_name[ACTIVEFUNCTION]="Active_function";
 	return params_name;
 }

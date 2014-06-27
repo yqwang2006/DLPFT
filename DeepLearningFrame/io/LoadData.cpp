@@ -48,7 +48,8 @@ bool dlpft::io::LoadData::load_data(arma::mat& data_mat){
 			else if (load_type == arma::csv_ascii)
 				string_type = "CSV data";
 			else 
-				unknow_type = true;
+				string_type = "raw ASCII formatted data";
+				//unknow_type = true;
 		}
 		delete[] raw_header;
 	}else if(file_type_name == "pgm"){
@@ -206,4 +207,45 @@ bool dlpft::io::LoadData::load_data(arma::imat& data_mat){
 	if(transpose)
 		data_mat = trans(data_mat);
 	return success;
+}
+bool dlpft::io::LoadData::load_data_to_mat(arma::mat& data_mat,int rows,int cols){
+	assert(file_name!="");
+	bool unknow_type = false;
+	size_t loc = file_name.rfind(".");
+	if(loc == std::string::npos){
+		std::cout << "Cannot determine type of file " << file_name << std::endl;
+		return false;
+	}
+	data_mat.set_size(rows,cols);
+	double data_i_j = 0;
+	std::ifstream ifs;
+	ifs.open(file_name.c_str());
+	for(int i = 0; i < rows;i++){
+		for(int j = 0;j < cols;j++){
+			ifs >> data_i_j;
+			data_mat(i,j) = data_i_j;
+		}
+	}
+	return true;
+}
+bool dlpft::io::LoadData::load_data_to_mat(arma::imat& data_mat,int rows,int cols){
+	assert(file_name!="");
+	bool unknow_type = false;
+	size_t loc = file_name.rfind(".");
+	if(loc == std::string::npos){
+		std::cout << "Cannot determine type of file " << file_name << std::endl;
+		return false;
+	}
+	data_mat.set_size(rows,cols);
+	std::ifstream ifs;
+	int label;
+	ifs.open(file_name.c_str());
+	for(int i = 0; i < rows;i++){
+		for(int j = 0;j < cols;j++){
+			ifs >> label;
+			data_mat(i,j) = label;
+		}
+	}
+	ifs.close();
+	return true;
 }

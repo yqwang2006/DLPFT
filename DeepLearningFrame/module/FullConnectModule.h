@@ -17,7 +17,7 @@ namespace dlpft{
 				initial_weights_bias();
 			}
 			~FullConnectModule(){}
-			void pretrain(const arma::mat data, const arma::imat labels, NewParam param){}
+			void pretrain(const arma::mat data,NewParam param){}
 			arma::mat forwardpropagate(const arma::mat data,  NewParam param);
 			arma::mat backpropagate(arma::mat next_layer_weight,const arma::mat next_delta, const arma::mat features, NewParam param);
 			void initial_weights_bias();

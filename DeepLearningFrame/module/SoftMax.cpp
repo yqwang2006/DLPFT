@@ -7,7 +7,7 @@ using namespace dlpft::function;
 using namespace dlpft::optimizer;
 using namespace dlpft::factory;
 using namespace dlpft::param;
-void SoftMax::pretrain(const arma::mat data, const arma::imat labels, NewParam param){
+void SoftMax::train(const arma::mat data, const arma::imat labels, NewParam param){
 
 	typedef Creator<CostFunction> FuncFatory;
 	typedef Creator<Optimizer> OptFactory;

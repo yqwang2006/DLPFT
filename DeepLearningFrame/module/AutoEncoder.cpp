@@ -5,7 +5,7 @@ using namespace dlpft::module;
 using namespace dlpft::function;
 using namespace dlpft::optimizer;
 using namespace dlpft::factory;
-void AutoEncoder::pretrain(const arma::mat data, const arma::imat labels, NewParam param){
+void AutoEncoder::pretrain(const arma::mat data, NewParam param){
 	
 	typedef Creator<Optimizer> OptFactory;
 	OptFactory& opt_factory = OptFactory::Instance();
@@ -16,7 +16,7 @@ void AutoEncoder::pretrain(const arma::mat data, const arma::imat labels, NewPar
 	SAECostFunction* costfunc = new SAECostFunction(inputSize,outputSize);
 	arma::mat grad;
 	costfunc->data = data;
-	costfunc->labels = labels;
+	costfunc->labels = zeros<arma::imat>(data.n_cols,1);
 	set_init_coefficient(costfunc->coefficient);
 	
 	Optimizer* testOpt = create_optimizer(param,costfunc);

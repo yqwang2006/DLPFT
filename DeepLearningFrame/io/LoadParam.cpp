@@ -58,7 +58,14 @@ void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllData
 				data_addr.test_labels_addr = values[0].replace(value.find("%"),1,":");
 				continue;
 			}
-			
+			if(varname == params_name[FINETUNEDATA]){
+				data_addr.finetune_data_addr = values[0].replace(value.find("%"),1,":");
+				continue;
+			}
+			if(varname == params_name[FINETUNELABELS]){
+				data_addr.finetune_labels_addr = values[0].replace(value.find("%"),1,":");
+				continue;
+			}
 			ParamVar param_var;
 
 			param_var.mode = (ParamMode)atoi(values[0].c_str());

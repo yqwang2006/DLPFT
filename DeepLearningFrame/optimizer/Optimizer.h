@@ -14,9 +14,14 @@ namespace dlpft{
 			CostFunction *function_ptr;
 			arma::mat opt_var;
 			int max_iteration;
+			bool display;
 		public:
-			Optimizer(void):name(""){}
-			Optimizer(CostFunction* func,int max_iter):name(""),function_ptr(func),max_iteration(max_iter){}
+			Optimizer(void):name(""){
+				display = true;
+			}
+			Optimizer(CostFunction* func,int max_iter):name(""),function_ptr(func),max_iteration(max_iter){
+				display = true;
+			}
 			~Optimizer(){
 				
 				cout << "~Optimizer()" << endl;

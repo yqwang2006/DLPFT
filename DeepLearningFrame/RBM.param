@@ -9,10 +9,10 @@ Learning_rate:1,0.1
 Layer_order:2
 Algorithm:SoftMax
 Max_epoch:1,400,100
-Hid_num:1,10
+Hid_num:1,19
 Optimize_method:1,cg
 Lambda:1,1e-3
-trainData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTrainData_5000.txt,txt
-trainLabels:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTrainLabels_5000.txt,txt
-testData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTestData_1000.txt,txt
+trainData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\traindata.txt,txt
+trainLabels:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\lv_trainlabel.txt,txt
+testData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\lv_testdata.txt,txt
 testLabels:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTestLabels_1000.txt,txt

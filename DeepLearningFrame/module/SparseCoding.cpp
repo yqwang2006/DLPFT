@@ -4,7 +4,7 @@ using namespace dlpft::module;
 using namespace dlpft::param;
 using namespace dlpft::function;
 using namespace dlpft::factory;
-void SparseCoding::pretrain(const arma::mat data, const arma::imat labels, NewParam param){
+void SparseCoding::pretrain(const arma::mat data,NewParam param){
 	
 	typedef Creator<Optimizer> OptFactory;
 	OptFactory& opt_factory = OptFactory::Instance();
@@ -56,6 +56,8 @@ void SparseCoding::pretrain(const arma::mat data, const arma::imat labels, NewPa
 
 	Optimizer *sc_opt = create_optimizer(param,sc_cost_func);
 	
+	sc_opt->display = false;
+
 	arma::mat minibatch = arma::zeros(visible_size,batch_size);
 	rand_data(data,minibatch,samples_num,batch_size);
 	
@@ -86,7 +88,7 @@ void SparseCoding::pretrain(const arma::mat data, const arma::imat labels, NewPa
 			sc_cost_func->coefficient = forwardpropagate(minibatch,param);
 			
 			sc_cost_func->data = minibatch;
-			sc_cost_func->labels = labels.rows(0,batch_size-1);
+			sc_cost_func->labels = zeros<imat>(minibatch.n_cols,1);
 			sc_cost_func->coefficient.reshape(feature_num*batch_size,1);
 
 			

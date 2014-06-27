@@ -38,8 +38,10 @@ double dlpft::optimizer::CgOptimizer::optimize(string varname){
 		if(stop(f,f_old,g,iter)){
 			break;
 		}
-		cout << "iteration " << iter << ": ";
-		cout << "func_value:"<< f << "; step_size = " << step_size << ";" << endl;
+		if(display){
+			cout << "iteration " << iter << ": ";
+			cout << "func_value:"<< f << "; step_size = " << step_size << ";" << endl;
+		}
 		iter ++;
 	}
 	//cout << "after opt:" << function_ptr->get_coefficient()->n_rows<<";"  << function_ptr->get_coefficient()->n_cols << endl;
