@@ -56,7 +56,7 @@ void RBM::pretrain(const arma::mat data,NewParam param){
 			//update W,b,c
 			
 			deltaW = momentum * deltaW + learn_rate *
-				((h_means * minibatches[batch].t() - nh_means * nv_samples.t())/batch_size - weightcost * weightMatrix);
+				((h_means * minibatches[batch].t() - nh_means * nv_means.t())/batch_size - weightcost * weightMatrix);
 			deltac = momentum * deltac + (learn_rate/batch_size) * 
 				(sum(minibatches[batch],1) - sum(nv_means,1));
 			deltab = momentum * deltab + (learn_rate/batch_size) *
@@ -146,6 +146,6 @@ void RBM::initial_weights_bias(){
 }
 void RBM::calculate_grad_using_delta(const arma::mat input_data,const arma::mat delta,NewParam param,arma::mat& Wgrad, arma::mat& bgrad){
 	int lambda = atoi(param.params[params_name[LAMBDA]].c_str());
-	Wgrad = ((double)1/input_data.n_cols)*delta * input_data.t() + lambda * weightMatrix;
+	Wgrad = ((double)1/input_data.n_cols)*delta * input_data.t();// + lambda * weightMatrix;
 	bgrad = sum(delta,1)/input_data.n_cols;
 }

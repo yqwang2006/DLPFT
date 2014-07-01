@@ -18,7 +18,7 @@ void dlpft::optimizer::Optimizer::wolfe_line_search(
 	){
 	double f_new = 0;
 	arma::mat grad_new;
-	
+
 	arma::mat x_new = x+t*search_dir;
 	function_ptr->coefficient = x_new;
 	f_new = function_ptr->value_gradient(grad_new);
@@ -78,7 +78,7 @@ void dlpft::optimizer::Optimizer::wolfe_line_search(
 		f_prev = f_new;
 		grad_prev = grad_new;
 		gtd_prev = gtd_new;
-		
+
 
 		x_new = x + t*search_dir;
 		function_ptr->coefficient = x_new;
@@ -159,7 +159,7 @@ void dlpft::optimizer::Optimizer::wolfe_line_search(
 				bracketGval[HIpos] = bracketGval[LOpos];
 
 
-				
+
 			}
 			bracket[LOpos] = t;
 			bracketFval[LOpos] = f_new;
@@ -184,7 +184,7 @@ void dlpft::optimizer::Optimizer::wolfe_line_search(
 		t = bracket[LOpos];
 		func_value = bracketFval[LOpos];
 		grad = bracketGval[LOpos];
-		
+
 
 }
 double dlpft::optimizer::Optimizer::polyinterp(vector<InterPoint>& points, double& xminBound, double& xmaxBound){
@@ -234,21 +234,9 @@ double dlpft::optimizer::Optimizer::polyinterp(vector<InterPoint>& points, doubl
 		}
 	}
 	//«ÛΩ‚Ax=b
-	//cout << "A:" << endl;
-	//cout << A;
-	//cout << "b:" << endl;
-	//cout << b;
 
-
-	arma::vec params = arma::solve(A,b);
-	//cout << "params:" << endl;
+	arma::vec params = solve(A,b);
 	//cout << params <<endl;
-
-	//cout << "inv_A:" << endl;
-	//cout << arma::inv(A);
-	//cout << "inv_A*b" << endl;
-	//cout << arma::inv(A)*b;
-
 	arma::vec dParams = zeros(order,1);
 	for(int i = 0;i < order;i++){
 		dParams(i) = params(i)*(order-i);
@@ -258,7 +246,7 @@ double dlpft::optimizer::Optimizer::polyinterp(vector<InterPoint>& points, doubl
 	if(is_finite(dParams)){
 		cp.set_size(2+nPoints);
 		cp(0) = xminBound;
-		
+
 		cp(1) = xmaxBound;
 		for(int i = 0;i < nPoints;i++){
 			cp(i+2) = points[i].x.real;
@@ -273,7 +261,7 @@ double dlpft::optimizer::Optimizer::polyinterp(vector<InterPoint>& points, doubl
 		for(int i = 0;i < nPoints;i++){
 			cp(i+2) = points[i].x.real;
 		}
-		
+
 	}
 	double fmin = datum::inf;
 	double minPos = (xminBound + xmaxBound)/2;

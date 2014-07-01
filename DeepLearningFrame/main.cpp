@@ -28,12 +28,7 @@ int main(int argc, char**argv){
 	if(argc < 3){
 		exit(-1);
 	}
-	mat A = randu<mat>(4,7);
-	cube B = randu<cube>(3,4,5);
-	cout << A;
-	A.cols(0,A.n_cols-2) = A.cols(1,A.n_cols-1);
-	A.col(A.n_cols-1) = A.col(0);
-	cout << A;
+
 	string modelInfo = argv[1];
 	string paramFileName = argv[2];
 	string paramFullName = paramFileName + ".param";

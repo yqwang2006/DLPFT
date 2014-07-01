@@ -11,7 +11,7 @@ double dlpft::optimizer::LbfgsOptimizer::optimize(string varname){
 	int iter = 0;
 	double step_size=1;
 	double gtd = 0;
-	arma::mat& x = function_ptr->coefficient;
+	arma::mat x = function_ptr->coefficient;
 	arma::mat old_dirs;
 	arma::mat old_stps;
 	double Hdiag = 1;
@@ -33,6 +33,7 @@ double dlpft::optimizer::LbfgsOptimizer::optimize(string varname){
 		iter ++;
 	}
 	//cout << "after opt:" << function_ptr->get_coefficient()->n_rows<<";"  << function_ptr->get_coefficient()->n_cols << endl;
+	function_ptr->coefficient = x;
 	return f;
 }
 bool dlpft::optimizer::LbfgsOptimizer::stop(const double& f, const double &f_old, const arma::mat& g, const int& iter){

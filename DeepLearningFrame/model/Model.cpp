@@ -100,14 +100,17 @@ void Model::train(arma::mat data, arma::imat labels,vector<NewParam> model_param
 	ModelCost* costfunc = new ModelCost(modules,data,labels,model_param);
 	arma::mat grad;
 
-	Optimizer* testOpt = create_optimizer(model_param[0],costfunc);
+	double learning_rate = atof(model_param[0].params[params_name[LEARNRATE]].c_str());
+	if(batch_size == 0) batch_size = 100;
+	if(learning_rate == 0) learning_rate = 0.1;
+	SgdOptimizer *opt_ptr = new SgdOptimizer(costfunc,max_epoch,learning_rate,batch_size);
 
 	initParams(costfunc->coefficient,model_param);
 
-	testOpt->set_func_ptr(costfunc);
+	opt_ptr->set_func_ptr(costfunc);
 
 
-	testOpt->optimize("SupervisedModel");
+	opt_ptr->optimize("SupervisedModel");
 
 
 	modelParamsToStack(costfunc->coefficient,model_param);
