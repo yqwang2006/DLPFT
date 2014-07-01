@@ -28,9 +28,12 @@ int main(int argc, char**argv){
 	if(argc < 3){
 		exit(-1);
 	}
-
-
-
+	mat A = randu<mat>(4,7);
+	cube B = randu<cube>(3,4,5);
+	cout << A;
+	A.cols(0,A.n_cols-2) = A.cols(1,A.n_cols-1);
+	A.col(A.n_cols-1) = A.col(0);
+	cout << A;
 	string modelInfo = argv[1];
 	string paramFileName = argv[2];
 	string paramFullName = paramFileName + ".param";
@@ -108,13 +111,16 @@ int main(int argc, char**argv){
 		if(finetune_switch){
 			cout << "Begin finetuning!" << endl;
 			unsupervisedModel.train_classifier(finetune_data,finetune_labels,params[0]);
-			//unsupervisedModel.train(finetune_data,finetune_labels,params[0]);
+			unsupervisedModel.train(finetune_data,finetune_labels,params[0]);
 		}
 		if(data_addr.test_data_addr != ""){
 			cout << "Begin predicting!" << endl;
 			pred_labels = unsupervisedModel.predict(test_data,test_labels,params[0]);
+			if(data_addr.test_labels_addr != ""){
+				pred_acc = unsupervisedModel.predict_acc(pred_labels,test_labels);
+			}
 		}
-		pred_acc = unsupervisedModel.predict_acc(pred_labels,test_labels);
+		
 	}
 	else{
 		if(data_addr.train_labels_addr == ""){
@@ -126,8 +132,11 @@ int main(int argc, char**argv){
 		if(data_addr.test_data_addr != ""){
 			cout << "Begin predicting!" << endl;
 			pred_labels = supervisedModel.predict(test_data,test_labels,params[0]);
+			if(data_addr.test_labels_addr != ""){
+				pred_acc = supervisedModel.predict_acc(pred_labels,test_labels);
+			}
 		}
-		pred_acc = supervisedModel.predict_acc(pred_labels,test_labels);
+		
 	}
 	cout << "predict accu: " << pred_acc*100 << "%"<< endl;
 	end = clock();

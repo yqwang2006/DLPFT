@@ -2,6 +2,8 @@
 #include <string>
 #include "armadillo"
 #include <assert.h>
+#include "../util/roots.h"
+#include "../util/InterPoint.h"
 #include "../function/CostFunction.h"
 #include "../function/SAECostFunction.h"
 using namespace std;
@@ -37,6 +39,9 @@ namespace dlpft{
 			int get_max_iteration()const{return max_iteration;}
 			void set_max_iteration(int mi){max_iteration = mi;}
 			virtual double optimize(string varname){return 0;}
+			
+			void wolfe_line_search(arma::mat &x,double& t,const arma::mat& search_dir,double& func_value,arma::mat& grad,double& gtd,double& c1,double& c2,int &maxIter,double &tolX);
+			double polyinterp(vector<InterPoint>&, double&, double&);
 
 		};//class Optimizer
 	};//namespace dlpft

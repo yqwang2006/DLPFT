@@ -121,7 +121,6 @@ arma::imat Model::predict(const arma::mat testdata, const arma::imat testlabels,
 	arma::mat max_vals;
 	arma::imat pred_labels = zeros<arma::imat>(testdata.n_cols,1);
 
-	double pred_accu = 0;
 	for(int i = 0;i < layer_num;i++){
 		features = modules[i]->forwardpropagate(features,params[i]);
 	}

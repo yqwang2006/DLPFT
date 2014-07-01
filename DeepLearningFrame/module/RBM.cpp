@@ -40,8 +40,11 @@ void RBM::pretrain(const arma::mat data,NewParam param){
 
 	for(int epoch = 0; epoch < max_epoch; epoch++){
 		errsum = 0;
+		
 		for(int batch = 0; batch < num_batches; batch++){
-			CD_k(1,minibatches[batch],weightMatrix,bias,c_bias);
+			
+			
+			CD_k(1,minibatches[batch],c_bias);
 			
 			
 			if(batch < 5)
@@ -53,7 +56,7 @@ void RBM::pretrain(const arma::mat data,NewParam param){
 			//update W,b,c
 			
 			deltaW = momentum * deltaW + learn_rate *
-				((h_means * minibatches[batch].t() - nh_means * nv_means.t())/batch_size - weightcost * weightMatrix);
+				((h_means * minibatches[batch].t() - nh_means * nv_samples.t())/batch_size - weightcost * weightMatrix);
 			deltac = momentum * deltac + (learn_rate/batch_size) * 
 				(sum(minibatches[batch],1) - sum(nv_means,1));
 			deltab = momentum * deltab + (learn_rate/batch_size) *
@@ -98,41 +101,41 @@ arma::mat RBM::BiNomial(const arma::mat mean){
 	}
 	return result;
 }
-void RBM::sample_h_given_v(arma::mat& v0_sample, arma::mat& mean, arma::mat& sample,arma::mat& weightMat, arma::mat& h_bias){
-	mean = propup(v0_sample,weightMat,h_bias);
+void RBM::sample_h_given_v(arma::mat& v0_sample, arma::mat& mean, arma::mat& sample){
+	mean = propup(v0_sample);
 	sample = BiNomial(mean);
 }
-void RBM::sample_v_given_h(arma::mat& h0_sample, arma::mat& mean, arma::mat& sample,arma::mat& weightMat, arma::mat& v_bias){
-	mean = propdown(h0_sample,weightMat,v_bias);
+void RBM::sample_v_given_h(arma::mat& h0_sample, arma::mat& mean, arma::mat& sample, arma::mat& v_bias){
+	mean = propdown(h0_sample,v_bias);
 	sample = BiNomial(mean);
 }
-arma::mat RBM::propup(arma::mat& v,arma::mat& weightMat, arma::mat& h_bias){
-	assert(weightMat.n_cols == v.n_rows);
-	arma::mat negh = weightMat * v + arma::repmat(h_bias,1,v.n_cols);
+arma::mat RBM::propup(arma::mat& v){
+	assert(weightMatrix.n_cols == v.n_rows);
+	arma::mat negh = weightMatrix * v + arma::repmat(bias,1,v.n_cols);
 	negh = active_function(activeFuncChoice,negh);
 
 	return negh;
 }
-arma::mat RBM::propdown(arma::mat& h,arma::mat& weightMat,arma::mat& v_bias){
-	assert(h.n_rows == weightMat.n_rows);
-	arma::mat negdata = weightMat.t() * h + arma::repmat(v_bias,1,h.n_cols);
+arma::mat RBM::propdown(arma::mat& h,arma::mat& v_bias){
+	assert(h.n_rows == weightMatrix.n_rows);
+	arma::mat negdata = weightMatrix.t() * h + arma::repmat(v_bias,1,h.n_cols);
 	negdata = active_function(activeFuncChoice,negdata);
 	return negdata;
 }
-void  RBM::gibbs_hvh(arma::mat& weightMat, arma::mat& h_bias, arma::mat& v_bias,arma::mat& h0_sample){
-	sample_v_given_h(h0_sample, nv_means, nv_samples,weightMat, v_bias);
-	sample_h_given_v(nv_means, nh_means, nh_samples,weightMat,h_bias);
+void  RBM::gibbs_hvh( arma::mat& v_bias,arma::mat& h0_sample){
+	sample_v_given_h(h0_sample, nv_means, nv_samples, v_bias);
+	sample_h_given_v(nv_samples, nh_means, nh_samples);
 }
 double RBM::get_reconstruct_error(arma::mat& v){
 	return 0;
 }
-void  RBM::CD_k(int k,arma::mat& v, arma::mat& weightMat, arma::mat& h_bias, arma::mat& v_bias){
-	sample_h_given_v(v, h_means, h_samples,weightMat,h_bias);
+void  RBM::CD_k(int k,arma::mat& v, arma::mat& v_bias){
+	sample_h_given_v(v, h_means, h_samples);
 	for(int step = 0;step < k; step++){
 		if(step == 0){
-			gibbs_hvh(weightMat,h_bias,v_bias,h_samples);
+			gibbs_hvh(v_bias,h_samples);
 		}else{
-			gibbs_hvh(weightMat,h_bias,v_bias,nh_samples);
+			gibbs_hvh(v_bias,nh_samples);
 		}
 	}
 }
@@ -143,6 +146,6 @@ void RBM::initial_weights_bias(){
 }
 void RBM::calculate_grad_using_delta(const arma::mat input_data,const arma::mat delta,NewParam param,arma::mat& Wgrad, arma::mat& bgrad){
 	int lambda = atoi(param.params[params_name[LAMBDA]].c_str());
-	Wgrad = ((double)1/input_data.n_cols)*delta * input_data.t();// + lambda * weightMatrix;
+	Wgrad = ((double)1/input_data.n_cols)*delta * input_data.t() + lambda * weightMatrix;
 	bgrad = sum(delta,1)/input_data.n_cols;
 }

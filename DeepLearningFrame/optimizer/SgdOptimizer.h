@@ -12,6 +12,7 @@ namespace dlpft{
 		public:
 			SgdOptimizer(void){ 
 				name = "sgd";
+				display = true;
 				max_iteration = 10;
 				tolerance = 1e-9;
 				batch_size = 100;
@@ -29,6 +30,7 @@ namespace dlpft{
 							:Optimizer(func,max_iter){
 				name = "sgd";
 				function_ptr = func;
+				display = true;
 				tolerance = tol;
 				batch_size = batch_s;
 				momentum = mom;
