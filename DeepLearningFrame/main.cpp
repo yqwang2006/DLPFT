@@ -25,10 +25,22 @@ void load_data(string ,arma::imat&,int, int);
 
 int main(int argc, char**argv){
 
+
+
+	//mat A = randn(10000,4000);
+	//mat B = randn(4000,10000);
+	//mat C = zeros(10000,10000);
+
+	//clock_t start = clock();
+	//C = A*B;
+	//clock_t end = clock();
+	//double t = (double)(end-start)/CLOCKS_PER_SEC;
+	//cout << "consumed " << t << "s" << endl;
+
+
 	if(argc < 3){
 		exit(-1);
 	}
-
 	string modelInfo = argv[1];
 	string paramFileName = argv[2];
 	string paramFullName = paramFileName + ".param";

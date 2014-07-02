@@ -10,11 +10,13 @@ void Model::pretrain(const arma::mat data, vector<NewParam> params){
 	if((params[number_layer-1].params[params_name[ALGORITHM]] == "SoftMax")){
 		for(int i = 0;i < number_layer-1;i++){
 			modules[i]->pretrain(features,params[i]);
-			features = modules[i]->forwardpropagate(features,params[i]);
+			if(i < number_layer-2)
+				features = modules[i]->forwardpropagate(features,params[i]);
 		}
 	}else{
 		for(int i = 0;i < number_layer;i++){
 			modules[i]->pretrain(features,params[i]);
+			if(i < number_layer-1)
 			features = modules[i]->forwardpropagate(features,params[i]);
 		}
 	}
@@ -195,6 +197,12 @@ void Model::modelParamsToStack(arma::mat theta,vector<NewParam> params){
 		if(params[i].params[params_name[ALGORITHM]] == "ConvolveModule"){
 			int number_filters = ((ConvolveModule*) modules[i])->filterNum;
 			int filter_dim = ((ConvolveModule*) modules[i])->filterDim;
+			rows_num = filter_dim*number_filters;
+			cols_num = filter_dim;
+
+		}else if(params[i].params[params_name[ALGORITHM]] == "CRBM"){
+			int number_filters = ((ConvolutionRBM*) modules[i])->filterNum;
+			int filter_dim = ((ConvolutionRBM*) modules[i])->filterDim;
 			rows_num = filter_dim*number_filters;
 			cols_num = filter_dim;
 

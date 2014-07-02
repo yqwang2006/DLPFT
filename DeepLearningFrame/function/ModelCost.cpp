@@ -23,7 +23,6 @@ double ModelCost::value_gradient(arma::mat& grad){
 	//forward Propagation
 	int start_b_loc = 0;
 	
-
 	for(int i = 0;i < layer_num;i ++){
 
 		if(i == 0){
@@ -116,9 +115,15 @@ void ModelCost::paramsToStack(){
 	for(int i = 0;i < layer_num; i++){
 		int hiddenSize = 0;
 		int rows_num = 0,cols_num = 0;
-		if(params[i].params[params_name[ALGORITHM]] == "ConvolveModule"){
+		if(params[i].params[params_name[ALGORITHM]] == "ConvolveModule" ){
 			int number_filters = ((ConvolveModule*) modules[i])->filterNum;
 			int filter_dim = ((ConvolveModule*) modules[i])->filterDim;
+			rows_num = filter_dim*number_filters;
+			cols_num = filter_dim;
+
+		}else if(params[i].params[params_name[ALGORITHM]] == "CRBM" ){
+			int number_filters = ((ConvolutionRBM*) modules[i])->filterNum;
+			int filter_dim = ((ConvolutionRBM*) modules[i])->filterDim;
 			rows_num = filter_dim*number_filters;
 			cols_num = filter_dim;
 
