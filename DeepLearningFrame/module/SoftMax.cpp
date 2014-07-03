@@ -66,6 +66,6 @@ void SoftMax::set_init_coefficient(arma::mat& coefficient){
 }
 void SoftMax::calculate_grad_using_delta(const arma::mat input_data,const arma::mat delta,NewParam param, arma::mat& Wgrad, arma::mat& bgrad){
 	int lambda = atoi(param.params[params_name[LAMBDA]].c_str());
-	Wgrad = ((double)1/input_data.n_cols)*delta * input_data.t() + 3e-3 * weightMatrix;
+	Wgrad = ((double)1/input_data.n_cols)*delta * input_data.t();// + 3e-3 * weightMatrix;
 	bgrad = sum(delta,1)/input_data.n_cols;
 }

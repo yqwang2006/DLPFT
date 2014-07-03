@@ -32,16 +32,21 @@ double ModelCost::value_gradient(arma::mat& grad){
 			activations[i] = modules[i]->forwardpropagate(activations[i-1],params[i]);
 		}
 
-		cost += (lambda/2)*arma::sum(arma::sum(arma::pow(modules[i]->weightMatrix,2)));
+		/*ofstream ofs;
+		ofs.open("weightMat.txt");
+		modules[i]->weightMatrix.quiet_save(ofs,raw_ascii);
+		ofs.close();*/
+
+		//cost += (lambda/2)*arma::sum(arma::sum(arma::pow(modules[i]->weightMatrix,2)));
 		start_b_loc += modules[i]->weightMatrix.size();
 	}
 
 	arma::mat desired_out = onehot(activations[layer_num-1].n_rows,activations[layer_num-1].n_cols,labels);
-	arma::mat gm = reshape(desired_out,desired_out.size(),1).t()*log(reshape(activations[layer_num-1],activations[layer_num-1].size(),1));
+	//arma::mat gm = reshape(desired_out,desired_out.size(),1).t()*log(reshape(activations[layer_num-1],activations[layer_num-1].size(),1));
 
-	
+	double gm_cost = dot(reshape(desired_out,desired_out.size(),1),log(reshape(activations[layer_num-1],activations[layer_num-1].size(),1)));
 
-	cost += ((double)-1/num_images)*gm(0);
+	cost += ((double)-1/num_images)*gm_cost;
 
 	//backward propagation to compute delta
 
