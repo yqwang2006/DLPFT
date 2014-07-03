@@ -43,9 +43,9 @@ double dlpft::function::SAECostFunction::value_gradient(arma::mat& grad){
 	
 	arma::vec rho = sum(a2,1)/m;
 	
-	Jsparse = sum(sparsityParam * log(sparsityParam/rho)+(1-sparsityParam) * log((1-sparsityParam)/(1-rho)));
+	Jsparse = sum(kl_rho * log(kl_rho/rho)+(1-kl_rho) * log((1-kl_rho)/(1-rho)));
 	
-	cost = Jcost+lambda*Jweight+beta*Jsparse;
+	cost = Jcost+weight_decay*Jweight+sparsity*Jsparse;
 	
 /*
 	end = clock();
@@ -59,7 +59,7 @@ double dlpft::function::SAECostFunction::value_gradient(arma::mat& grad){
 	arma::vec b1grad(zeros(b1.size()));
 	arma::vec b2grad(zeros(b2.size()));
 	arma::mat d3 = -(data - a3) % active_function_dev(activeFuncChoice,a3);
-	arma::mat sterm = beta * (-sparsityParam/rho + (1-sparsityParam)/(1-rho));
+	arma::mat sterm = sparsity * (-kl_rho/rho + (1-kl_rho)/(1-rho));
 	arma::mat d2 = (W2.t()*d3 + repmat(sterm,1,m)) % active_function_dev(activeFuncChoice,a2);
 	/*
 	end = clock();
@@ -70,12 +70,12 @@ double dlpft::function::SAECostFunction::value_gradient(arma::mat& grad){
 	
 
 	W1grad = W1grad + d2 * data.t();
-	W1grad = W1grad/m + lambda * W1;
+	W1grad = W1grad/m + weight_decay * W1;
 
 	
 
 	W2grad = W2grad + d3*a2.t();
-	W2grad = W2grad/m + lambda*W2;
+	W2grad = W2grad/m + weight_decay*W2;
 
 	b1grad = b1grad + sum(d2,1);
 	b1grad =  b1grad / m;

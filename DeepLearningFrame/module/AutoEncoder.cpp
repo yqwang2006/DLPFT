@@ -4,16 +4,16 @@ using namespace dlpft::param;
 using namespace dlpft::module;
 using namespace dlpft::function;
 using namespace dlpft::optimizer;
-using namespace dlpft::factory;
 void AutoEncoder::pretrain(const arma::mat data, NewParam param){
 	
-	typedef Creator<Optimizer> OptFactory;
-	OptFactory& opt_factory = OptFactory::Instance();
 
 	int h_v_size = inputSize * outputSize;
 	int sample_num = data.n_cols;
+	double sparsity_coeff = atof(param.params[params_name[SPARSITY]].c_str());
+	double weight_decay_rate = atof(param.params[params_name[WEIGHTDECAY]].c_str());
+	double KL_Rho_dist = atof(param.params[params_name[KLRHO]].c_str());
 
-	SAECostFunction* costfunc = new SAECostFunction(inputSize,outputSize);
+	SAECostFunction* costfunc = new SAECostFunction(inputSize,outputSize,sparsity_coeff,weight_decay_rate,KL_Rho_dist);
 	arma::mat grad;
 	costfunc->data = data;
 	costfunc->labels = zeros<arma::imat>(data.n_cols,1);
@@ -23,7 +23,6 @@ void AutoEncoder::pretrain(const arma::mat data, NewParam param){
 	testOpt->set_func_ptr(costfunc);
 	testOpt->optimize("theta"); 
 
-	//cout << "after opt:" << costfunc->get_coefficient()->n_rows<<";" << costfunc->get_coefficient()->n_cols << endl;
 	
 	
 	weightMatrix = reshape((costfunc->coefficient).rows(0,h_v_size-1),outputSize,inputSize);
@@ -61,7 +60,7 @@ void AutoEncoder::set_init_coefficient(arma::mat& coefficient){
 	coefficient.rows(2*h_v_size+outputSize,coefficient.size()-1) = backwardBias;
 }
 void AutoEncoder::calculate_grad_using_delta(const arma::mat input_data,const arma::mat delta,NewParam param, arma::mat& Wgrad, arma::mat& bgrad){
-	int lambda = atoi(param.params[params_name[LAMBDA]].c_str());
+	int lambda = atoi(param.params[params_name[WEIGHTDECAY]].c_str());
 	Wgrad = ((double)1/input_data.n_cols)*delta * input_data.t() + lambda * weightMatrix;
 	bgrad = sum(delta,1)/input_data.n_cols;
 }

@@ -87,10 +87,8 @@ void Model::train(arma::mat data, arma::imat labels,vector<NewParam> model_param
 	int max_epoch = atoi(model_param[0].params[params_name[MAXEPOCH]].c_str());
 	int sample_num = data.n_cols;
 	int batch_size = atoi(model_param[0].params[params_name[BATCHSIZE]].c_str());
-	if (max_epoch == 0)
-		max_epoch = 100;
-	if(batch_size == 0)
-		batch_size = 100;
+	double weight_dec = atof(model_param[0].params[params_name[WEIGHTDECAY]].c_str());
+	
 	arma::mat features = data;
 	double error = 0;
 
@@ -99,12 +97,11 @@ void Model::train(arma::mat data, arma::imat labels,vector<NewParam> model_param
 	arma::mat *minibatches = new arma::mat[batch_num];
 
 
-	ModelCost* costfunc = new ModelCost(modules,data,labels,model_param);
+	ModelCost* costfunc = new ModelCost(modules,data,labels,model_param,weight_dec);
 	arma::mat grad;
 
 	double learning_rate = atof(model_param[0].params[params_name[LEARNRATE]].c_str());
-	if(batch_size == 0) batch_size = 100;
-	if(learning_rate == 0) learning_rate = 0.1;
+
 	SgdOptimizer *opt_ptr = new SgdOptimizer(costfunc,max_epoch,learning_rate,batch_size);
 
 	initParams(costfunc->coefficient,model_param);

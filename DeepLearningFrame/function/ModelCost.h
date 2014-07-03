@@ -14,7 +14,7 @@ namespace dlpft{
 			vector<NewParam> params;
 			Module** modules;
 			int layer_num;
-			
+			double weight_decay;
 		public:
 			ModelCost(void):CostFunction(){
 				function_name = "Model cost function";
@@ -22,7 +22,7 @@ namespace dlpft{
 			}
 
 
-			ModelCost(Module** m,arma::mat d , arma::imat l,vector<NewParam> np,
+			ModelCost(Module** m,arma::mat d , arma::imat l,vector<NewParam> np,const double weight_dec = 3e-3,
 				const string func_name = "Model cost function")
 			{
 					labels = l;
@@ -30,6 +30,8 @@ namespace dlpft{
 					modules = m;
 					layer_num = np.size();
 					params = np;
+					weight_decay = weight_dec;
+					if(weight_decay == 0) weight_decay = 3e-3;
 					initialParam();
 					function_name = func_name;
 			}

@@ -1,6 +1,6 @@
 #include "LoadParam.h"
 #include "../util/params_name.h"
-void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllDataAddr& data_addr){
+void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllDataAddr& data_info){
 	
 	//fill_param_map();
 	ifstream infile;
@@ -43,27 +43,39 @@ void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllData
 			vector<string> values = split(value,",");
 			if(varname == params_name[TRAINDATA]){
 				
-				data_addr.train_data_addr = values[0].replace(value.find("%"),1,":");
+				data_info.train_data_info.name = values[0].replace(value.find("%"),1,":");
+				data_info.train_data_info.rows = atoi(values[2].c_str());
+				data_info.train_data_info.cols = atoi(values[3].c_str());
 				continue;
 			}
 			if(varname == params_name[TRAINLABELS]){
-				data_addr.train_labels_addr = values[0].replace(value.find("%"),1,":");
+				data_info.train_labels_info.name = values[0].replace(value.find("%"),1,":");
+				data_info.train_labels_info.rows = atoi(values[2].c_str());
+				data_info.train_labels_info.cols = atoi(values[3].c_str());
 				continue;
 			}
 			if(varname == params_name[TESTDATA]){
-				data_addr.test_data_addr = values[0].replace(value.find("%"),1,":");
+				data_info.test_data_info.name = values[0].replace(value.find("%"),1,":");
+				data_info.test_data_info.rows = atoi(values[2].c_str());
+				data_info.test_data_info.cols = atoi(values[3].c_str());
 				continue;
 			}
 			if(varname == params_name[TESTLABELS]){
-				data_addr.test_labels_addr = values[0].replace(value.find("%"),1,":");
+				data_info.test_labels_info.name = values[0].replace(value.find("%"),1,":");
+				data_info.test_labels_info.rows = atoi(values[2].c_str());
+				data_info.test_labels_info.cols = atoi(values[3].c_str());
 				continue;
 			}
 			if(varname == params_name[FINETUNEDATA]){
-				data_addr.finetune_data_addr = values[0].replace(value.find("%"),1,":");
+				data_info.finetune_data_info.name = values[0].replace(value.find("%"),1,":");
+				data_info.finetune_data_info.rows = atoi(values[2].c_str());
+				data_info.finetune_data_info.cols = atoi(values[3].c_str());
 				continue;
 			}
 			if(varname == params_name[FINETUNELABELS]){
-				data_addr.finetune_labels_addr = values[0].replace(value.find("%"),1,":");
+				data_info.finetune_labels_info.name = values[0].replace(value.find("%"),1,":");
+				data_info.finetune_labels_info.rows = atoi(values[2].c_str());
+				data_info.finetune_labels_info.cols = atoi(values[3].c_str());
 				continue;
 			}
 			ParamVar param_var;

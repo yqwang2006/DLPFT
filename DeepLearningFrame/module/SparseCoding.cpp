@@ -16,8 +16,8 @@ void SparseCoding::pretrain(const arma::mat data,NewParam param){
 	int batch_size = atoi(param.params[params_name[BATCHSIZE]].c_str());
 	int visible_size = data.n_rows;
 	int samples_num = data.n_cols;
-	double lambda = atof(param.params[params_name[SPARSITY]].c_str());
-	double gamma = atof(param.params[params_name[GAMMA]].c_str());
+	double sparsity = atof(param.params[params_name[SPARSITY]].c_str());
+	double weightdecay = atof(param.params[params_name[WEIGHTDECAY]].c_str());
 	double epsilon = atof(param.params[params_name[EPSILON]].c_str());
 
 
@@ -47,7 +47,7 @@ void SparseCoding::pretrain(const arma::mat data,NewParam param){
 		group_mat = arma::eye(feature_num,feature_num);
 	}
 
-	SCFeatureCost* sc_cost_func = new SCFeatureCost(visible_size,feature_num,group_mat);
+	SCFeatureCost* sc_cost_func = new SCFeatureCost(visible_size,feature_num,group_mat,sparsity,weightdecay,epsilon);
 	
 	sc_cost_func->weightMatrix = weightMatrix;
 	set_init_coefficient(sc_cost_func->coefficient,feature_num,batch_size);
@@ -76,8 +76,8 @@ void SparseCoding::pretrain(const arma::mat data,NewParam param){
 			double fResidue = error;
 			arma::mat R = group_mat * arma::pow(sc_cost_func->coefficient,2);
 			R = arma::sqrt(R+epsilon);
-			double Jsparsity = lambda*arma::sum(arma::sum(R));
-			double Jweight = gamma * arma::sum(arma::sum(arma::pow(sc_cost_func->weightMatrix,2)));
+			double Jsparsity = sparsity*arma::sum(arma::sum(R));
+			double Jweight = weightdecay * arma::sum(arma::sum(arma::pow(sc_cost_func->weightMatrix,2)));
 
 			cout << iter << "	" << batch << "	" << fResidue+Jsparsity+Jweight << "	" << fResidue
 				<< "	"<< Jsparsity << "	" << Jweight << endl;
@@ -102,7 +102,7 @@ void SparseCoding::pretrain(const arma::mat data,NewParam param){
 			sc_cost_func->coefficient.reshape(feature_num,batch_size);
 
 			sc_cost_func->weightMatrix = ((minibatch*sc_cost_func->coefficient.t())
-				*arma::inv((gamma*batch_size*eye(feature_num,feature_num)+sc_cost_func->coefficient*sc_cost_func->coefficient.t()) )).t();
+				*arma::inv((weightdecay*batch_size*eye(feature_num,feature_num)+sc_cost_func->coefficient*sc_cost_func->coefficient.t()) )).t();
 
 
 		}
@@ -194,7 +194,7 @@ void SparseCoding::set_init_coefficient(arma::mat& coefficient,int rows, int col
 	coefficient = arma::randu<arma::mat> (rows,cols);
 }
 void SparseCoding::calculate_grad_using_delta(const arma::mat input_data,const arma::mat delta,NewParam param, arma::mat& Wgrad, arma::mat& bgrad){
-	int lambda = atoi(param.params[params_name[LAMBDA]].c_str());
+	int lambda = atoi(param.params[params_name[WEIGHTDECAY]].c_str());
 	Wgrad = ((double)1/input_data.n_cols)*delta * input_data.t() + lambda * weightMatrix;
 	bgrad = sum(delta,1)/input_data.n_cols;
 }

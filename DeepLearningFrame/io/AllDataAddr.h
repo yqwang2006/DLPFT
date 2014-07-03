@@ -1,17 +1,16 @@
 #ifndef ALLDATAADDR_H
 #define ALLDATAADDR_H
-#include <string>
-using namespace std;
+#include "DataInfo.h"
 namespace dlpft{
 	namespace io{
 		class AllDataAddr{
 		public:
-			string train_data_addr;
-			string train_labels_addr;
-			string test_data_addr;
-			string test_labels_addr;
-			string finetune_data_addr;
-			string finetune_labels_addr;
+			DataInfo train_data_info;
+			DataInfo train_labels_info;
+			DataInfo test_data_info;
+			DataInfo test_labels_info;
+			DataInfo finetune_data_info;
+			DataInfo finetune_labels_info;
 			AllDataAddr(){}
 			~AllDataAddr(){}
 		};

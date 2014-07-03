@@ -10,9 +10,9 @@ namespace dlpft{
 		private:
 			int visiableSize;
 			int hiddenSize;
-			double lambda;
-			double sparsityParam;
-			double beta;
+			double weight_decay;
+			double kl_rho;
+			double sparsity;
 			
 		public:
 			SAECostFunction(void):CostFunction(){
@@ -21,9 +21,9 @@ namespace dlpft{
 			}
 
 
-			SAECostFunction(int v, int h, const double lambda=3e-3,
-				const double sparsityParam=0.05,const double beta = 3e-3,const string func_name = "sparse autoencoder function")
-				:visiableSize(v),hiddenSize(h),lambda(lambda),sparsityParam(sparsityParam),beta(beta){
+			SAECostFunction(int v, int h,const double sparsity = 3e-3, const double weight_decay=3e-3,
+				const double kl_rho_dist=0.05,const string func_name = "sparse autoencoder function")
+				:visiableSize(v),hiddenSize(h),weight_decay(weight_decay),kl_rho(kl_rho_dist),sparsity(sparsity){
 					function_name = func_name;
 			}
 			~SAECostFunction(void){
@@ -37,12 +37,12 @@ namespace dlpft{
 			void set_visiableSize(int v){visiableSize = v;}
 			int get_hiddenSize() const{return hiddenSize;}
 			void set_hiddenSize(int h) { hiddenSize = h;}
-			double get_lambda() const {return lambda;}
-			void set_lambda(double l) {lambda = l;}
-			double get_beta() const{return beta;}
-			void set_beta(double b){ beta = b;}
-			double get_sparsityParam() const{return sparsityParam;}
-			void set_sparsityParam(double s){ sparsityParam = s;}
+			double get_weight_decay() const {return weight_decay;}
+			void set_weight_decay(double l) {weight_decay = l;}
+			double get_sparsity() const{return sparsity;}
+			void set_sparsity(double b){ sparsity = b;}
+			double get_kl_rho() const{return kl_rho;}
+			void set_kl_rho(double s){ kl_rho = s;}
 
 
 			double value_gradient(arma::mat& grad);

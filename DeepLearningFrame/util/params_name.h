@@ -5,8 +5,8 @@ using namespace std;
 static enum PARAMSNAME { 
 	LAYERNUM,LAYERORDER,ALGORITHM,OPTIMETHOD,
 	HIDNUM,MAXEPOCH,BATCHSIZE,LEARNRATE,
-	POOLINGTYPE,POOLINGDIM,SPARSITY,GAMMA,EPSILON,
-	LAMBDA,CLASSESNUM,
+	SPARSITY,WEIGHTDECAY,KLRHO,
+	POOLINGTYPE,POOLINGDIM,EPSILON,
 	FILTERNUM,FILTERDIM,
 	TRAINDATA,TRAINLABELS,TESTDATA,TESTLABELS,FINETUNEDATA,FINETUNELABELS,ACTIVEFUNCTION
 };
@@ -24,10 +24,9 @@ static map<PARAMSNAME,string> fill_param_map(){
 	params_name[POOLINGTYPE] = "Pooling_type";
 	params_name[POOLINGDIM] = "Pooling_dim";
 	params_name[SPARSITY] = "Sparsity";
-	params_name[GAMMA] = "SC_gamma";
+	params_name[WEIGHTDECAY] = "Weight_decay";
 	params_name[EPSILON] = "Epsilon";
-	params_name[LAMBDA] = "Lambda";
-	params_name[CLASSESNUM] = "Num_classes";
+	params_name[KLRHO] = "KL_rho";
 	params_name[TRAINDATA] = "trainData";
 	params_name[TRAINLABELS] = "trainLabels";
 	params_name[TESTDATA] = "testData";

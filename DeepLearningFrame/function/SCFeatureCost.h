@@ -23,7 +23,14 @@ namespace dlpft{
 
 			SCFeatureCost():CostFunction(){}
 			SCFeatureCost(int v, int h, arma::mat gm, double lam = 5e-5, const double gam = 1e-2, const double eps = 1e-5,const bool topo = false)
-				:visible_size(v),hidden_size(h),group_matrix(gm),lambda(lam),gamma(gam),epsilon(eps),is_topo(topo){}
+				:visible_size(v),hidden_size(h),group_matrix(gm),lambda(lam),gamma(gam),epsilon(eps),is_topo(topo){
+				if(lambda == 0)
+					lambda = 5e-5;
+				if(gamma == 0)
+					gamma = 1e-2;
+				if(epsilon == 0)
+					epsilon = 1e-5;
+			}
 
 			~SCFeatureCost(){}
 

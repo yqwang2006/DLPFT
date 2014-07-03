@@ -10,7 +10,7 @@ namespace dlpft{
 			int visiableSize;
 			int hiddenSize;
 			double lambda;
-			double sparsityParam;
+			double kl_rho;
 			double beta;
 		public:
 			ScWeightFunction(void){
@@ -19,8 +19,8 @@ namespace dlpft{
 			}
 
 			ScWeightFunction(arma::mat theta,int v, int h, const double lambda=0.001,
-				const double sparsityParam=0.001,const double beta = 0.001,const string func_name = "sparse coding weight function")
-				:theta(theta),visiableSize(v),hiddenSize(h),lambda(lambda),sparsityParam(sparsityParam),beta(beta){
+				const double kl_rho=0.001,const double beta = 0.001,const string func_name = "sparse coding weight function")
+				:theta(theta),visiableSize(v),hiddenSize(h),lambda(lambda),kl_rho(kl_rho),beta(beta){
 					function_name = func_name;
 					
 			}
