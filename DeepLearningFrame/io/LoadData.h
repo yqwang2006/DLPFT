@@ -16,6 +16,8 @@ namespace dlpft{
 			bool load_data(arma::imat& data_mat);
 			bool load_data_to_mat(arma::mat& data_mat,int rows,int cols);
 			bool load_data_to_mat(arma::imat& data_mat,int rows,int cols);
+			void getdatainfo(std::string file_name,int& rows,int& cols);
+			std::vector<std::string> split(std::string str,std::string pattern);
 		};
 	};
 };

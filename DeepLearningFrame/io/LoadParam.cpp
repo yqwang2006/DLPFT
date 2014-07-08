@@ -44,38 +44,70 @@ void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllData
 			if(varname == params_name[TRAINDATA]){
 				
 				data_info.train_data_info.name = values[0].replace(value.find("%"),1,":");
-				data_info.train_data_info.rows = atoi(values[2].c_str());
-				data_info.train_data_info.cols = atoi(values[3].c_str());
+				if(values.size() == 4){
+					data_info.train_data_info.rows = atoi(values[2].c_str());
+					data_info.train_data_info.cols = atoi(values[3].c_str());
+				}else{
+					data_info.train_data_info.rows = 0;
+					data_info.train_data_info.cols = 0;
+				}
 				continue;
+
 			}
 			if(varname == params_name[TRAINLABELS]){
 				data_info.train_labels_info.name = values[0].replace(value.find("%"),1,":");
-				data_info.train_labels_info.rows = atoi(values[2].c_str());
-				data_info.train_labels_info.cols = atoi(values[3].c_str());
+
+				if(values.size() == 4){
+					data_info.train_labels_info.rows = atoi(values[2].c_str());
+					data_info.train_labels_info.cols = atoi(values[3].c_str());
+				}else{
+					data_info.train_data_info.rows = 0;
+					data_info.train_data_info.cols = 0;
+				}
 				continue;
 			}
 			if(varname == params_name[TESTDATA]){
 				data_info.test_data_info.name = values[0].replace(value.find("%"),1,":");
-				data_info.test_data_info.rows = atoi(values[2].c_str());
-				data_info.test_data_info.cols = atoi(values[3].c_str());
+				if(values.size() == 4){
+					data_info.test_data_info.rows = atoi(values[2].c_str());
+					data_info.test_data_info.cols = atoi(values[3].c_str());
+				}else{
+					data_info.train_data_info.rows = 0;
+					data_info.train_data_info.cols = 0;
+				}
 				continue;
 			}
 			if(varname == params_name[TESTLABELS]){
 				data_info.test_labels_info.name = values[0].replace(value.find("%"),1,":");
-				data_info.test_labels_info.rows = atoi(values[2].c_str());
-				data_info.test_labels_info.cols = atoi(values[3].c_str());
+				if(values.size() == 4){
+					data_info.test_labels_info.rows = atoi(values[2].c_str());
+					data_info.test_labels_info.cols = atoi(values[3].c_str());
+				}else{
+					data_info.train_data_info.rows = 0;
+					data_info.train_data_info.cols = 0;
+				}
 				continue;
 			}
 			if(varname == params_name[FINETUNEDATA]){
 				data_info.finetune_data_info.name = values[0].replace(value.find("%"),1,":");
-				data_info.finetune_data_info.rows = atoi(values[2].c_str());
-				data_info.finetune_data_info.cols = atoi(values[3].c_str());
+				if(values.size() == 4){
+					data_info.finetune_data_info.rows = atoi(values[2].c_str());
+					data_info.finetune_data_info.cols = atoi(values[3].c_str());
+				}else{
+					data_info.train_data_info.rows = 0;
+					data_info.train_data_info.cols = 0;
+				}
 				continue;
 			}
 			if(varname == params_name[FINETUNELABELS]){
 				data_info.finetune_labels_info.name = values[0].replace(value.find("%"),1,":");
-				data_info.finetune_labels_info.rows = atoi(values[2].c_str());
-				data_info.finetune_labels_info.cols = atoi(values[3].c_str());
+				if(values.size() == 4){
+					data_info.finetune_labels_info.rows = atoi(values[2].c_str());
+					data_info.finetune_labels_info.cols = atoi(values[3].c_str());
+				}else{
+					data_info.train_data_info.rows = 0;
+					data_info.train_data_info.cols = 0;
+				}
 				continue;
 			}
 			ParamVar param_var;

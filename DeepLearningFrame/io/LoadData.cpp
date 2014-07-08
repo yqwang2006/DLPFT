@@ -210,11 +210,17 @@ bool dlpft::io::LoadData::load_data(arma::imat& data_mat){
 }
 bool dlpft::io::LoadData::load_data_to_mat(arma::mat& data_mat,int rows,int cols){
 	assert(file_name!="");
-	bool unknow_type = false;
 	size_t loc = file_name.rfind(".");
 	if(loc == std::string::npos){
 		std::cout << "Cannot determine type of file " << file_name << std::endl;
 		return false;
+	}
+	if(rows == 0 || cols == 0){
+		bool load_success = false;//load_data(data_mat);
+		if(load_success) return true;
+		else{
+			getdatainfo(file_name,rows,cols);
+		}
 	}
 	data_mat.set_size(rows,cols);
 	double data_i_j = 0;
@@ -230,12 +236,19 @@ bool dlpft::io::LoadData::load_data_to_mat(arma::mat& data_mat,int rows,int cols
 }
 bool dlpft::io::LoadData::load_data_to_mat(arma::imat& data_mat,int rows,int cols){
 	assert(file_name!="");
-	bool unknow_type = false;
 	size_t loc = file_name.rfind(".");
 	if(loc == std::string::npos){
 		std::cout << "Cannot determine type of file " << file_name << std::endl;
 		return false;
 	}
+	if(rows == 0 || cols == 0){
+		bool load_success = false;//load_data(data_mat);
+		if(load_success) return true;
+		else{
+			getdatainfo(file_name,rows,cols);
+		}
+	}
+
 	data_mat.set_size(rows,cols);
 	std::ifstream ifs;
 	int label;
@@ -248,4 +261,47 @@ bool dlpft::io::LoadData::load_data_to_mat(arma::imat& data_mat,int rows,int col
 	}
 	ifs.close();
 	return true;
+}
+void dlpft::io::LoadData::getdatainfo(std::string file_name,int& rows,int& cols){
+	std::ifstream ifs;
+	ifs.open(file_name);
+	std::string line;
+	int row_num = 0,col_num = 0;
+	while(std::getline(ifs,line)){
+		row_num ++;
+		if(row_num == 1){
+			std::string pattern ;
+			if(line.find("\t")!=std::string::npos)
+				pattern = "\t";
+			else
+				pattern = " ";
+			std::vector<std::string> words = split(line,pattern);
+			cols = words.size();
+		}
+	}
+	ifs.close();
+	
+
+	rows = row_num;
+	
+}
+//×Ö·û´®·Ö¸îº¯Êý
+std::vector<std::string> dlpft::io::LoadData::split(std::string str,std::string pattern)
+{
+    std::string::size_type pos;
+    std::vector<std::string> result;
+    str+=pattern;//À©Õ¹×Ö·û´®ÒÔ·½±ã²Ù×÷
+    int size=str.size();
+
+    for(size_t i=0; i<size; i++)
+    {
+        pos=str.find(pattern,i);
+        if(pos<size)
+        {
+            std::string s=str.substr(i,pos-i);
+            result.push_back(s);
+            i=pos+pattern.size()-1;
+        }
+    }
+    return result;
 }
