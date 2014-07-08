@@ -1,6 +1,5 @@
 #ifndef FULLCONNECTMODULE_H
 #define FULLCONNECTMODULE_H
-#include "armadillo"
 #include "Module.h"
 
 namespace dlpft{

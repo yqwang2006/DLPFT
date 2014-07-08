@@ -5,7 +5,7 @@
 #include "io/LoadData.h"
 #include "io/LoadParam.h"
 #include "RegisterProduct.h"
-#include "module/AutoEncoder.h"
+#include "module\AllModule.h"
 #include "param/AllParam.h"
 #include "io/AllDataAddr.h"
 #include "model\Model.h"

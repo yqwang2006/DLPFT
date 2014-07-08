@@ -1,10 +1,10 @@
 #ifndef MULTIPARAM_H
 #define MULTIPARAM_H
 
-#include "Param.h"
 #include <vector>
 namespace dlpft{
 	namespace param{
+		enum ParamMode {VALUES=1,RANGE,AUTOSEARCH};
 		class ParamVar{
 		public:
 			std::string var_name;
