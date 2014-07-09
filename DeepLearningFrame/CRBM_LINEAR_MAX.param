@@ -5,13 +5,14 @@ Algorithm:CRBM
 Optimize_method:1,CD
 Filter_dim:1,5
 Featuremaps_num:1,10
-Max_epoch:1,3
+Max_epoch:1,10
+Active_function:1,LINEAR
 Batch_size:1,256
 Learning_rate:1,0.1
 Layer_order:2
 Algorithm:Pooling
 Pooling_dim:1,2
-Pooling_type:1,MEAN
+Pooling_type:1,MAX
 Layer_order:3
 Algorithm:SoftMax
 Max_epoch:1,100

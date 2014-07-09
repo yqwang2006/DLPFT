@@ -226,10 +226,14 @@ bool dlpft::io::LoadData::load_data_to_mat(arma::mat& data_mat,int rows,int cols
 	double data_i_j = 0;
 	std::ifstream ifs;
 	ifs.open(file_name.c_str());
+	if(!ifs.is_open()){
+		std::cout << "Cannot open the file! Please check file's name and try again!" << std::endl;
+		return false;
+	
+	}
 	for(int i = 0; i < rows;i++){
 		for(int j = 0;j < cols;j++){
-			ifs >> data_i_j;
-			data_mat(i,j) = data_i_j;
+			ifs >> data_mat(i,j);
 		}
 	}
 	return true;

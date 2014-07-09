@@ -157,8 +157,9 @@ void load_data(DataInfo filename, arma::mat& data_mat){
 	LoadData file(filename.name);
 	clock_t start = clock(),end;
 	double dur_time = 0;
-
-	file.load_data_to_mat(data_mat,filename.rows,filename.cols);
+	if(!file.load_data(data_mat)){
+		file.load_data_to_mat(data_mat,filename.rows,filename.cols);
+	}
 	end = clock();
 	dur_time = (double)(end-start)/CLOCKS_PER_SEC;
 	cout << dur_time << endl;
@@ -169,7 +170,9 @@ void load_data(DataInfo filename, arma::imat& data_mat){
 	clock_t start = clock(),end;
 	double dur_time = 0;
 
-	file.load_data_to_mat(data_mat,filename.rows,filename.cols);
+	if(!file.load_data(data_mat)){
+		file.load_data_to_mat(data_mat,filename.rows,filename.cols);
+	}
 	end = clock();
 	dur_time = (double)(end-start)/CLOCKS_PER_SEC;
 	cout << dur_time << endl;

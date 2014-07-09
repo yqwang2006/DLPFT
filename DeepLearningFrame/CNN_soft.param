@@ -1,22 +1,11 @@
-Layer_num:3
-Model_type:UnsuperviseModel
+Layer_num:1
+Model_type:SuperviseModel
 Layer_order:1
-Algorithm:CRBM
-Optimize_method:1,CD
-Filter_dim:1,5
-Featuremaps_num:1,10
-Max_epoch:1,3
-Batch_size:1,256
-Learning_rate:1,0.1
-Layer_order:2
-Algorithm:Pooling
-Pooling_dim:1,2
-Pooling_type:1,MEAN
-Layer_order:3
 Algorithm:SoftMax
-Max_epoch:1,100
+Optimize_method:1,sgd
+Max_epoch:1,3
+Batch_size:1,50
 Hid_num:1,10
-Optimize_method:1,cg
 Lambda:1,1e-3
 trainData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTrainData_5000.txt,txt
 trainLabels:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTrainLabels_5000.txt,txt

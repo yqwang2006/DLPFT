@@ -1,0 +1,36 @@
+Layer_num:5
+Model_type:SuperviseModel
+Layer_order:1
+Algorithm:ConvolveModule
+Optimize_method:1,sgd
+Active_function:1,SIGMOID
+Max_epoch:1,10
+Batch_size:1,50
+Learn_rate:1,0.05
+Filter_dim:1,5
+Featuremaps_num:1,10
+Layer_order:2
+Algorithm:Pooling
+Pooling_dim:1,2
+Pooling_type:1,MAX
+Layer_order:3
+Algorithm:ConvolveModule
+Optimize_method:1,sgd
+Max_epoch:1,2
+Batch_size:1,1000
+Filter_dim:1,5
+Featuremaps_num:1,10
+Layer_order:4
+Algorithm:Pooling
+Pooling_dim:1,2
+Pooling_type:1,MAX
+Layer_order:5
+Algorithm:SoftMax
+Max_epoch:1,100
+Hid_num:1,10
+Optimize_method:1,cg
+Lambda:1,1e-3
+trainData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTrainData_5000.txt,txt,5000,784
+trainLabels:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTrainLabels_5000.txt,txt,5000,1
+testData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTestData_1000.txt,txt,1000,784
+testLabels:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTestLabels_1000.txt,txt,1000,1

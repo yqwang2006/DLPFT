@@ -1,0 +1,33 @@
+Layer_num:4
+Model_type:UnsuperviseModel
+Layer_order:1
+Algorithm:RBM
+Optimize_method:1,CD
+Hid_num:1,400
+Max_epoch:1,50
+Batch_size:1,1000
+Learning_rate:1,0.1
+Layer_order:2
+Algorithm:RBM
+Optimize_method:1,CD
+Hid_num:1,200
+Max_epoch:1,5
+Batch_size:1,1000
+Learning_rate:1,0.1
+Layer_order:3
+Algorithm:RBM
+Optimize_method:1,CD
+Hid_num:1,100
+Max_epoch:1,5
+Batch_size:1,1000
+Learning_rate:1,0.1
+Layer_order:4
+Algorithm:SoftMax
+Max_epoch:1,400
+Hid_num:1,19
+Optimize_method:1,cg
+Lambda:1,1e-3
+trainData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\pretrain_data.txt,txt
+testData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\lv_testdata.txt,txt
+Finetune_data:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\lv_traindata.txt,txt
+Finetune_labels:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\lv_trainlabel.txt,txt
