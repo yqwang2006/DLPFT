@@ -1,6 +1,6 @@
 #include "LoadParam.h"
 #include "../util/params_name.h"
-void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllDataAddr& data_info){
+void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllDataAddr& data_info, string& modelType){
 	
 	//fill_param_map();
 	ifstream infile;
@@ -28,7 +28,10 @@ void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllData
 				multi_params = new MultiParam[layer_num];
 				continue;
 			}
-				
+			if(varname == "Model_type"){
+				modelType = value;
+				continue;
+			}	
 			if(varname == params_name[LAYERORDER]){
 				layer_order = atoi(value.c_str());
 				continue;
@@ -209,6 +212,9 @@ void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllData
 		}
 		result_vector.push_back(param_vec);
 	
+	}
+	if(modelType == ""){
+		modelType = "UnsuperviseModel";
 	}
 	//for(int i = 0;i < all_params;i ++)
 	//	for(int j = 0;j < layer_num;j++){

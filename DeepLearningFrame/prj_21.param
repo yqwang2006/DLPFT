@@ -1,4 +1,5 @@
 Layer_num:3
+Model_type:UnsuperviseModel
 Layer_order:1
 Algorithm:AutoEncoder
 Optimize_method:1,cg

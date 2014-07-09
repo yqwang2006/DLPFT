@@ -1,4 +1,5 @@
 Layer_num:3
+Model_type:SuperviseModel
 Layer_order:1
 Algorithm:ConvolveModule
 Optimize_method:1,sgd
@@ -6,7 +7,7 @@ Active_function:1,SIGMOID
 Max_epoch:1,3
 Batch_size:1,50
 Filter_dim:1,9
-Features_num:1,5
+Featuremaps_num:1,5
 Layer_order:2
 Algorithm:Pooling
 Pooling_dim:1,2

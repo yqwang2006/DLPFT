@@ -27,11 +27,11 @@ int main(int argc, char**argv){
 
 
 
-	if(argc < 3){
+	if(argc < 2){
 		exit(-1);
 	}
-	string modelInfo = argv[1];
-	string paramFileName = argv[2];
+	string modelInfo;
+	string paramFileName = argv[1];
 	string paramFullName = paramFileName + ".param";
 
 	RegisterFunction();
@@ -41,7 +41,8 @@ int main(int argc, char**argv){
 	dlpft::io::LoadParam load_param(paramFullName);
 	vector<vector<NewParam>> params;
 	AllDataAddr data_addr;
-	load_param.load(params,data_addr);
+
+	load_param.load(params,data_addr,modelInfo);
 	
 	arma::mat train_data,test_data,finetune_data;
 	arma::imat train_labels,test_labels,finetune_labels;
@@ -101,7 +102,7 @@ int main(int argc, char**argv){
 	start = clock();
 
 	cout << "Begin trainning!" << endl;
-	if(modelInfo == "unSupervisedModel"){
+	if(modelInfo == "UnsuperviseModel"){
 		Model unsupervisedModel(input_size,params[0]);
 		unsupervisedModel.pretrain(train_data,params[0]);
 		if(finetune_switch){

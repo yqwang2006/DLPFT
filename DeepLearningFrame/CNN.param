@@ -1,11 +1,12 @@
 Layer_num:5
+Model_type:SuperviseModel
 Layer_order:1
 Algorithm:ConvolveModule
 Optimize_method:1,sgd
 Max_epoch:1,20
 Batch_size:1,50
 Filter_dim:1,5
-Features_num:1,6
+Featuremaps_num:1,6
 Learn_rate:1,0.05
 Layer_order:2
 Algorithm:Pooling
@@ -17,7 +18,7 @@ Optimize_method:1,sgd
 Max_epoch:1,4
 Batch_size:1,1000
 Filter_dim:1,5
-Features_num:1,12
+Featuremaps_num:1,12
 Layer_order:4
 Algorithm:Pooling
 Pooling_dim:1,2

@@ -1,4 +1,5 @@
 Layer_num:4
+Model_type:UnsuperviseModel
 Layer_order:1
 Algorithm:RBM
 Optimize_method:1,CD

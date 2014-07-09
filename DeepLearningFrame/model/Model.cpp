@@ -53,7 +53,7 @@ Module* Model::create_module(NewParam& param,int& in_size,int& in_num){
 	}else if(m_name == "ConvolveModule"){
 		int in_dim = sqrt(in_size / in_num);
 		int filter_dim = atoi(param.params[params_name[FILTERDIM]].c_str());
-		int out_num = atoi(param.params[params_name[FILTERNUM]].c_str());
+		int out_num = atoi(param.params[params_name[FEATUREMAPSNUM]].c_str());
 		module = new ConvolveModule(in_dim,in_num,filter_dim,out_num,act_choice);
 		int out_dim = in_dim - filter_dim + 1;
 		in_size = out_dim*out_dim*out_num;
@@ -61,7 +61,7 @@ Module* Model::create_module(NewParam& param,int& in_size,int& in_num){
 	}else if(m_name == "CRBM"){
 		int in_dim = sqrt(in_size / in_num);
 		int filter_dim = atoi(param.params[params_name[FILTERDIM]].c_str());
-		int out_num = atoi(param.params[params_name[FILTERNUM]].c_str());
+		int out_num = atoi(param.params[params_name[FEATUREMAPSNUM]].c_str());
 		module = new ConvolutionRBM(in_dim,in_num,filter_dim,out_num,act_choice);
 		int out_dim = in_dim - filter_dim + 1;
 		in_size = out_dim*out_dim*out_num;
@@ -154,7 +154,7 @@ void Model::initParams(arma::mat& theta,vector<NewParam> param){
  		W_dim += modules[i]->weightMatrix.size();
 		b_dim += modules[i]->bias.size();
 
-		//last_filter_num = atoi(param[i].params[params_name[FILTERNUM]].c_str());
+		//last_filter_num = atoi(param[i].params[params_name[FEATUREMAPSNUM]].c_str());
 		//last_output_dim = last_output_dim - atoi(param[i].params[params_name[FILTERDIM]].c_str()) + 1;
 	}
 	theta_dim = W_dim + b_dim;
@@ -175,7 +175,7 @@ void Model::initParams(arma::mat& theta,vector<NewParam> param){
 		next_b_loc = curr_b_loc + bia.size();
 		b.rows(curr_b_loc,next_b_loc-1) = reshape(bia,bia.size(),1);
 		curr_b_loc = next_b_loc;
-		//last_filter_num = atoi(param[i].params[params_name[FILTERNUM]].c_str());
+		//last_filter_num = atoi(param[i].params[params_name[FEATUREMAPSNUM]].c_str());
 		//last_output_dim = last_output_dim - atoi(param[i].params[params_name[FILTERDIM]].c_str()) + 1;
 	}
 	theta.rows(0,W.size()-1) = W;

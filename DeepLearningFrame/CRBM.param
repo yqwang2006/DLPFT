@@ -1,9 +1,10 @@
 Layer_num:3
+Model_type:SuperviseModel
 Layer_order:1
 Algorithm:CRBM
 Optimize_method:1,CD
 Filter_dim:1,5
-Features_num:1,10
+Featuremaps_num:1,10
 Max_epoch:1,3
 Batch_size:1,256
 Learning_rate:1,0.1

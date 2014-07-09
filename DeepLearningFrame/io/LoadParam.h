@@ -14,7 +14,7 @@ namespace dlpft{
 			LoadParam(){file_name = "";}
 			LoadParam(std::string fname):file_name(fname){}
 			void setname(const string fileName){file_name = fileName;}
-			void load(vector<vector<NewParam>>&, AllDataAddr&);
+			void load(vector<vector<NewParam>>&, AllDataAddr&, string& modelType);
 			std::vector<std::string> split(std::string str,std::string pattern);
 		};
 	};
