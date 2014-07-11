@@ -8,6 +8,7 @@
 #include "module\AllModule.h"
 #include "param/AllParam.h"
 #include "io/AllDataAddr.h"
+#include "io/SaveResult.h"
 #include "model\Model.h"
 #include "util\convolve.h"
 #include "util\onehot.h"
@@ -102,19 +103,22 @@ int main(int argc, char**argv){
 	start = clock();
 
 	cout << "Begin trainning!" << endl;
+	Model model(input_size,params[0]);
+
+
 	if(modelInfo == "UnsuperviseModel"){
-		Model unsupervisedModel(input_size,params[0]);
-		unsupervisedModel.pretrain(train_data,params[0]);
+	
+		model.pretrain(train_data,params[0]);
 		if(finetune_switch){
 			cout << "Begin finetuning!" << endl;
-			unsupervisedModel.train_classifier(finetune_data,finetune_labels,params[0]);
-			unsupervisedModel.train(finetune_data,finetune_labels,params[0]);
+			model.train_classifier(finetune_data,finetune_labels,params[0]);
+			model.train(finetune_data,finetune_labels,params[0]);
 		}
 		if(data_addr.test_data_info.name != ""){
 			cout << "Begin predicting!" << endl;
-			pred_labels = unsupervisedModel.predict(test_data,test_labels,params[0]);
+			pred_labels = model.predict(test_data,test_labels,params[0]);
 			if(data_addr.test_labels_info.name != ""){
-				pred_acc = unsupervisedModel.predict_acc(pred_labels,test_labels);
+				pred_acc = model.predict_acc(pred_labels,test_labels);
 			}
 		}
 		
@@ -124,30 +128,31 @@ int main(int argc, char**argv){
 			cout << "You must set the train labels! Because you choose the supervised model for train!" << endl;
 			exit(-1);
 		}
-		Model supervisedModel(input_size,params[0]);
-		supervisedModel.train(train_data,train_labels,params[0]);
+		model.train(train_data,train_labels,params[0]);
 		if(data_addr.test_data_info.name != ""){
 			cout << "Begin predicting!" << endl;
-			pred_labels = supervisedModel.predict(test_data,test_labels,params[0]);
+			pred_labels = model.predict(test_data,test_labels,params[0]);
 			if(data_addr.test_labels_info.name != ""){
-				pred_acc = supervisedModel.predict_acc(pred_labels,test_labels);
+				pred_acc = model.predict_acc(pred_labels,test_labels);
 			}
 		}
 		
 	}
+	
+	SaveResult save_info;
+	
 	cout << "predict accu: " << pred_acc*100 << "%"<< endl;
 	end = clock();
 	duration = (double)(end-start)/CLOCKS_PER_SEC;
 	cout << duration << endl;
 	
-	string result_file_name = "result/"+paramFileName + "_result.txt";
-	ofstream ofs;
-	ofs.open(result_file_name);
-	ofs << pred_acc << endl;
-	pred_labels.quiet_save(ofs,raw_ascii);
-	ofs.close();
+	string result_file_name = paramFileName + "_result.txt";
 
 
+	string header_info = "Program consumed " + save_info.getstring(duration) + " s\n";
+	header_info += "The accuracy is " + save_info.getstring(pred_acc*100) + "%\n";
+
+	save_info.save_result(model.modules,params[0],paramFileName,pred_labels,header_info);
 
 
 	return 0;
