@@ -15,11 +15,12 @@ void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllData
 	int param_value_num = 1;
 	int all_params = 1;
 	if(infile.is_open()){
-
 		while(infile.good() && !infile.eof()){
 			memset(buf,0,1024);
 			infile.getline(buf,1024);
 			line = buf;
+			if(line == "")
+				continue;
 			vector<string> words = split(line,":");
 			string varname = words[0];
 			string value = words[1];
@@ -164,8 +165,6 @@ void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllData
 
 			iter ++;
 		}//end while
-
-
 	}//end if open
 	infile.close();
 
@@ -182,7 +181,6 @@ void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllData
 		}
 	}
 
-	
 	int index = 0;
 	for(int i = 0;i < all_params;i++){
 		vector<NewParam> param_vec;
@@ -213,6 +211,8 @@ void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllData
 		result_vector.push_back(param_vec);
 	
 	}
+	
+	
 	if(modelType == ""){
 		modelType = "UnsuperviseModel";
 	}

@@ -38,17 +38,17 @@ int main(int argc, char**argv){
 	RegisterFunction();
 	RegisterOptimizer();
 
+
 	//load param file
 	dlpft::io::LoadParam load_param(paramFullName);
 	vector<vector<NewParam>> params;
 	AllDataAddr data_addr;
 
 	load_param.load(params,data_addr,modelInfo);
-	
 	arma::mat train_data,test_data,finetune_data;
 	arma::imat train_labels,test_labels,finetune_labels;
 
-
+	
 	//load train data
 	if(data_addr.train_data_info.name == ""){
 		cout << "Please set the address of the train data at the param file!" << endl;

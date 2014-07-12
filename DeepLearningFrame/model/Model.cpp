@@ -92,6 +92,9 @@ void Model::train(arma::mat data, arma::imat labels,vector<NewParam> model_param
 	arma::mat features = data;
 	double error = 0;
 
+	if(max_epoch == 0) max_epoch = 50;
+	if(batch_size == 0) batch_size = 100;
+	if(weight_dec == 0) weight_dec = 3e-3;
 
 	int batch_num = sample_num / batch_size;
 	arma::mat *minibatches = new arma::mat[batch_num];

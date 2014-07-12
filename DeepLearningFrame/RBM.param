@@ -4,9 +4,10 @@ Layer_order:1
 Algorithm:RBM
 Optimize_method:1,CD
 Hid_num:1,200
-Max_epoch:1,50
+Max_epoch:1,5
 Batch_size:1,100
 Learning_rate:1,0.1
+Active_function:1,SIGMOID
 Layer_order:2
 Algorithm:SoftMax
 Max_epoch:1,400,100
@@ -17,3 +18,5 @@ trainData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTrainData_5000
 trainLabels:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTrainLabels_5000.txt,txt,5000,1
 testData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTestData_1000.txt,txt,1000,784
 testLabels:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTestLabels_1000.txt,txt,1000,1
+
+
