@@ -31,7 +31,6 @@ int main(int argc, char**argv){
 	if(argc < 2){
 		exit(-1);
 	}
-	string modelInfo;
 	string paramFileName = argv[1];
 	string paramFullName = paramFileName + ".param";
 
@@ -43,8 +42,10 @@ int main(int argc, char**argv){
 	dlpft::io::LoadParam load_param(paramFullName);
 	vector<vector<NewParam>> params;
 	AllDataAddr data_addr;
-
-	load_param.load(params,data_addr,modelInfo);
+	NewParam global_info;
+	
+	//params存放所有层的参数，其中params[layer_num]存放全局参数
+	load_param.load(params,data_addr,global_info);
 	arma::mat train_data,test_data,finetune_data;
 	arma::imat train_labels,test_labels,finetune_labels;
 
@@ -76,20 +77,20 @@ int main(int argc, char**argv){
 		}
 	}
 
-	bool finetune_switch = false;
+	bool finetune_data_switch = false;
 
 	if(data_addr.finetune_data_info.name != "" && data_addr.finetune_labels_info.name != ""){
 		cout << "Loading finetune data!" << endl;
 		load_data(data_addr.finetune_data_info,finetune_data);
 		finetune_data = finetune_data.t();
 		load_data(data_addr.finetune_labels_info,finetune_labels);
-		finetune_switch = true;
+		finetune_data_switch = true;
 	}else if(data_addr.train_labels_info.name!=""){
 		finetune_data = train_data;
 		finetune_labels = train_labels;
-		finetune_switch = true;
+		finetune_data_switch = true;
 	}else{
-		finetune_switch = false;
+		finetune_data_switch = false;
 	}
 
 
@@ -103,13 +104,13 @@ int main(int argc, char**argv){
 	start = clock();
 
 	cout << "Begin trainning!" << endl;
+	//只训练第一个参数文件，此处可加循环将所有的参数文件都训练一遍。
 	Model model(input_size,params[0]);
-
-
-	if(modelInfo == "UnsuperviseModel"){
+	int layer_num = params[0].size();
+	if(global_info.params[params_name[MODELTYPE]] == "UnsuperviseModel"){
 	
 		model.pretrain(train_data,params[0]);
-		if(finetune_switch){
+		if(finetune_data_switch && global_info.params[params_name[FINETUNESWITCH]] == "ON"){
 			cout << "Begin finetuning!" << endl;
 			model.train_classifier(finetune_data,finetune_labels,params[0]);
 			model.train(finetune_data,finetune_labels,params[0]);

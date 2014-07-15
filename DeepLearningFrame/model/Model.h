@@ -17,7 +17,7 @@ namespace dlpft{
 			Model(){}
 			Model(int input_size,vector<NewParam> module_params){
 				inputSize = input_size;
-				layerNumber = module_params.size();
+				layerNumber = module_params.size()-1;
 				modules = new Module* [layerNumber];
 				int in_size = input_size;
 				int in_num = 1;

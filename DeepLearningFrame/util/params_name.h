@@ -3,11 +3,12 @@
 #include <map>
 using namespace std;
 static enum PARAMSNAME { 
+	MODELTYPE,GLOBALOPTMETHOD,GLOBALMAXEPOCH,GLOBALBATCHSIZE,GLOBALWEIGHTDECAY,GLOBALLEARNRATE,GLOBALLEARNRATEDECAY,
 	LAYERNUM,LAYERORDER,ALGORITHM,OPTIMETHOD,
 	HIDNUM,MAXEPOCH,BATCHSIZE,LEARNRATE,
 	SPARSITY,WEIGHTDECAY,KLRHO,
 	POOLINGTYPE,POOLINGDIM,EPSILON,
-	FEATUREMAPSNUM,FILTERDIM,
+	FINETUNESWITCH,FEATUREMAPSNUM,FILTERDIM,
 	TRAINDATA,TRAINLABELS,TESTDATA,TESTLABELS,FINETUNEDATA,FINETUNELABELS,ACTIVEFUNCTION
 };
 
@@ -36,6 +37,12 @@ static map<PARAMSNAME,string> fill_param_map(){
 	params_name[FINETUNEDATA]="Finetune_data";
 	params_name[FINETUNELABELS] = "Finetune_labels";
 	params_name[ACTIVEFUNCTION]="Active_function";
+	params_name[FINETUNESWITCH] = "Finetune_switch";
+	params_name[GLOBALOPTMETHOD] = "Global_optimize_method";
+	params_name[GLOBALMAXEPOCH] = "Global_max_epoch";
+	params_name[GLOBALBATCHSIZE] = "Global_batch_size";
+	params_name[GLOBALLEARNRATE] = "Global_learning_rate";
+	params_name[GLOBALLEARNRATEDECAY] = "Global_learning_rate_decayrate";
 	return params_name;
 }
 static map<PARAMSNAME,string> params_name = fill_param_map();

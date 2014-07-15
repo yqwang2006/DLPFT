@@ -28,7 +28,7 @@ namespace dlpft{
 					labels = l;
 					data = d;
 					modules = m;
-					layer_num = np.size();
+					layer_num = np.size()-1;
 					params = np;
 					weight_decay = weight_dec;
 					if(weight_decay == 0) weight_decay = 3e-3;

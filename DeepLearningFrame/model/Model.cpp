@@ -4,19 +4,18 @@
 using namespace dlpft::model;
 using namespace dlpft::function;
 void Model::pretrain(const arma::mat data, vector<NewParam> params){
-	int number_layer = params.size();
 
 	arma::mat features = data;
-	if((params[number_layer-1].params[params_name[ALGORITHM]] == "SoftMax")){
-		for(int i = 0;i < number_layer-1;i++){
+	if((params[layerNumber-1].params[params_name[ALGORITHM]] == "SoftMax")){
+		for(int i = 0;i < layerNumber-1;i++){
 			modules[i]->pretrain(features,params[i]);
-			if(i < number_layer-2)
+			if(i < layerNumber-2)
 				features = modules[i]->forwardpropagate(features,params[i]);
 		}
 	}else{
-		for(int i = 0;i < number_layer;i++){
+		for(int i = 0;i < layerNumber;i++){
 			modules[i]->pretrain(features,params[i]);
-			if(i < number_layer-1)
+			if(i < layerNumber-1)
 			features = modules[i]->forwardpropagate(features,params[i]);
 		}
 	}
@@ -84,11 +83,12 @@ Module* Model::create_module(NewParam& param,int& in_size,int& in_num){
 	return module;
 }
 void Model::train(arma::mat data, arma::imat labels,vector<NewParam> model_param){
-	int max_epoch = atoi(model_param[0].params[params_name[MAXEPOCH]].c_str());
+	int max_epoch = atoi(model_param[layerNumber].params[params_name[GLOBALMAXEPOCH]].c_str());
 	int sample_num = data.n_cols;
-	int batch_size = atoi(model_param[0].params[params_name[BATCHSIZE]].c_str());
-	double weight_dec = atof(model_param[0].params[params_name[WEIGHTDECAY]].c_str());
-	
+	int batch_size = atoi(model_param[layerNumber].params[params_name[GLOBALBATCHSIZE]].c_str());
+	double weight_dec = atof(model_param[layerNumber].params[params_name[GLOBALWEIGHTDECAY]].c_str());
+	double learning_rate = atof(model_param[layerNumber].params[params_name[GLOBALLEARNRATE]].c_str());
+	double learning_rate_decay = atof(model_param[layerNumber].params[params_name[GLOBALLEARNRATEDECAY]].c_str());
 	arma::mat features = data;
 	double error = 0;
 
@@ -103,9 +103,7 @@ void Model::train(arma::mat data, arma::imat labels,vector<NewParam> model_param
 	ModelCost* costfunc = new ModelCost(modules,data,labels,model_param,weight_dec);
 	arma::mat grad;
 
-	double learning_rate = atof(model_param[0].params[params_name[LEARNRATE]].c_str());
-
-	SgdOptimizer *opt_ptr = new SgdOptimizer(costfunc,max_epoch,learning_rate,batch_size);
+	SgdOptimizer *opt_ptr = new SgdOptimizer(costfunc,max_epoch,learning_rate,batch_size,learning_rate_decay);
 
 	initParams(costfunc->coefficient,model_param);
 
@@ -120,16 +118,15 @@ void Model::train(arma::mat data, arma::imat labels,vector<NewParam> model_param
 	delete []minibatches;
 }
 arma::imat Model::predict(const arma::mat testdata, const arma::imat testlabels,vector<NewParam> params){
-	int layer_num = params.size();
 	arma::mat features = testdata;
 
 	arma::mat max_vals;
 	arma::imat pred_labels = zeros<arma::imat>(testdata.n_cols,1);
 
-	for(int i = 0;i < layer_num;i++){
+	for(int i = 0;i < layerNumber;i++){
 		features = modules[i]->forwardpropagate(features,params[i]);
 	}
-	if(params[layer_num-1].params["Algorithm"] == "SoftMax"){
+	if(params[layerNumber-1].params["Algorithm"] == "SoftMax"){
 
 		max_vals = max(features);
 

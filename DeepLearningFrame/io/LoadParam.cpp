@@ -1,6 +1,6 @@
 #include "LoadParam.h"
 #include "../util/params_name.h"
-void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllDataAddr& data_info, string& modelType){
+void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllDataAddr& data_info,NewParam& globalInfo){
 	
 	//fill_param_map();
 	ifstream infile;
@@ -14,6 +14,7 @@ void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllData
 	int iter = 0;
 	int param_value_num = 1;
 	int all_params = 1;
+	
 	if(infile.is_open()){
 		while(infile.good() && !infile.eof()){
 			memset(buf,0,1024);
@@ -26,13 +27,21 @@ void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllData
 			string value = words[1];
 			if(varname == params_name[LAYERNUM]){
 				layer_num = atoi(value.c_str());
-				multi_params = new MultiParam[layer_num];
+				multi_params = new MultiParam[layer_num+1];//last for global param
 				continue;
 			}
-			if(varname == "Model_type"){
-				modelType = value;
+			if(varname == params_name[MODELTYPE]){
+				globalInfo.params[params_name[MODELTYPE]] = value;
+				layer_order = layer_num + 1;
 				continue;
-			}	
+			}
+			if(varname == params_name[FINETUNESWITCH]){
+				globalInfo.params[params_name[FINETUNESWITCH]] = value;
+
+				layer_order = layer_num + 1;
+				
+				continue;
+			}
 			if(varname == params_name[LAYERORDER]){
 				layer_order = atoi(value.c_str());
 				continue;
@@ -170,7 +179,7 @@ void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllData
 
 	//set acc_tag;
 	all_params = param_value_num;
-	for(int i = 0;i < layer_num;i++){
+	for(int i = 0;i < layer_num+1;i++){
 		for(int j = 0;j < multi_params[i].vars.size();j++){
 			
 				if(multi_params[i].vars[j].mode != AUTOSEARCH){
@@ -184,7 +193,7 @@ void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllData
 	int index = 0;
 	for(int i = 0;i < all_params;i++){
 		vector<NewParam> param_vec;
-		for(int layer = 0;layer < layer_num;layer ++){
+		for(int layer = 0;layer < layer_num + 1;layer ++){
 			NewParam param_layer;
 			param_layer.addNewParam(multi_params[layer].algorithm_name,multi_params[layer].algorithm_value);
 			for(int k = 0;k < multi_params[layer].vars.size(); k++){
@@ -213,11 +222,14 @@ void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllData
 	}
 	
 	
-	if(modelType == ""){
-		modelType = "UnsuperviseModel";
+	if(globalInfo.params[params_name[MODELTYPE]]== ""){
+		globalInfo.params[params_name[MODELTYPE]] = "UnsuperviseModel";
+	}
+	if(globalInfo.params[params_name[FINETUNESWITCH]]== ""){
+		globalInfo.params[params_name[FINETUNESWITCH]] = "OFF";
 	}
 	//for(int i = 0;i < all_params;i ++)
-	//	for(int j = 0;j < layer_num;j++){
+	//	for(int j = 0;j < layer_num+1;j++){
 	//		cout << "Param["<< i << "]["<<j<<"] = " << endl;
 	//		cout << result_vector[i][j];
 	//	}

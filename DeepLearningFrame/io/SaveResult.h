@@ -24,7 +24,7 @@ namespace dlpft{
 					mkdir(dir_name.c_str());
 				}
 				
-				for(int i = 0;i < params.size();i++){
+				for(int i = 0;i < params.size()-1;i++){
 					/*string param_dir = dir_name + "\\result_param_" + getstring(i);
 					if(_access(param_dir.c_str(),6) == -1){
 						mkdir(param_dir.c_str());
@@ -41,7 +41,7 @@ namespace dlpft{
 					mkdir(dir_name.c_str());
 				}
 				
-				for(int i = 0;i < params.size();i++){
+				for(int i = 0;i < params.size()-1;i++){
 					/*string param_dir = dir_name + "\\result_param_" + getstring(i);
 					if(_access(param_dir.c_str(),6) == -1){
 						mkdir(param_dir.c_str());

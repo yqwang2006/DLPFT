@@ -37,7 +37,7 @@ double ModelCost::value_gradient(arma::mat& grad){
 		modules[i]->weightMatrix.quiet_save(ofs,raw_ascii);
 		ofs.close();*/
 
-		//cost += (lambda/2)*arma::sum(arma::sum(arma::pow(modules[i]->weightMatrix,2)));
+		cost += (lambda/2)*arma::sum(arma::sum(arma::pow(modules[i]->weightMatrix,2)));
 		start_b_loc += modules[i]->weightMatrix.size();
 	}
 
