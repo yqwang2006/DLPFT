@@ -27,6 +27,8 @@ double dlpft::optimizer::LbfgsOptimizer::optimize(string varname){
 			break;
 		}
 		if(display){
+			LogOut << "iteration " << iter << ": ";
+			LogOut << "func_value:"<< f << "; step_size = " << step_size << ";" << endl;
 			cout << "iteration " << iter << ": ";
 			cout << "func_value:"<< f << "; step_size = " << step_size << ";" << endl;
 		}

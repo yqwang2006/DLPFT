@@ -50,10 +50,12 @@ void ConvolutionRBM::pretrain(const arma::mat data, NewParam param){
 			bias += learn_rate * hgrad;
 			v_bias += learn_rate * vgrad;
 
+			LogOut << "Ended batch " << batch+1 << "/" << num_batches << ". Reconstruction error is " << error << endl;
 			cout << "Ended batch " << batch+1 << "/" << num_batches << ". Reconstruction error is " << error << endl;
 			errsum += error;
 		}
 
+		LogOut << "Ended epoch " << epoch << "/" << max_epoch << ". Reconstruction error is " << errsum << endl;
 		cout << "Ended epoch " << epoch << "/" << max_epoch << ". Reconstruction error is " << errsum << endl;
 
 	}

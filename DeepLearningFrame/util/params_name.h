@@ -37,6 +37,7 @@ static map<PARAMSNAME,string> fill_param_map(){
 	params_name[FINETUNEDATA]="Finetune_data";
 	params_name[FINETUNELABELS] = "Finetune_labels";
 	params_name[ACTIVEFUNCTION]="Active_function";
+	params_name[MODELTYPE] = "Model_type";
 	params_name[FINETUNESWITCH] = "Finetune_switch";
 	params_name[GLOBALOPTMETHOD] = "Global_optimize_method";
 	params_name[GLOBALMAXEPOCH] = "Global_max_epoch";

@@ -7,6 +7,7 @@
 #include "../optimizer/AllOptMethod.h"
 #include "../factory/Creator.h"
 #include "../util/params_name.h"
+#include "../util/global_vars.h"
 //#define DEBUG 1
 using namespace dlpft::param;
 using namespace dlpft::function;

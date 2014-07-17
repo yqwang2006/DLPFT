@@ -71,6 +71,7 @@ void RBM::pretrain(const arma::mat data,NewParam param){
 			errsum += err;
 		}
 
+		LogOut << "Ended epoch " << epoch << "/" << max_epoch << ". Reconstruction error is " << errsum << endl;
 		cout << "Ended epoch " << epoch << "/" << max_epoch << ". Reconstruction error is " << errsum << endl;
 
 	}

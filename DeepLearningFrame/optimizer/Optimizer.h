@@ -6,6 +6,7 @@
 #include "../util/InterPoint.h"
 #include "../function/CostFunction.h"
 #include "../function/SAECostFunction.h"
+#include "../util/global_vars.h"
 using namespace std;
 using namespace dlpft::function;
 namespace dlpft{

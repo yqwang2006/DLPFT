@@ -1,10 +1,12 @@
 #include "LoadData.h"
+#include "../util/global_vars.h"
 bool dlpft::io::LoadData::load_data(arma::mat& data_mat){
 	assert(file_name!="");
 	bool unknow_type = false;
 	size_t loc = file_name.rfind(".");
 	if(loc == std::string::npos){
 		std::cout << "Cannot determine type of file " << file_name << std::endl;
+		LogOut << "Cannot determine type of file " << file_name << std::endl;
 		return false;
 	}
 	std::fstream load_stream;
@@ -12,6 +14,7 @@ bool dlpft::io::LoadData::load_data(arma::mat& data_mat){
 	load_stream.open(file_name.c_str(),std::fstream::in);
 	if(!load_stream.is_open()){
 		std::cout << "Cannot open the file! Please check file's name and try again!" << std::endl;
+		LogOut << "Cannot open the file! Please check file's name and try again!" << std::endl;
 		return false;
 	}
 	arma::file_type load_type;
@@ -95,9 +98,14 @@ bool dlpft::io::LoadData::load_data(arma::mat& data_mat){
 	if(!success){
 		std::cout << std::endl;
 		std::cout << "Loading from " << file_name << " failed!" << std::endl;
+		LogOut << std::endl;
+		LogOut << "Loading from " << file_name << " failed!" << std::endl;
 	}else{
 		std::cout << "Loading from " << file_name << " successfully!" << std::endl;
 		std::cout << "Size is " << (transpose ? data_mat.n_cols : data_mat.n_rows)
+				  << " x " << (transpose ? data_mat.n_rows : data_mat.n_cols) << ".\n";
+		LogOut << "Loading from " << file_name << " successfully!" << std::endl;
+		LogOut << "Size is " << (transpose ? data_mat.n_cols : data_mat.n_rows)
 				  << " x " << (transpose ? data_mat.n_rows : data_mat.n_cols) << ".\n";
 	}
 	if(transpose)
@@ -110,6 +118,7 @@ bool dlpft::io::LoadData::load_data(arma::imat& data_mat){
 	size_t loc = file_name.rfind(".");
 	if(loc == std::string::npos){
 		std::cout << "Cannot determine type of file " << file_name << std::endl;
+		LogOut << "Cannot determine type of file " << file_name << std::endl;
 		return false;
 	}
 	std::fstream load_stream;
@@ -117,6 +126,7 @@ bool dlpft::io::LoadData::load_data(arma::imat& data_mat){
 	load_stream.open(file_name.c_str(),std::fstream::in);
 	if(!load_stream.is_open()){
 		std::cout << "Cannot open the file! Please check file's name and try again!" << std::endl;
+		LogOut << "Cannot open the file! Please check file's name and try again!" << std::endl;
 		return false;
 	}
 	arma::file_type load_type;
@@ -193,15 +203,21 @@ bool dlpft::io::LoadData::load_data(arma::imat& data_mat){
 	}
 	if(unknow_type){
 		std::cout << "Cannot support " << file_type_name << " file type!" << std::endl;
+		LogOut << "Cannot support " << file_type_name << " file type!" << std::endl;
 		return false;
 	}
 	bool success = data_mat.load(load_stream,load_type);
 	if(!success){
 		std::cout << std::endl;
 		std::cout << "Loading from " << file_name << " failed!" << std::endl;
+		LogOut << std::endl;
+		LogOut << "Loading from " << file_name << " failed!" << std::endl;
 	}else{
 		std::cout << "Loading from " << file_name << " successfully!" << std::endl;
 		std::cout << "Size is " << (transpose ? data_mat.n_cols : data_mat.n_rows)
+				  << " x " << (transpose ? data_mat.n_rows : data_mat.n_cols) << ".\n";
+		LogOut << "Loading from " << file_name << " successfully!" << std::endl;
+		LogOut << "Size is " << (transpose ? data_mat.n_cols : data_mat.n_rows)
 				  << " x " << (transpose ? data_mat.n_rows : data_mat.n_cols) << ".\n";
 	}
 	if(transpose)
@@ -213,6 +229,7 @@ bool dlpft::io::LoadData::load_data_to_mat(arma::mat& data_mat,int rows,int cols
 	size_t loc = file_name.rfind(".");
 	if(loc == std::string::npos){
 		std::cout << "Cannot determine type of file " << file_name << std::endl;
+		LogOut << "Cannot determine type of file " << file_name << std::endl;
 		return false;
 	}
 	if(rows == 0 || cols == 0){
@@ -228,6 +245,7 @@ bool dlpft::io::LoadData::load_data_to_mat(arma::mat& data_mat,int rows,int cols
 	ifs.open(file_name.c_str());
 	if(!ifs.is_open()){
 		std::cout << "Cannot open the file! Please check file's name and try again!" << std::endl;
+		LogOut << "Cannot open the file! Please check file's name and try again!" << std::endl;
 		return false;
 	
 	}
@@ -243,6 +261,7 @@ bool dlpft::io::LoadData::load_data_to_mat(arma::imat& data_mat,int rows,int col
 	size_t loc = file_name.rfind(".");
 	if(loc == std::string::npos){
 		std::cout << "Cannot determine type of file " << file_name << std::endl;
+		LogOut << "Cannot determine type of file " << file_name << std::endl;
 		return false;
 	}
 	if(rows == 0 || cols == 0){

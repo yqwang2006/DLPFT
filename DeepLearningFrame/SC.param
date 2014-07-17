@@ -1,9 +1,10 @@
 Layer_num:3
 Model_type:UnsuperviseModel
+Finetune_switch:OFF
 Layer_order:1
 Algorithm:SC
 Optimize_method:1,cg
-Hid_num:1,256
+Hid_num:1,900
 Max_epoch:1,4
 Batch_size:1,100
 Learning_rate:1,0.1

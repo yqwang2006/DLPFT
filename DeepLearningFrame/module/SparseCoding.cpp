@@ -79,6 +79,8 @@ void SparseCoding::pretrain(const arma::mat data,NewParam param){
 			double Jsparsity = sparsity*arma::sum(arma::sum(R));
 			double Jweight = weightdecay * arma::sum(arma::sum(arma::pow(sc_cost_func->weightMatrix,2)));
 
+			LogOut << iter << "	" << batch << "	" << fResidue+Jsparsity+Jweight << "	" << fResidue
+				<< "	"<< Jsparsity << "	" << Jweight << endl;
 			cout << iter << "	" << batch << "	" << fResidue+Jsparsity+Jweight << "	" << fResidue
 				<< "	"<< Jsparsity << "	" << Jweight << endl;
 
