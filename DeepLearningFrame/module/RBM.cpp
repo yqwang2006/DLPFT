@@ -141,9 +141,17 @@ void  RBM::CD_k(int k,arma::mat& v, arma::mat& v_bias){
 	}
 }
 void RBM::initial_weights_bias(){
-	srand(unsigned(time(NULL)));
-	weightMatrix = 0.1 * arma::randn(outputSize,inputSize);
-	bias = arma::zeros(outputSize,1);
+	if(load_weight == "YES"){
+		if(weight_addr != "" && bias_addr != ""){
+			if(initial_weights_bias_from_file(weight_addr,bias_addr)){
+				return;
+			}
+		}
+	}
+		srand(unsigned(time(NULL)));
+		weightMatrix = 0.1 * arma::randn(outputSize,inputSize);
+		bias = arma::zeros(outputSize,1);
+	
 }
 void RBM::calculate_grad_using_delta(const arma::mat input_data,const arma::mat delta,NewParam param,arma::mat& Wgrad, arma::mat& bgrad){
 	int lambda = atoi(param.params[params_name[WEIGHTDECAY]].c_str());

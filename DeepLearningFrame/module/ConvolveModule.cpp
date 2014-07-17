@@ -2,13 +2,20 @@
 #include "../util/convolve.h"
 using namespace dlpft::module;
 void ConvolveModule::initial_weights_bias(){
-	bias = zeros(outputImageNum,1);
-	weightMatrix = zeros(filterDim*filterNum,filterDim);
-
-	cube tempW = 0.1 * randn(filterDim,filterDim,filterNum);
-	for(int i = 0; i < filterNum; i++){
-		weightMatrix.rows(i*filterDim,(i+1)*filterDim-1) = tempW.slice(i);
+	if(load_weight == "YES"){
+		if(weight_addr != "" && bias_addr != ""){
+			if(initial_weights_bias_from_file(weight_addr,bias_addr)){
+				return;
+			}
+		}
 	}
+		bias = zeros(outputImageNum,1);
+		weightMatrix = zeros(filterDim*filterNum,filterDim);
+
+		cube tempW = 0.1 * randn(filterDim,filterDim,filterNum);
+		for(int i = 0; i < filterNum; i++){
+			weightMatrix.rows(i*filterDim,(i+1)*filterDim-1) = tempW.slice(i);
+		}
 	
 	
 }

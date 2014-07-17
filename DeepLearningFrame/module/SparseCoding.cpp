@@ -113,23 +113,27 @@ void SparseCoding::pretrain(const arma::mat data,NewParam param){
 
 }
 void SparseCoding::rand_data(const arma::mat input, arma::mat& batch,int sample_num, int batch_size){
-	
-	srand(unsigned(time(NULL)));
-	int batches_num = sample_num / batch_size;
-	int visible_size = input.n_rows;
-	vector<int> groups;
-	for(int i = 0;i < sample_num; i++){
-			groups.push_back(i);
+	if(load_weight == "YES"){
+		if(weight_addr != "" && bias_addr != ""){
+			initial_weights_bias_from_file(weight_addr,bias_addr);
+		}
+	}else{
+		srand(unsigned(time(NULL)));
+		int batches_num = sample_num / batch_size;
+		int visible_size = input.n_rows;
+		vector<int> groups;
+		for(int i = 0;i < sample_num; i++){
+				groups.push_back(i);
+		}
+
+		random_shuffle(groups.begin(),groups.end());
+
+		for(int i = 0;i < batch_size; i++)
+		{
+			batch.col(i) = input.col(groups[i]);
+		}
+
 	}
-
-	random_shuffle(groups.begin(),groups.end());
-
-	for(int i = 0;i < batch_size; i++)
-	{
-		batch.col(i) = input.col(groups[i]);
-	}
-
-	
 
 
 }
@@ -188,6 +192,13 @@ arma::mat SparseCoding::forwardpropagate(const arma::mat data,NewParam param){
 
 }
 void SparseCoding::initial_weights_bias(){
+	if(load_weight == "YES"){
+		if(weight_addr != "" && bias_addr != ""){
+			if(initial_weights_bias_from_file(weight_addr,bias_addr)){
+				return;
+			}
+		}
+	}
 	srand(unsigned(time(0)));
 	weightMatrix = arma::randu<arma::mat> (outputSize,inputSize);
 

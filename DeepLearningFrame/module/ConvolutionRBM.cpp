@@ -2,18 +2,27 @@
 #include "../util/randdata.h"
 using namespace dlpft::module;
 void ConvolutionRBM::initial_weights_bias(){
-	bias = zeros(outputImageNum,1);
-	weightMatrix = zeros(filterDim*filterNum,filterDim);
-#if DEBUG
-	for(int i = 0; i < filterNum; i++){
-		weightMatrix.rows(i*filterDim,(i+1)*filterDim-1) = (i+1)*ones(filterDim,filterDim);
+
+	if(load_weight == "YES"){
+		if(weight_addr != "" && bias_addr != ""){
+			if(initial_weights_bias_from_file(weight_addr,bias_addr)){
+				return;
+			}
+		}
 	}
-#else
-	cube tempW = 0.1 * randn(filterDim,filterDim,filterNum);
-	for(int i = 0; i < filterNum; i++){
-		weightMatrix.rows(i*filterDim,(i+1)*filterDim-1) = tempW.slice(i);
-	}
-#endif
+
+		bias = zeros(outputImageNum,1);
+		weightMatrix = zeros(filterDim*filterNum,filterDim);
+	#if DEBUG
+		for(int i = 0; i < filterNum; i++){
+			weightMatrix.rows(i*filterDim,(i+1)*filterDim-1) = (i+1)*ones(filterDim,filterDim);
+		}
+	#else
+		cube tempW = 0.1 * randn(filterDim,filterDim,filterNum);
+		for(int i = 0; i < filterNum; i++){
+			weightMatrix.rows(i*filterDim,(i+1)*filterDim-1) = tempW.slice(i);
+		}
+	#endif
 	
 	
 }

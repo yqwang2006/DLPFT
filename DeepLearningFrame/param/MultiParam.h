@@ -21,8 +21,10 @@ namespace dlpft{
 		};
 		class MultiParam{
 		public:
-			std::string algorithm_name;
-			std::string algorithm_value;
+			std::string load_weight_from_file;
+			std::string weight_address;
+			std::string bias_address;
+			std::string algorithm;
 			std::vector<ParamVar> vars;
 
 		};

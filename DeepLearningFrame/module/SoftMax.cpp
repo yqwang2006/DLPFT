@@ -44,18 +44,26 @@ arma::mat SoftMax::forwardpropagate(const arma::mat data,  NewParam param){
 
 }
 void SoftMax::initial_weights_bias(){
-	srand(unsigned(time(NULL)));
-	double r = sqrt(6) / sqrt(outputSize + inputSize + 1);
-	int h_v_size = outputSize * inputSize;
-#if DEBUG
-	weightMatrix = 0.13*arma::ones<arma::mat> (outputSize,inputSize);
-#else
-	weightMatrix = arma::randu<arma::mat> (outputSize,inputSize)*2*r-r;
-#endif
-	weightMatrix = 0.01 * (arma::randu<arma::mat> (outputSize,inputSize) - 0.5);
+	if(load_weight == "YES"){
+		if(weight_addr != "" && bias_addr != ""){
+			if(initial_weights_bias_from_file(weight_addr,bias_addr)){
+				return;
+			}
+		}
+	}
+		srand(unsigned(time(NULL)));
+		double r = sqrt(6) / sqrt(outputSize + inputSize + 1);
+		int h_v_size = outputSize * inputSize;
+	#if DEBUG
+		weightMatrix = 0.13*arma::ones<arma::mat> (outputSize,inputSize);
+	#else
+		weightMatrix = arma::randu<arma::mat> (outputSize,inputSize)*2*r-r;
+	#endif
+		weightMatrix = 0.01 * (arma::randu<arma::mat> (outputSize,inputSize) - 0.5);
 
 
-	bias = arma::zeros(outputSize,1);
+		bias = arma::zeros(outputSize,1);
+	
 }
 void SoftMax::set_init_coefficient(arma::mat& coefficient){
 	coefficient.set_size(outputSize*inputSize + outputSize,1);

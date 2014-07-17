@@ -224,8 +224,17 @@ arma::mat Pooling::backpropagate(arma::mat next_layer_weight,const arma::mat nex
 void Pooling::initial_weights_bias(){
 	//weightMatrix = 0.005*arma::randu<arma::mat> (outputImageNum,1);
 	//bias = zeros(outputImageNum,1);
-	weightMatrix = zeros(outputImageNum,1);
-	bias = zeros(outputImageNum,1);
+	if(load_weight == "YES"){
+		if(weight_addr != "" && bias_addr != ""){
+			if(initial_weights_bias_from_file(weight_addr,bias_addr)){
+				return;
+			}
+		}
+	}
+
+		weightMatrix = zeros(outputImageNum,1);
+		bias = zeros(outputImageNum,1);
+	
 }
 void Pooling::calculate_grad_using_delta(const arma::mat input_data,const arma::mat delta,NewParam param,arma::mat& Wgrad, arma::mat& bgrad){
 	bgrad.set_size(outputImageNum,1);

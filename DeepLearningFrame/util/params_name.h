@@ -9,7 +9,8 @@ static enum PARAMSNAME {
 	SPARSITY,WEIGHTDECAY,KLRHO,
 	POOLINGTYPE,POOLINGDIM,EPSILON,
 	FINETUNESWITCH,FEATUREMAPSNUM,FILTERDIM,
-	TRAINDATA,TRAINLABELS,TESTDATA,TESTLABELS,FINETUNEDATA,FINETUNELABELS,ACTIVEFUNCTION
+	TRAINDATA,TRAINLABELS,TESTDATA,TESTLABELS,FINETUNEDATA,FINETUNELABELS,ACTIVEFUNCTION,
+	LOADWEIGHT,WEIGHTADDRESS,BIASADDRESS
 };
 
 static map<PARAMSNAME,string> fill_param_map(){
@@ -44,6 +45,9 @@ static map<PARAMSNAME,string> fill_param_map(){
 	params_name[GLOBALBATCHSIZE] = "Global_batch_size";
 	params_name[GLOBALLEARNRATE] = "Global_learning_rate";
 	params_name[GLOBALLEARNRATEDECAY] = "Global_learning_rate_decayrate";
+	params_name[LOADWEIGHT] = "Load_weight_from_file";
+	params_name[WEIGHTADDRESS] = "Weight_addr";
+	params_name[BIASADDRESS] = "Bias_addr";
 	return params_name;
 }
 static map<PARAMSNAME,string> params_name = fill_param_map();

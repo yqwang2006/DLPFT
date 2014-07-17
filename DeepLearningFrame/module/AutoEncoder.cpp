@@ -42,14 +42,26 @@ arma::mat AutoEncoder::forwardpropagate(const arma::mat data,  NewParam param){
 	return activation;
 }
 void AutoEncoder::initial_weights_bias(){
-	srand(unsigned(time(NULL)));
-	double r = sqrt(6) / sqrt(outputSize + inputSize + 1);
-	int h_v_size = outputSize * inputSize;
 	
-	weightMatrix = arma::randu<arma::mat> (outputSize,inputSize)*2*r-r;
-	backwardWeight = arma::randu<arma::mat> (inputSize,outputSize)*2*r-r;
-	bias = arma::zeros(outputSize,1);
-	backwardBias = arma::zeros(inputSize,1);
+	if(load_weight == "YES"){
+		if(weight_addr != "" && bias_addr != ""){
+			if(initial_weights_bias_from_file(weight_addr,bias_addr)){
+				backwardWeight = weightMatrix.t();
+				backwardBias = arma::zeros(inputSize,1);
+				//backwardWeight = arma::randu<arma::mat> (inputSize,outputSize)*2*r-r;
+				return;
+			}
+		}
+	}
+		srand(unsigned(time(NULL)));
+		double r = sqrt(6) / sqrt(outputSize + inputSize + 1);
+		int h_v_size = outputSize * inputSize;
+	
+		weightMatrix = arma::randu<arma::mat> (outputSize,inputSize)*2*r-r;
+		backwardWeight = arma::randu<arma::mat> (inputSize,outputSize)*2*r-r;
+		bias = arma::zeros(outputSize,1);
+		backwardBias = arma::zeros(inputSize,1);
+	
 }
 void AutoEncoder::set_init_coefficient(arma::mat& coefficient){
 	coefficient.set_size(outputSize * inputSize * 2 + outputSize + inputSize);
