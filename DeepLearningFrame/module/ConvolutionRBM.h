@@ -48,7 +48,7 @@ namespace dlpft{
 						return false;
 				}
 				if(!file1.load_data(bias)){
-					if(!file.load_data_to_mat(bias,filterNum,1))
+					if(!file.load_data_to_mat(bias,outputImageNum,1))
 						return false;
 				}
 				end = clock();

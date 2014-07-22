@@ -6,7 +6,7 @@ Global_max_epoch:1,50
 Global_batch_size:1,100
 Global_weight_decay:1,3e-3
 Global_learning_rate:1,0.05
-Global_learning_rate_decayrate:1,0.98
+Global_learning_rate_decayrate:1,0.95
 Layer_order:1
 Algorithm:RBM
 Optimize_method:1,CD

@@ -6,6 +6,9 @@ Global_batch_size:1,100
 Global_weight_decay:1,3e-3
 Global_learning_rate:1,0.05
 Global_learning_rate_decayrate:1,0.98
+Init_weight_from_file:YES
+Weight_addr:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\result\CNN_LINEAR_MAX_5_6_5_12\
+Bias_addr:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\result\CNN_LINEAR_MAX_5_6_5_12\
 Layer_order:1
 Algorithm:ConvolveModule
 Active_function:1,LINEAR
@@ -30,6 +33,7 @@ Max_epoch:1,100
 Hid_num:1,10
 Optimize_method:1,cg
 Weight_decay:1,1e-3
+
 trainData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTrainData_5000.txt,txt,5000,784
 trainLabels:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTrainLabels_5000.txt,txt,5000,1
 testData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTestData_1000.txt,txt,1000,784

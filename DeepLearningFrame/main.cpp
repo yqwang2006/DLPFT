@@ -116,7 +116,11 @@ int main(int argc, char**argv){
 	LogOut << "Begin trainning!" << endl;
 	cout << "Begin trainning!" << endl;
 	//只训练第一个参数文件，此处可加循环将所有的参数文件都训练一遍。
-	Model model(input_size,params[0]);
+	
+	string init_mat_from_file = global_info.params[params_name[LOADWEIGHT]];
+	string file_path = global_info.params[params_name[WEIGHTADDRESS]];
+	
+	Model model(input_size,params[0],init_mat_from_file,file_path);
 	int layer_num = params[0].size();
 	if(global_info.params[params_name[MODELTYPE]] == "UnsuperviseModel"){
 	

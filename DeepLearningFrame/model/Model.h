@@ -12,17 +12,21 @@ namespace dlpft{
 		public:
 			int layerNumber;
 			Module** modules;
+			string loadWeightFromFile;
+			string filePath;
 			int inputSize;
 		public:
 			Model(){}
-			Model(int input_size,vector<NewParam> module_params){
+			Model(int input_size,vector<NewParam> module_params,const string lwff = "NO", const string fp = ""){
 				inputSize = input_size;
 				layerNumber = module_params.size()-1;
 				modules = new Module* [layerNumber];
 				int in_size = input_size;
 				int in_num = 1;
+				loadWeightFromFile = lwff;
+				filePath = fp;
 				for(int i = 0; i < layerNumber; i++){
-					modules[i] = create_module(module_params[i],input_size,in_num);
+					modules[i] = create_module(module_params[i],input_size,in_num,i);
 				}
 			}
 			~Model(){
@@ -35,7 +39,7 @@ namespace dlpft{
 			void pretrain(arma::mat data, vector<NewParam> model_param);
 			void train_classifier(const arma::mat data, const arma::imat labels, vector<NewParam> param);
 			arma::imat predict(const arma::mat testdata, const arma::imat testlabels,vector<NewParam> params);
-			Module* create_module(NewParam& param,int& in_size,int& in_num);
+			Module* create_module(NewParam& param,int& in_size,int& in_num,int layer_id);
 			void train(arma::mat data, arma::imat labels,vector<NewParam> model_param);
 			void initParams(arma::mat& theta,vector<NewParam> param);
 			void modelParamsToStack(arma::mat theta,vector<NewParam> params);

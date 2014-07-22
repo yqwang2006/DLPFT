@@ -30,14 +30,16 @@ void Model::train_classifier(const arma::mat data, const arma::imat labels, vect
 	} 
 
 }
-Module* Model::create_module(NewParam& param,int& in_size,int& in_num){
+Module* Model::create_module(NewParam& param,int& in_size,int& in_num,int layer_id){
 	string m_name = param.params["Algorithm"];
 	int out_size = atoi(param.params[params_name[HIDNUM]].c_str());
 	string act_func = param.params["Active_function"];
 	//cout << act_func << endl;
-	string load_w = param.params[params_name[LOADWEIGHT]];
-	string w_addr = param.params[params_name[WEIGHTADDRESS]];
-	string b_addr = param.params[params_name[BIASADDRESS]];
+	string load_w = loadWeightFromFile;
+	stringstream layer_id_str;
+	layer_id_str << layer_id;
+	string w_addr = filePath + "WeightMat_" + layer_id_str.str() + ".txt";
+	string b_addr = filePath + "bias_" + layer_id_str.str() + ".txt";
 	ActivationFunction act_choice = get_activation_function(act_func);
 	Module* module;
 	if(m_name == "AutoEncoder"){

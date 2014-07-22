@@ -45,7 +45,7 @@ static map<PARAMSNAME,string> fill_param_map(){
 	params_name[GLOBALBATCHSIZE] = "Global_batch_size";
 	params_name[GLOBALLEARNRATE] = "Global_learning_rate";
 	params_name[GLOBALLEARNRATEDECAY] = "Global_learning_rate_decayrate";
-	params_name[LOADWEIGHT] = "Load_weight_from_file";
+	params_name[LOADWEIGHT] = "Init_weight_from_file";
 	params_name[WEIGHTADDRESS] = "Weight_addr";
 	params_name[BIASADDRESS] = "Bias_addr";
 	return params_name;

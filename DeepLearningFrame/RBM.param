@@ -7,12 +7,12 @@ Global_batch_size:1,100
 Global_weight_decay:1,3e-3
 Global_learning_rate:1,0.05
 Global_learning_rate_decayrate:1,0.98
+Init_weight_from_file:YES
+Weight_addr:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\result\RBM\
+Bias_addr:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\result\RBM\
 Layer_order:1
 Algorithm:RBM
 Optimize_method:1,CD
-Load_weight_from_file:YES
-Weight_addr:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\result\RBM\WeightMat_0.txt
-Bias_addr:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\result\RBM\bias_0.txt
 Hid_num:1,200
 Max_epoch:1,5
 Batch_size:1,100
@@ -24,9 +24,6 @@ Max_epoch:1,400,100
 Hid_num:1,10
 Optimize_method:1,cg
 Lambda:1,1e-3
-Load_weight_from_file:YES
-Weight_addr:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\result\RBM\WeightMat_1.txt
-Bias_addr:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\result\RBM\bias_1.txt
 trainData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTrainData_5000.txt,txt,5000,784
 trainLabels:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTrainLabels_5000.txt,txt,5000,1
 testData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTestData_1000.txt,txt,1000,784

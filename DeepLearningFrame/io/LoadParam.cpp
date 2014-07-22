@@ -122,18 +122,12 @@ void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllData
 				continue;
 			}
 			if(varname == params_name[LOADWEIGHT]){
-				multi_params[layer_order-1].load_weight_from_file = values[0];
+				globalInfo.params[varname] = values[0];
 				continue;
 			}
 			if(varname == params_name[WEIGHTADDRESS]){
 				
-				multi_params[layer_order-1].weight_address = values[0].replace(value.find("%"),1,":");
-				
-				continue;
-			}
-			if(varname == params_name[BIASADDRESS]){
-				
-				multi_params[layer_order-1].bias_address = values[0].replace(value.find("%"),1,":");
+				globalInfo.params[varname] = values[0].replace(value.find("%"),1,":");
 				
 				continue;
 			}
@@ -210,9 +204,6 @@ void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllData
 		for(int layer = 0;layer < layer_num + 1;layer ++){
 			NewParam param_layer;
 			param_layer.addNewParam(params_name[ALGORITHM],multi_params[layer].algorithm);
-			param_layer.addNewParam(params_name[LOADWEIGHT],multi_params[layer].load_weight_from_file);
-			param_layer.addNewParam(params_name[WEIGHTADDRESS],multi_params[layer].weight_address);
-			param_layer.addNewParam(params_name[BIASADDRESS],multi_params[layer].bias_address);
 			for(int k = 0;k < multi_params[layer].vars.size(); k++){
 						if(multi_params[layer].vars[k].mode != AUTOSEARCH){
 							index = multi_params[layer].vars[k].index;
