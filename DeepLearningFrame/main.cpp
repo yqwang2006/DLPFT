@@ -32,8 +32,12 @@ int main(int argc, char**argv){
 	if(argc < 2){
 		exit(-1);
 	}
-	string paramFileName = argv[1];
-	string paramFullName = paramFileName + ".param";
+	string paramFileFullPath = argv[1];
+
+	string paramFullName = paramFileFullPath + ".param";
+	
+	string paramFileName = paramFileFullPath.substr(paramFileFullPath.find_last_of("\\")+1,paramFileFullPath.length());
+
 
 	RegisterFunction();
 	RegisterOptimizer();
@@ -170,8 +174,6 @@ int main(int argc, char**argv){
 	duration = (double)(end-start)/CLOCKS_PER_SEC;
 	LogOut << duration << endl;
 	
-	string result_file_name = paramFileName + "_result.txt";
-
 
 	string header_info = "Program consumed " + save_info.getstring(duration) + " s\n";
 	header_info += "The accuracy is " + save_info.getstring(pred_acc*100) + "%\n";

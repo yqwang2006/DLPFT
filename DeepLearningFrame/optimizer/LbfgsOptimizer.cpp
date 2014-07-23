@@ -96,7 +96,7 @@ void dlpft::optimizer::LbfgsOptimizer::search_direction(
 		for(int i = 0;i< k;i++){
 			ro(i) = ((double)1)/dot(old_stps.col(i),old_dirs.col(i));
 		}
-		q.col(k) = grad.col(0);
+		q.col(k) = -grad.col(0);
 		for(int i = k-1;i>=0;i--){
 			al(i) = ro(i)*dot(old_dirs.col(i),q.col(i+1));
 			q.col(i) = q.col(i+1)-al(i)*old_stps.col(i);

@@ -17,7 +17,7 @@ void SoftMax::train(const arma::mat data, const arma::imat labels, NewParam para
 	
 
 	SoftMaxCost* costfunc = new SoftMaxCost(inputSize,outputSize,data,labels);
-	
+
 	set_init_coefficient(costfunc->coefficient);
 
 	arma::mat grad;
