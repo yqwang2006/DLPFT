@@ -13,7 +13,6 @@ static void RegisterFunction(){
 	func_factory.registerCreator<SAECostFunction>("saecost");
 	func_factory.registerCreator<ScWeightFunction>("scweightcost");
 	func_factory.registerCreator<SoftMaxCost>("softmaxcost");
-	func_factory.registerCreator<TestFunction>("test");
 }
 static void RegisterOptimizer(){
 

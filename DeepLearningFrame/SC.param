@@ -4,9 +4,9 @@ Finetune_switch:OFF
 Layer_order:1
 Algorithm:SC
 Optimize_method:1,lbfgs
-Hid_num:1,900
+Hid_num:1,400
 Max_epoch:1,10
-Batch_size:1,100
+Batch_size:1,1000
 Learning_rate:1,0.1
 Sparsity:1,5e-5
 Weight_decay:1,1e-3
