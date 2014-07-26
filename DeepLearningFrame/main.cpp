@@ -24,10 +24,9 @@ void load_data(string ,arma::mat&);
 void load_data(string ,arma::imat&);
 void load_data(DataInfo ,arma::mat&);
 void load_data(DataInfo ,arma::imat&);
-
+SaveResult save_result;
+int snap_num = 0;
 int main(int argc, char**argv){
-
-
 
 	if(argc < 2){
 		exit(-1);
@@ -43,6 +42,9 @@ int main(int argc, char**argv){
 	RegisterOptimizer();
 
 	string filedir = "result\\"+paramFileName;
+	string snapshotdir = "snapshot\\"+paramFileName;
+
+
 	open_file(filedir,"LogOut.txt");
 	
 	
@@ -166,8 +168,6 @@ int main(int argc, char**argv){
 		
 	}
 	
-	SaveResult save_info;
-	
 	LogOut << "predict accu: " << pred_acc*100 << "%"<< endl;
 	cout << "predict accu: " << pred_acc*100 << "%"<< endl;
 	end = clock();
@@ -175,10 +175,10 @@ int main(int argc, char**argv){
 	LogOut << duration << endl;
 	
 
-	string header_info = "Program consumed " + save_info.getstring(duration) + " s\n";
-	header_info += "The accuracy is " + save_info.getstring(pred_acc*100) + "%\n";
+	string header_info = "Program consumed " + save_result.getstring(duration) + " s\n";
+	header_info += "The accuracy is " + save_result.getstring(pred_acc*100) + "%\n";
 
-	save_info.save_result(model.modules,params[0],filedir,pred_labels,header_info);
+	save_result.save_result(model.modules,params[0],filedir,pred_labels,header_info);
 
 	
 	close_file();

@@ -5,6 +5,7 @@
 #include <io.h>
 #include <direct.h>
 extern std::ofstream LogOut;
+//
 static bool open_file(std::string dir_name,std::string file_name){
 	if(_access(dir_name.c_str(),6) == -1){
 		mkdir(dir_name.c_str());
