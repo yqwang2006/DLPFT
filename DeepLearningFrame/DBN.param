@@ -1,6 +1,6 @@
 Layer_num:4
 Model_type:UnsuperviseModel
-Finetune_switch:ON
+Finetune_switch:1,ON
 Global_optimize_method:1,sgd
 Global_max_epoch:1,50
 Global_batch_size:1,100

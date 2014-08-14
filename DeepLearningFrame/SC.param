@@ -1,6 +1,6 @@
 Layer_num:3
 Model_type:UnsuperviseModel
-Finetune_switch:OFF
+Finetune_switch:1,OFF
 Layer_order:1
 Algorithm:SC
 Optimize_method:1,lbfgs

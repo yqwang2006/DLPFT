@@ -30,18 +30,8 @@ void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllData
 				multi_params = new MultiParam[layer_num+1];//last for global param
 				continue;
 			}
-			if(varname == params_name[MODELTYPE]){
-				globalInfo.params[params_name[MODELTYPE]] = value;
-				layer_order = layer_num + 1;
-				continue;
-			}
-			if(varname == params_name[FINETUNESWITCH]){
-				globalInfo.params[params_name[FINETUNESWITCH]] = value;
-
-				layer_order = layer_num + 1;
-				
-				continue;
-			}
+			
+			
 			if(varname == params_name[LAYERORDER]){
 				layer_order = atoi(value.c_str());
 				continue;
@@ -52,6 +42,19 @@ void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllData
 				continue;
 			}
 			vector<string> values = split(value,",");
+			if(varname == params_name[MODELTYPE]){
+
+				globalInfo.params[params_name[MODELTYPE]] = values[0];
+				layer_order = layer_num + 1;
+				continue;
+			}
+			if(varname == params_name[FINETUNESWITCH]){
+				globalInfo.params[params_name[FINETUNESWITCH]] = values[1];
+
+				layer_order = layer_num + 1;
+				
+				continue;
+			}
 			if(varname == params_name[TRAINDATA]){
 				
 				data_info.train_data_info.name = values[0].replace(value.find("%"),1,":");

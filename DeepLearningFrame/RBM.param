@@ -1,6 +1,6 @@
 Layer_num:2
 Model_type:UnsuperviseModel
-Finetune_switch:ON
+Finetune_switch:1,OFF
 Global_optimize_method:1,sgd
 Global_max_epoch:1,50
 Global_batch_size:1,100
@@ -9,7 +9,6 @@ Global_learning_rate:1,0.05
 Global_learning_rate_decayrate:1,0.98
 Init_weight_from_file:YES
 Weight_addr:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\result\RBM\
-Bias_addr:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\result\RBM\
 Layer_order:1
 Algorithm:RBM
 Optimize_method:1,CD

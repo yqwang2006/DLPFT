@@ -33,17 +33,47 @@ int main(int argc, char**argv){
 	}
 	string paramFileFullPath = argv[1];
 
-	string paramFullName = paramFileFullPath + ".param";
-	
-	string paramFileName = paramFileFullPath.substr(paramFileFullPath.find_last_of("\\")+1,paramFileFullPath.length());
 
+
+	string paramFullName;
+	if(paramFileFullPath.find(".param") != string::npos){
+		paramFullName = paramFileFullPath;
+	}else{
+		paramFullName = paramFileFullPath + ".param";
+	}
+	
+	string split_symbol;
+
+	if(paramFileFullPath.find("\\") != string::npos){
+		split_symbol = "\\";
+	}else{
+		split_symbol = "/";
+	}
+	string paramFullpath;
+	string::size_type pos = 0;
+	if((pos = paramFullName.find_last_of(split_symbol)) != string::npos){
+		paramFullpath = paramFullName.substr(0,pos);
+	}else{
+		paramFullpath = "";
+	}
+	string paramFileName = paramFullName.substr(paramFullName.find_last_of(split_symbol)+1,paramFullName.find(".param")-paramFullName.find_last_of(split_symbol)-1);
 
 	RegisterFunction();
 	RegisterOptimizer();
 
-	string filedir = "result\\"+paramFileName;
-	string snapshotdir = "snapshot\\"+paramFileName;
+	string filedir;
 
+	string param_path = "param";
+
+	if((pos = paramFullpath.find(param_path)) != string::npos){
+		filedir = paramFullpath .replace(pos,param_path.length(),"result" + split_symbol) + paramFileName;
+	}else{
+		filedir = paramFullpath + "result" + split_symbol + paramFileName;
+	}
+	string snapshotdir = "snapshot"+ split_symbol +paramFileName;
+	if(_access(filedir.c_str(),6) == -1){
+		mkdir(filedir.c_str());
+	}
 
 	open_file(filedir,"LogOut.txt");
 	
@@ -68,8 +98,10 @@ int main(int argc, char**argv){
 		cout << "Please set the address of the train data at the param file!" << endl;
 		exit(-1);
 	}
+
 	LogOut << "Loading train data!" << endl;
 	cout << "Loading train data!" << endl;
+
 	//load_data(data_addr.train_data_addr,train_data,18900,588);
 	load_data(data_addr.train_data_info,train_data);
 	train_data = train_data.t();

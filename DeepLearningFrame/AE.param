@@ -20,9 +20,6 @@ Max_epoch:1,100
 Hid_num:1,10
 Optimize_method:1,cg
 Lambda:1,1e-3
-Load_weight_from_file:YES
-Weight_addr:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\result\AE\WeightMat_1.txt
-Bias_addr:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\result\AE\bias_1.txt
 
 trainData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTrainData_5000.txt,txt,5000,784
 trainLabels:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTrainLabels_5000.txt,txt,5000,1
