@@ -40,8 +40,11 @@ double ModelCost::value_gradient(arma::mat& grad){
 		cost += (lambda/2)*arma::sum(arma::sum(arma::pow(modules[i]->weightMatrix,2)));
 		start_b_loc += modules[i]->weightMatrix.size();
 	}
-
-	arma::mat desired_out = onehot(activations[layer_num-1].n_rows,activations[layer_num-1].n_cols,labels);
+	arma::mat desired_out;
+	if(modules[layer_num-1]->name == "SoftMax")
+		desired_out = onehot(activations[layer_num-1].n_rows,activations[layer_num-1].n_cols,labels);
+	else
+		desired_out = labels.t();
 	//arma::mat gm = reshape(desired_out,desired_out.size(),1).t()*log(reshape(activations[layer_num-1],activations[layer_num-1].size(),1));
 
 	double gm_cost = dot(reshape(desired_out,desired_out.size(),1),log(reshape(activations[layer_num-1],activations[layer_num-1].size(),1)));

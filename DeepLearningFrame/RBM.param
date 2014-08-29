@@ -7,7 +7,7 @@ Global_batch_size:1,100
 Global_weight_decay:1,3e-3
 Global_learning_rate:1,0.05
 Global_learning_rate_decayrate:1,0.98
-Init_weight_from_file:YES
+Init_weight_from_file:NO
 Weight_addr:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\result\RBM\
 Layer_order:1
 Algorithm:RBM

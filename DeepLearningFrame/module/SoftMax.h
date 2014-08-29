@@ -21,7 +21,7 @@ namespace dlpft{
 			}
 			~SoftMax(){}
 			void pretrain(const arma::mat data,NewParam param){}
-			void train(const arma::mat data, const arma::imat labels, NewParam param);
+			void train(const arma::mat data, const arma::mat labels, NewParam param);
 			arma::mat backpropagate(arma::mat next_layer_weight,const arma::mat next_delta, const arma::mat features, NewParam param);
 			arma::mat forwardpropagate(const arma::mat data,  NewParam param);
 			void initial_weights_bias();

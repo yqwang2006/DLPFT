@@ -13,7 +13,7 @@ namespace dlpft{
 			string function_name;
 			arma::mat coefficient;
 			arma::mat data;
-			arma::imat labels;
+			arma::mat labels;
 			ActivationFunction activeFuncChoice;
 		public:
 			CostFunction(void):function_name(""){

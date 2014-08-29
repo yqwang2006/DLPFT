@@ -33,7 +33,7 @@ static map<PARAMSNAME,string> fill_param_map(){
 	params_name[TRAINLABELS] = "trainLabels";
 	params_name[TESTDATA] = "testData";
 	params_name[TESTLABELS] = "testLabels";
-	params_name[FEATUREMAPSNUM] = "Featuremaps_num";
+	params_name[FEATUREMAPSNUM] = "Features_num";
 	params_name[FILTERDIM] = "Filter_dim";
 	params_name[FINETUNEDATA]="Finetune_data";
 	params_name[FINETUNELABELS] = "Finetune_labels";

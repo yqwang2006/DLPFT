@@ -8,10 +8,9 @@ Global_learning_rate:1,0.05
 Global_learning_rate_decayrate:1,0.98
 Layer_order:1
 Algorithm:ConvolveModule
-Optimize_method:1,sgd
 Active_function:1,LINEAR
 Filter_dim:1,9
-Featuremaps_num:1,20
+Features_num:1,20
 Layer_order:2
 Algorithm:Pooling
 Pooling_dim:1,2

@@ -21,9 +21,9 @@ using namespace dlpft::io;
 
 //#define UNSUPERVISEDMODEL 1
 void load_data(string ,arma::mat&);
-void load_data(string ,arma::imat&);
+void load_data(string ,arma::mat&);
 void load_data(DataInfo ,arma::mat&);
-void load_data(DataInfo ,arma::imat&);
+void load_data(DataInfo ,arma::mat&);
 SaveResult save_result;
 int snap_num = 0;
 int main(int argc, char**argv){
@@ -89,7 +89,7 @@ int main(int argc, char**argv){
 	//params存放所有层的参数，其中params[layer_num]存放全局参数
 	load_param.load(params,data_addr,global_info);
 	arma::mat train_data,test_data,finetune_data;
-	arma::imat train_labels,test_labels,finetune_labels;
+	arma::mat train_labels,test_labels,finetune_labels;
 
 	
 	//load train data
@@ -144,7 +144,7 @@ int main(int argc, char**argv){
 
 	int input_size = train_data.n_rows;
 
-	arma::imat pred_labels;
+	arma::mat pred_labels;
 	double pred_acc = 0;
 
 	clock_t start,end;
@@ -230,31 +230,8 @@ void load_data(DataInfo filename, arma::mat& data_mat){
 	cout << dur_time << endl;
 	//cout << (*test)(998,716) << endl;
 }
-void load_data(DataInfo filename, arma::imat& data_mat){
-	LoadData file(filename.name);
-	clock_t start = clock(),end;
-	double dur_time = 0;
 
-	if(!file.load_data(data_mat)){
-		file.load_data_to_mat(data_mat,filename.rows,filename.cols);
-	}
-	end = clock();
-	dur_time = (double)(end-start)/CLOCKS_PER_SEC;
-	cout << dur_time << endl;
-	//cout << (*test)(998,716) << endl;
-}
 void load_data(string filename, arma::mat& data_mat){
-	LoadData file(filename);
-	clock_t start = clock(),end;
-	double dur_time = 0;
-
-	file.load_data(data_mat);
-	end = clock();
-	dur_time = (double)(end-start)/CLOCKS_PER_SEC;
-	cout << dur_time << endl;
-	//cout << (*test)(998,716) << endl;
-}
-void load_data(string filename, arma::imat& data_mat){
 	LoadData file(filename);
 	clock_t start = clock(),end;
 	double dur_time = 0;

@@ -37,13 +37,13 @@ namespace dlpft{
 				delete []modules;
 			}
 			void pretrain(arma::mat data, vector<NewParam> model_param);
-			void train_classifier(const arma::mat data, const arma::imat labels, vector<NewParam> param);
-			arma::imat predict(const arma::mat testdata, const arma::imat testlabels,vector<NewParam> params);
+			void train_classifier(const arma::mat data, const arma::mat labels, vector<NewParam> param);
+			arma::mat predict(const arma::mat testdata, const arma::mat testlabels,vector<NewParam> params);
 			Module* create_module(NewParam& param,int& in_size,int& in_num,int layer_id);
-			void train(arma::mat data, arma::imat labels,vector<NewParam> model_param);
+			void train(arma::mat data, arma::mat labels,vector<NewParam> model_param);
 			void initParams(arma::mat& theta,vector<NewParam> param);
 			void modelParamsToStack(arma::mat theta,vector<NewParam> params);
-			double predict_acc(const arma::imat predict_labels, const arma::imat labels);
+			double predict_acc(const arma::mat predict_labels, const arma::mat labels);
 		};
 	};
 };

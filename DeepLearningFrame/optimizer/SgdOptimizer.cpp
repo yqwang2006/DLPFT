@@ -3,7 +3,7 @@
 double dlpft::optimizer::SgdOptimizer::optimize(string varname){
 	arma::mat &x = function_ptr->coefficient;
 	arma::mat dat = function_ptr->data;
-	arma::imat labels_opt = function_ptr->labels;
+	arma::mat labels_opt = function_ptr->labels;
 	size_t data_dim = size(dat,0);
 	size_t data_length = size(dat,1);
 	double mom = 0.5;
@@ -11,8 +11,9 @@ double dlpft::optimizer::SgdOptimizer::optimize(string varname){
 	arma::mat velocity = zeros(size(x,0),size(x,1));
 	int it = 0;
 	vector<int> randperm;
+	size_t label_dim = size(labels_opt,1);
 	arma::mat minibatch(data_dim,batch_size);
-	arma::imat batchlabels(batch_size,1);
+	arma::mat batchlabels(batch_size,label_dim);
 	arma::mat grad = zeros(size(x,0),size(x,1));
 	double func_cost = 0;
 	for(int e = 0;e<max_iteration;e++){

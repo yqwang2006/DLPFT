@@ -8,6 +8,7 @@ void RBM::pretrain(const arma::mat data,NewParam param){
 	int batch_size = atoi(param.params[params_name[BATCHSIZE]].c_str());
 	double learn_rate = atof(param.params[params_name[LEARNRATE]].c_str());
 
+
 	double inittialmomentum = 0.5;
 	double finalmomentum = 0.9;
 	double momentum = 0;

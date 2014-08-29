@@ -22,7 +22,7 @@ namespace dlpft{
 			}
 
 
-			ModelCost(Module** m,arma::mat d , arma::imat l,vector<NewParam> np,const double weight_dec = 3e-3,
+			ModelCost(Module** m,arma::mat d , arma::mat l,vector<NewParam> np,const double weight_dec = 3e-3,
 				const string func_name = "Model cost function")
 			{
 					labels = l;

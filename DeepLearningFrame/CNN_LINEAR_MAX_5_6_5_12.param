@@ -13,7 +13,7 @@ Layer_order:1
 Algorithm:ConvolveModule
 Active_function:1,LINEAR
 Filter_dim:1,5
-Featuremaps_num:1,10
+Features_num:1,10
 Layer_order:2
 Algorithm:Pooling
 Pooling_dim:1,2
@@ -22,7 +22,7 @@ Layer_order:3
 Algorithm:ConvolveModule
 Active_function:1,LINEAR
 Filter_dim:1,5
-Featuremaps_num:1,10
+Features_num:1,10
 Layer_order:4
 Algorithm:Pooling
 Pooling_dim:1,2

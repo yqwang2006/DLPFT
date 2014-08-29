@@ -20,7 +20,7 @@ void Model::pretrain(const arma::mat data, vector<NewParam> params){
 		}
 	}
 }
-void Model::train_classifier(const arma::mat data, const arma::imat labels, vector<NewParam> param){
+void Model::train_classifier(const arma::mat data, const arma::mat labels, vector<NewParam> param){
 	arma::mat features = data;
 	for(int i = 0;i < layerNumber-1;i++){
 		features = modules[i]->forwardpropagate(features,param[i]);
@@ -87,7 +87,7 @@ Module* Model::create_module(NewParam& param,int& in_size,int& in_num,int layer_
 	}
 	return module;
 }
-void Model::train(arma::mat data, arma::imat labels,vector<NewParam> model_param){
+void Model::train(arma::mat data, arma::mat labels,vector<NewParam> model_param){
 	int max_epoch = atoi(model_param[layerNumber].params[params_name[GLOBALMAXEPOCH]].c_str());
 	int sample_num = data.n_cols;
 	int batch_size = atoi(model_param[layerNumber].params[params_name[GLOBALBATCHSIZE]].c_str());
@@ -122,11 +122,11 @@ void Model::train(arma::mat data, arma::imat labels,vector<NewParam> model_param
 
 	delete []minibatches;
 }
-arma::imat Model::predict(const arma::mat testdata, const arma::imat testlabels,vector<NewParam> params){
+arma::mat Model::predict(const arma::mat testdata, const arma::mat testlabels,vector<NewParam> params){
 	arma::mat features = testdata;
 
 	arma::mat max_vals;
-	arma::imat pred_labels = zeros<arma::imat>(testdata.n_cols,1);
+	arma::mat pred_labels = zeros<arma::mat>(testdata.n_cols,size(testlabels,1));
 
 	for(int i = 0;i < layerNumber;i++){
 		features = modules[i]->forwardpropagate(features,params[i]);
@@ -145,6 +145,9 @@ arma::imat Model::predict(const arma::mat testdata, const arma::imat testlabels,
 			}
 
 		}
+	}else{
+
+		pred_labels = features.t();
 	}
 	return pred_labels;
 }
@@ -231,7 +234,7 @@ void Model::modelParamsToStack(arma::mat theta,vector<NewParam> params){
 		start_b_loc = end_b_loc;
 	}
 }
-double Model::predict_acc(const arma::imat predict_labels, const arma::imat labels){
+double Model::predict_acc(const arma::mat predict_labels, const arma::mat labels){
 	//fstream ofs;
 	//ofs.open("pred_labels.txt",fstream::out);
 	//predict_labels.quiet_save(ofs,raw_ascii);

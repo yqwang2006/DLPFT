@@ -36,7 +36,7 @@ namespace dlpft{
 					ofs.close();
 				}
 			}
-			void save_result(Module** m,vector<NewParam> params, string dir_name, imat pred_labels,string header_info){
+			void save_result(Module** m,vector<NewParam> params, string dir_name, mat pred_labels,string header_info){
 				if(_access(dir_name.c_str(),6) == -1){
 					mkdir(dir_name.c_str());
 				}
@@ -63,7 +63,7 @@ namespace dlpft{
 				pred_labels.quiet_save(ofs,raw_ascii);
 				ofs.close();
 			}
-			void save_snapshot(Module** m,vector<NewParam> params, string dir_name, imat pred_labels,string header_info){
+			void save_snapshot(Module** m,vector<NewParam> params, string dir_name, mat pred_labels,string header_info){
 				if(_access(dir_name.c_str(),6) == -1){
 					mkdir(dir_name.c_str());
 				}

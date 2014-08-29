@@ -16,7 +16,7 @@ void AutoEncoder::pretrain(const arma::mat data, NewParam param){
 	SAECostFunction* costfunc = new SAECostFunction(inputSize,outputSize,sparsity_coeff,weight_decay_rate,KL_Rho_dist);
 	arma::mat grad;
 	costfunc->data = data;
-	costfunc->labels = zeros<arma::imat>(data.n_cols,1);
+	costfunc->labels = zeros<arma::mat>(data.n_cols,1);
 	set_init_coefficient(costfunc->coefficient);
 	
 	Optimizer* testOpt = create_optimizer(param,costfunc);
