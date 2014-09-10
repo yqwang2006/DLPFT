@@ -130,6 +130,12 @@ arma::mat Model::predict(const arma::mat testdata, const arma::mat testlabels,ve
 
 	for(int i = 0;i < layerNumber;i++){
 		features = modules[i]->forwardpropagate(features,params[i]);
+		if(i == 0){
+			ofstream ofs;
+			ofs.open("features0.txt");
+			features.quiet_save(ofs,arma::raw_ascii);
+			ofs.close();
+		}
 	}
 	if(params[layerNumber-1].params["Algorithm"] == "SoftMax"){
 
