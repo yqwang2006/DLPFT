@@ -70,6 +70,7 @@ void dlpft::optimizer::Optimizer::wolfe_line_search(
 		double max_step = t * 10;
 		InterPoint point1(temp,f_prev,gtd_prev);
 		InterPoint point2(t,f_new,gtd_new);
+		points.clear();
 		points.push_back(point1);
 		points.push_back(point2);
 
@@ -123,7 +124,9 @@ void dlpft::optimizer::Optimizer::wolfe_line_search(
 		double xmaxBound = 0;
 		double bracket_max = max(bracket[0],bracket[1]) ;
 		double bracket_min = min(bracket[0],bracket[1]);
+
 		t = polyinterp(points,xminBound,xmaxBound);
+
 		if(min(bracket_max-t,t-bracket_min) / (bracket_max-bracket_min) < 0.1){
 			if(insufProgress || t >= bracket_max|| t <= bracket_min){
 				if(abs(t-bracket_max) < abs(t-bracket_min)){
@@ -188,6 +191,8 @@ void dlpft::optimizer::Optimizer::wolfe_line_search(
 
 }
 double dlpft::optimizer::Optimizer::polyinterp(vector<InterPoint>& points, double& xminBound, double& xmaxBound){
+	
+	
 	int nPoints = points.size();
 	//order 是待插值多项式的阶数
 	int order = 0;

@@ -41,7 +41,7 @@ namespace dlpft{
 			arma::mat backpropagate(arma::mat next_layer_weight,const arma::mat next_delta, const arma::mat features, NewParam param);
 			void initial_weights_bias();
 			arma::mat process_delta(arma::mat curr_delta); //up_sampling
-			void calculate_grad_using_delta(const arma::mat input_data,const arma::mat delta,NewParam param, arma::mat& Wgrad, arma::mat& bgrad);
+			void calculate_grad_using_delta(const arma::mat input_data,const arma::mat delta,NewParam param,double weight_decay, arma::mat& Wgrad, arma::mat& bgrad);
 			arma::mat down_sample(arma::mat data);
 			bool initial_weights_bias_from_file(string weight_addr,string bias_addr){
 				LoadData file(weight_addr);

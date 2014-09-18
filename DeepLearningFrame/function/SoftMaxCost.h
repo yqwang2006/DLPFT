@@ -10,7 +10,7 @@ namespace dlpft{
 		private:
 			int visiableSize;
 			int classesNum;
-			double lambda;
+			double weightDecay;
 		public:
 			SoftMaxCost(void):CostFunction(){
 				function_name = "softmax function";
@@ -20,7 +20,7 @@ namespace dlpft{
 
 			SoftMaxCost(int v, int c,const arma::mat d,const arma::mat  l, const double lambda=3e-3,
 				const string func_name = "softmax function")
-				:visiableSize(v),classesNum(c),lambda(lambda){
+				:visiableSize(v),classesNum(c),weightDecay(lambda){
 					labels = l;
 					data = d;
 					function_name = func_name;
@@ -38,8 +38,8 @@ namespace dlpft{
 			void set_visiableSize(int& v){visiableSize = v;}
 			int get_hiddenSize() const{return classesNum;}
 			void set_hiddenSize(int& h) { classesNum = h;}
-			double get_lambda() const {return lambda;}
-			void set_lambda(double& l) {lambda = l;}
+			double get_weight_decay() const {return weightDecay;}
+			void set_weight_decay(double& l) {weightDecay = l;}
 
 
 			double value_gradient(arma::mat& grad);

@@ -109,7 +109,7 @@ arma::mat ConvolveModule::backpropagate(arma::mat next_layer_weight,const arma::
 	
 
 }
-void ConvolveModule::calculate_grad_using_delta(const arma::mat input_data,const arma::mat delta, NewParam param,arma::mat& Wgrad, arma::mat& bgrad){
+void ConvolveModule::calculate_grad_using_delta(const arma::mat input_data,const arma::mat delta, NewParam param,double weight_decay,arma::mat& Wgrad, arma::mat& bgrad){
 	//compute bgrad
 	clock_t start_time = clock();
 	clock_t end_time;

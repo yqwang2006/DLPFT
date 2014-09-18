@@ -236,7 +236,7 @@ void Pooling::initial_weights_bias(){
 		bias = zeros(outputImageNum,1);
 	
 }
-void Pooling::calculate_grad_using_delta(const arma::mat input_data,const arma::mat delta,NewParam param,arma::mat& Wgrad, arma::mat& bgrad){
+void Pooling::calculate_grad_using_delta(const arma::mat input_data,const arma::mat delta,NewParam param,double weight_decay,arma::mat& Wgrad, arma::mat& bgrad){
 	bgrad.set_size(outputImageNum,1);
 	Wgrad.set_size(outputImageNum,1);
 	arma::mat down_sample_data = down_sample(input_data);

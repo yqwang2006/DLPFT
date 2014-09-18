@@ -1,6 +1,7 @@
 #ifndef COMPLEX_H
 #define COMPLEX_H
-
+#include <iostream>
+using namespace std;
 class Complex{
 public:
 	double real;
@@ -19,6 +20,11 @@ public:
 		real = c;
 		imag = 0;
 		return *this;
+	}
+	friend ostream& operator<< (ostream& out,Complex & c){
+		out << ' ' << c.real << "+ i" << c.imag << ' ';
+
+		return out;
 	}
 };
 

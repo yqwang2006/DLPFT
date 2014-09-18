@@ -79,11 +79,12 @@ void ConvolutionRBM::crbmGradients(int k,arma::mat minibatch,NewParam param,doub
 
 	arma::mat error_mat = arma::mean(pow(minibatch - nv_means,2),0);
 	error = error_mat(0);
-	
+	double weight_dec = atof(param.params[params_name[WEIGHTDECAY]].c_str());
+
 	arma::mat W2grad = zeros(weightMatrix.n_rows,weightMatrix.n_cols);
 	arma::mat h2grad = zeros(outputImageNum,1);
-	calculate_grad_using_delta(minibatch,h_means,param,Wgrad,hgrad);
-	calculate_grad_using_delta(nv_means,nh_means,param,W2grad,h2grad);
+	calculate_grad_using_delta(minibatch,h_means,param,weight_dec,Wgrad,hgrad);
+	calculate_grad_using_delta(nv_means,nh_means,param,weight_dec,W2grad,h2grad);
 
 
 	Wgrad = Wgrad - W2grad;
@@ -247,7 +248,7 @@ arma::mat ConvolutionRBM::backpropagate(arma::mat next_layer_weight,const arma::
 	
 
 }
-void ConvolutionRBM::calculate_grad_using_delta(const arma::mat input_data,const arma::mat delta, NewParam param,arma::mat& Wgrad, arma::mat& bgrad){
+void ConvolutionRBM::calculate_grad_using_delta(const arma::mat input_data,const arma::mat delta, NewParam param,double weight_decay,arma::mat& Wgrad, arma::mat& bgrad){
 //compute bgrad
 	//compute bgrad
 	clock_t start_time = clock();

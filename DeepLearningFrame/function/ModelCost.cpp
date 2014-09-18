@@ -21,7 +21,7 @@ double ModelCost::value_gradient(arma::mat& grad){
 	arma::mat* activations = new arma::mat[layer_num];
 	double cost = 0;
 	//forward Propagation
-	int start_b_loc = 0;
+	
 	
 	for(int i = 0;i < layer_num;i ++){
 
@@ -37,12 +37,14 @@ double ModelCost::value_gradient(arma::mat& grad){
 		modules[i]->weightMatrix.quiet_save(ofs,raw_ascii);
 		ofs.close();*/
 
-		cost += (lambda/2)*arma::sum(arma::sum(arma::pow(modules[i]->weightMatrix,2)));
-		start_b_loc += modules[i]->weightMatrix.size();
 	}
 	arma::mat desired_out;
-	if(modules[layer_num-1]->name == "SoftMax")
+	if(modules[layer_num-1]->name == "SoftMax"){
+
 		desired_out = onehot(activations[layer_num-1].n_rows,activations[layer_num-1].n_cols,labels);
+		cost += (lambda/2)*arma::sum(arma::sum(arma::pow(modules[layer_num-1]->weightMatrix,2)));
+
+	}
 	else
 		desired_out = labels.t();
 	//arma::mat gm = reshape(desired_out,desired_out.size(),1).t()*log(reshape(activations[layer_num-1],activations[layer_num-1].size(),1));
@@ -50,15 +52,15 @@ double ModelCost::value_gradient(arma::mat& grad){
 	double gm_cost = dot(reshape(desired_out,desired_out.size(),1),log(reshape(activations[layer_num-1],activations[layer_num-1].size(),1)));
 
 	cost += ((double)-1/num_images)*gm_cost;
+	
 
 	//backward propagation to compute delta
 
 	delta[layer_num] = -(desired_out - activations[layer_num-1]);
-	int start_w_loc=0,end_w_loc=start_b_loc,end_b_loc=grad.size();
 	arma::mat next_delta = delta[layer_num];
 	arma::mat input_data,next_layer_weight;
 	
-
+	int curr_loc = coefficient.size()-1;
 	for(int i = layer_num-1;i >=0 ;i--){
 		arma::mat w_grad = zeros(modules[i]->weightMatrix.n_rows,modules[i]->weightMatrix.n_cols);
 		arma::mat b_grad = zeros(modules[i]->bias.size(),1);
@@ -83,26 +85,19 @@ double ModelCost::value_gradient(arma::mat& grad){
 		}
 
 		delta[i] = modules[i]->backpropagate(next_layer_weight,next_delta,activations[i],params[i]);
-		modules[i]->calculate_grad_using_delta(input_data,delta[i],params[i],w_grad,b_grad);
+		modules[i]->calculate_grad_using_delta(input_data,delta[i],params[i],weight_decay,w_grad,b_grad);
 
-		
-		if(i > 0)
+		if(i > 0){
 			next_delta = modules[i]->process_delta(delta[i]);
+		}
+
+		grad.rows(curr_loc - b_grad.size()+1, curr_loc) = reshape(b_grad,b_grad.size(),1);
+		grad.rows(curr_loc-b_grad.size()-w_grad.size()+1,curr_loc-b_grad.size()) = reshape(w_grad,w_grad.size(),1);
 		
-		start_w_loc = end_w_loc - modules[i]->weightMatrix.size();
-		start_b_loc = end_b_loc - modules[i]->bias.size();
-		grad.rows(start_w_loc,end_w_loc-1) = reshape(w_grad,w_grad.size(),1);
-		grad.rows(start_b_loc,end_b_loc-1) = reshape(b_grad,b_grad.size(),1);
-		end_w_loc -= modules[i]->weightMatrix.size();
-		end_b_loc -= modules[i]->bias.size();
+		curr_loc = curr_loc - w_grad.size() - b_grad.size();
 
 	}
 
-	
-
-	//end_time = clock();
- //   duration = (double)(end_time-start_time)/CLOCKS_PER_SEC;
-	//cout << "SupervisedModel cost spent: " << duration << " s" << endl;		
 
 	delete[] activations;
 	delete[] delta;
@@ -116,10 +111,7 @@ void ModelCost::hessian(arma::mat& grad, arma::mat& hess){
 }
 void ModelCost::paramsToStack(){
 
-	int start_w_loc = 0;
-	int start_b_loc = 0;
-	int end_w_loc = 0;
-	int end_b_loc = 0;
+	int curr_loc = 0;
 	for(int i = 0;i < layer_num; i++){
 		int hiddenSize = 0;
 		int rows_num = 0,cols_num = 0;
@@ -142,19 +134,14 @@ void ModelCost::paramsToStack(){
 			rows_num = modules[i]->outputSize;
 			cols_num = modules[i]->inputSize;
 		}
-		end_w_loc += modules[i]->weightMatrix.size();
-		modules[i]->weightMatrix = arma::reshape(coefficient.rows(start_w_loc,end_w_loc-1),rows_num,cols_num);
-		start_w_loc = end_w_loc;
-	}
-	start_b_loc = end_w_loc;
-	end_b_loc = end_w_loc;
-	for(int i = 0;i < layer_num; i++){
-		int hiddenSize = 0;
+		
+		modules[i]->weightMatrix = arma::reshape(coefficient.rows(curr_loc,curr_loc + modules[i]->weightMatrix.size()-1),rows_num,cols_num);
+		
+		curr_loc += modules[i]->weightMatrix.size();
 
-		end_b_loc += modules[i]->bias.size();
-		arma::mat b = arma::reshape(coefficient.rows(start_b_loc,end_b_loc-1),end_b_loc-start_b_loc,1);
+		arma::mat b = arma::reshape(coefficient.rows(curr_loc,curr_loc+modules[i]->bias.size()-1),modules[i]->bias.size(),1);
 		modules[i]->bias = b;
-
-		start_b_loc = end_b_loc;
+		curr_loc += modules[i]->bias.size();
+		
 	}
 }

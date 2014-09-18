@@ -39,7 +39,7 @@ double dlpft::optimizer::LbfgsOptimizer::optimize(string varname){
 	return f;
 }
 bool dlpft::optimizer::LbfgsOptimizer::stop(const double& f, const double &f_old, const arma::mat& g, const int& iter){
-	if(sum(sum(abs(g))) <= 1e-5)
+	if(sum(sum(abs(g))) <= 1e-9)
 		return true;
 	if(abs(f-f_old) < 1e-9)
 		return true;

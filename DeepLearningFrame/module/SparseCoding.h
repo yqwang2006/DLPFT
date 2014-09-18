@@ -46,7 +46,7 @@ namespace dlpft{
 				cout << dur_time << endl;
 				return true;
 			}
-			void calculate_grad_using_delta(const arma::mat input_data,const arma::mat delta,NewParam param, arma::mat& Wgrad, arma::mat& bgrad);
+			void calculate_grad_using_delta(const arma::mat input_data,const arma::mat delta,NewParam param,double weight_decay, arma::mat& Wgrad, arma::mat& bgrad);
 		};
 		
 	};

@@ -1,25 +1,30 @@
 Layer_num:2
 Model_type:UnsuperviseModel
-Finetune_switch:OFF
-Init_weight_from_file:YES
-Weight_addr:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\result\AE\
-Bias_addr:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\result\AE\
+Finetune_switch:1,ON
+Global_optimize_method:1,lbfgs
+Global_max_epoch:1,100
+Global_batch_size:1,100
+Global_weight_decay:1,3e-3
+Global_learning_rate:1,0.1
+Global_learning_rate_decayrate:1,0.98
+
 Layer_order:1
 Algorithm:AutoEncoder
-Optimize_method:1,sgd
+Optimize_method:1,lbfgs
 Hid_num:1,200
-Max_epoch:1,10
-Sparsity:1,3e-3
+Max_epoch:1,200
+Sparsity:1,3
 Weight_decay:1,3e-3
-KL_rho:1,0.05
-Learning_rate:1,0.05
+KL_rho:1,0.1
+Learning_rate:1,0.1
 Batch_size:1,100
+
 Layer_order:2
 Algorithm:SoftMax
-Max_epoch:1,100
+Max_epoch:1,200
 Hid_num:1,10
-Optimize_method:1,cg
-Lambda:1,1e-3
+Optimize_method:1,lbfgs
+Lambda:1,1e-4
 
 trainData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTrainData_5000.txt,txt,5000,784
 trainLabels:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTrainLabels_5000.txt,txt,5000,1

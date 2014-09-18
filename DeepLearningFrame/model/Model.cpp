@@ -41,24 +41,25 @@ Module* Model::create_module(NewParam& param,int& in_size,int& in_num,int layer_
 	string w_addr = filePath + "WeightMat_" + layer_id_str.str() + ".txt";
 	string b_addr = filePath + "bias_" + layer_id_str.str() + ".txt";
 	ActivationFunction act_choice = get_activation_function(act_func);
+	double weight_decay = atof(param.params[params_name[WEIGHTDECAY]].c_str());
 	Module* module;
 	if(m_name == "AutoEncoder"){
-		module = new AutoEncoder(in_size,out_size,load_w,w_addr,b_addr,act_choice);
+		module = new AutoEncoder(in_size,out_size,load_w,w_addr,b_addr,act_choice,weight_decay);
 		in_size = out_size;
 	}else if(m_name == "RBM"){
-		module = new RBM(in_size,out_size,load_w,w_addr,b_addr,act_choice);
+		module = new RBM(in_size,out_size,load_w,w_addr,b_addr,act_choice,weight_decay);
 		in_size = out_size;
 	}else if(m_name == "SC"){
-		module = new SparseCoding(in_size,out_size,load_w,w_addr,b_addr,act_choice);
+		module = new SparseCoding(in_size,out_size,load_w,w_addr,b_addr,act_choice,weight_decay);
 		in_size = out_size;
 	}else if(m_name == "SoftMax"){
-		module = new SoftMax(in_size,out_size,load_w,w_addr,b_addr,act_choice);
+		module = new SoftMax(in_size,out_size,load_w,w_addr,b_addr,act_choice,weight_decay);
 		in_size = out_size;
 	}else if(m_name == "ConvolveModule"){
 		int in_dim = sqrt(in_size / in_num);
 		int filter_dim = atoi(param.params[params_name[FILTERDIM]].c_str());
 		int out_num = atoi(param.params[params_name[FEATUREMAPSNUM]].c_str());
-		module = new ConvolveModule(in_dim,in_num,filter_dim,out_num,load_w,w_addr,b_addr,act_choice);
+		module = new ConvolveModule(in_dim,in_num,filter_dim,out_num,load_w,w_addr,b_addr,act_choice,weight_decay);
 		int out_dim = in_dim - filter_dim + 1;
 		in_size = out_dim*out_dim*out_num;
 		in_num = out_num;
@@ -66,7 +67,7 @@ Module* Model::create_module(NewParam& param,int& in_size,int& in_num,int layer_
 		int in_dim = sqrt(in_size / in_num);
 		int filter_dim = atoi(param.params[params_name[FILTERDIM]].c_str());
 		int out_num = atoi(param.params[params_name[FEATUREMAPSNUM]].c_str());
-		module = new ConvolutionRBM(in_dim,in_num,filter_dim,out_num,load_w,w_addr,b_addr,act_choice);
+		module = new ConvolutionRBM(in_dim,in_num,filter_dim,out_num,load_w,w_addr,b_addr,act_choice,weight_decay);
 		int out_dim = in_dim - filter_dim + 1;
 		in_size = out_dim*out_dim*out_num;
 		in_num = out_num;
@@ -80,7 +81,7 @@ Module* Model::create_module(NewParam& param,int& in_size,int& in_num,int layer_
 		in_num = in_num;
 	}else if(m_name == "FullConnection"){
 		int o_size = atoi(param.params[params_name[HIDNUM]].c_str());
-		module = new FullConnectModule(in_size,o_size,load_w,w_addr,b_addr,act_choice);
+		module = new FullConnectModule(in_size,o_size,load_w,w_addr,b_addr,act_choice,weight_decay);
 		in_size = o_size;
 	}else{
 		module = NULL;
@@ -88,17 +89,22 @@ Module* Model::create_module(NewParam& param,int& in_size,int& in_num,int layer_
 	return module;
 }
 void Model::train(arma::mat data, arma::mat labels,vector<NewParam> model_param){
-	int max_epoch = atoi(model_param[layerNumber].params[params_name[GLOBALMAXEPOCH]].c_str());
+	
+
+	cout << "begin train!" <<endl;
+
+
+
 	int sample_num = data.n_cols;
-	int batch_size = atoi(model_param[layerNumber].params[params_name[GLOBALBATCHSIZE]].c_str());
+	
 	double weight_dec = atof(model_param[layerNumber].params[params_name[GLOBALWEIGHTDECAY]].c_str());
-	double learning_rate = atof(model_param[layerNumber].params[params_name[GLOBALLEARNRATE]].c_str());
-	double learning_rate_decay = atof(model_param[layerNumber].params[params_name[GLOBALLEARNRATEDECAY]].c_str());
+	
+	
+	int batch_size = atoi(model_param[layerNumber].params[params_name[GLOBALBATCHSIZE]].c_str());
+
 	arma::mat features = data;
 	double error = 0;
 
-	if(max_epoch == 0) max_epoch = 50;
-	if(batch_size == 0) batch_size = 100;
 	if(weight_dec == 0) weight_dec = 3e-3;
 
 	int batch_num = sample_num / batch_size;
@@ -108,8 +114,11 @@ void Model::train(arma::mat data, arma::mat labels,vector<NewParam> model_param)
 	ModelCost* costfunc = new ModelCost(modules,data,labels,model_param,weight_dec);
 	arma::mat grad;
 
-	SgdOptimizer *opt_ptr = new SgdOptimizer(costfunc,max_epoch,learning_rate,batch_size,learning_rate_decay);
+	//SgdOptimizer *opt_ptr = new SgdOptimizer(costfunc,max_epoch,learning_rate,batch_size,learning_rate_decay);
 
+	Optimizer* opt_ptr = create_optimizer(model_param[layerNumber],costfunc);
+	
+	
 	initParams(costfunc->coefficient,model_param);
 
 	opt_ptr->set_func_ptr(costfunc);
@@ -130,15 +139,9 @@ arma::mat Model::predict(const arma::mat testdata, const arma::mat testlabels,ve
 
 	for(int i = 0;i < layerNumber;i++){
 		features = modules[i]->forwardpropagate(features,params[i]);
-		if(i == 0){
-			ofstream ofs;
-			ofs.open("features0.txt");
-			features.quiet_save(ofs,arma::raw_ascii);
-			ofs.close();
-		}
 	}
 	if(params[layerNumber-1].params["Algorithm"] == "SoftMax"){
-
+		
 		max_vals = max(features);
 
 		for(int i = 0;i < features.n_cols;i++){
@@ -152,7 +155,7 @@ arma::mat Model::predict(const arma::mat testdata, const arma::mat testlabels,ve
 
 		}
 	}else{
-
+		
 		pred_labels = features.t();
 	}
 	return pred_labels;
@@ -163,45 +166,28 @@ void Model::initParams(arma::mat& theta,vector<NewParam> param){
 	int theta_dim = 0;
 	int W_dim = 0;
 	int b_dim = 0;
+	int curr_loc = 0;
+	for(int i = 0;i < layerNumber; i++){
+		theta_dim += modules[i]->weightMatrix.size() + modules[i]->bias.size();
+	}
+	theta = zeros(theta_dim,1);
 	for(int i = 0;i < layerNumber; i++){
 
- 		W_dim += modules[i]->weightMatrix.size();
-		b_dim += modules[i]->bias.size();
+ 		W_dim = modules[i]->weightMatrix.size();
 
-		//last_filter_num = atoi(param[i].params[params_name[FEATUREMAPSNUM]].c_str());
-		//last_output_dim = last_output_dim - atoi(param[i].params[params_name[FILTERDIM]].c_str()) + 1;
+		theta.rows(curr_loc,curr_loc+W_dim-1) = reshape(modules[i]->weightMatrix,W_dim,1);
+		curr_loc += W_dim;
+		//if(i < layerNumber - 1){
+			b_dim = modules[i]->bias.size();
+			theta.rows(curr_loc,curr_loc+b_dim-1) = modules[i]->bias;
+			curr_loc += b_dim;
+		//}
 	}
-	theta_dim = W_dim + b_dim;
-	theta.set_size(theta_dim,1);
-	arma::mat W = zeros(W_dim,1);
-	arma::mat b = zeros(b_dim,1);
-	int curr_w_loc = 0;
-	int curr_b_loc = 0;
-	int next_w_loc = 0;
-	int next_b_loc = 0;
-	for(int i = 0;i < layerNumber; i++){
-
-		arma::mat& weight = modules[i]->weightMatrix;
-		next_w_loc = curr_w_loc + weight.size();
-		W.rows(curr_w_loc,next_w_loc-1) = reshape(weight,weight.size(),1);
-		curr_w_loc = next_w_loc;
-		arma::mat& bia = modules[i]->bias;
-		next_b_loc = curr_b_loc + bia.size();
-		b.rows(curr_b_loc,next_b_loc-1) = reshape(bia,bia.size(),1);
-		curr_b_loc = next_b_loc;
-		//last_filter_num = atoi(param[i].params[params_name[FEATUREMAPSNUM]].c_str());
-		//last_output_dim = last_output_dim - atoi(param[i].params[params_name[FILTERDIM]].c_str()) + 1;
-	}
-	theta.rows(0,W.size()-1) = W;
-	theta.rows(W_dim,theta_dim-1) = b;
 
 }
 void Model::modelParamsToStack(arma::mat theta,vector<NewParam> params){
 
-	int start_w_loc = 0;
-	int start_b_loc = 0;
-	int end_w_loc = 0;
-	int end_b_loc = 0;
+	int curr_loc = 0;
 	for(int i = 0;i < layerNumber; i++){
 		int hiddenSize = 0;
 		int rows_num = 0,cols_num = 0;
@@ -224,20 +210,11 @@ void Model::modelParamsToStack(arma::mat theta,vector<NewParam> params){
 			rows_num = modules[i]->outputSize;
 			cols_num = modules[i]->inputSize;
 		}
-		end_w_loc += modules[i]->weightMatrix.size();
-		modules[i]->weightMatrix = arma::reshape(theta.rows(start_w_loc,end_w_loc-1),rows_num,cols_num);
-		start_w_loc = end_w_loc;
-	}
-	start_b_loc = end_w_loc;
-	end_b_loc = end_w_loc;
-	for(int i = 0;i < layerNumber; i++){
-		int hiddenSize = 0;
-
-		end_b_loc += modules[i]->bias.size();
-		arma::mat b = arma::reshape(theta.rows(start_b_loc,end_b_loc-1),end_b_loc-start_b_loc,1);
-		modules[i]->bias = b;
-
-		start_b_loc = end_b_loc;
+		
+		modules[i]->weightMatrix = arma::reshape(theta.rows(curr_loc,curr_loc + modules[i]->weightMatrix.size()-1),rows_num,cols_num);
+		curr_loc += modules[i]->weightMatrix.size();
+		modules[i]->bias = theta.rows(curr_loc,curr_loc+modules[i]->bias.size()-1);
+		curr_loc += modules[i]->bias.size();
 	}
 }
 double Model::predict_acc(const arma::mat predict_labels, const arma::mat labels){

@@ -76,7 +76,7 @@ namespace dlpft{
 			
 			virtual arma::mat process_delta(arma::mat curr_delta) = 0;
 
-			virtual void calculate_grad_using_delta(const arma::mat input_data,const arma::mat delta,NewParam param, arma::mat& Wgrad, arma::mat& bgrad)=0;
+			virtual void calculate_grad_using_delta(const arma::mat input_data,const arma::mat delta,NewParam param,double weight_decay, arma::mat& Wgrad, arma::mat& bgrad)=0;
 		};
 	};
 };
