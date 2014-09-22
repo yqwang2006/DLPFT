@@ -59,8 +59,8 @@ void ConvolutionRBM::pretrain(const arma::mat data, NewParam param){
 			bias += learn_rate * hgrad;
 			v_bias += learn_rate * vgrad;
 
-			LogOut << "Ended batch " << batch+1 << "/" << num_batches << ". Reconstruction error is " << error << endl;
-			cout << "Ended batch " << batch+1 << "/" << num_batches << ". Reconstruction error is " << error << endl;
+			//LogOut << "Ended batch " << batch+1 << "/" << num_batches << ". Reconstruction error is " << error << endl;
+			//cout << "Ended batch " << batch+1 << "/" << num_batches << ". Reconstruction error is " << error << endl;
 			errsum += error;
 		}
 
@@ -74,11 +74,12 @@ void ConvolutionRBM::pretrain(const arma::mat data, NewParam param){
 }
 void ConvolutionRBM::crbmGradients(int k,arma::mat minibatch,NewParam param,double v_bias, arma::mat& Wgrad, arma::mat& hgrad, double& vgrad, double& error){
 	arma::mat h_means, h_samples,nh_samples,nv_means,nv_samples,nh_means;
-	
+	int batch_size = minibatch.n_cols;
+
 	CD_k(1,minibatch,v_bias, h_means, h_samples,nv_means,nv_samples,nh_means,nh_samples);
 
-	arma::mat error_mat = arma::mean(pow(minibatch - nv_means,2),0);
-	error = error_mat(0);
+	error = arma::mean(arma::sum(arma::sum(pow(minibatch - nv_means,2))))/batch_size;
+	
 	double weight_dec = atof(param.params[params_name[WEIGHTDECAY]].c_str());
 
 	arma::mat W2grad = zeros(weightMatrix.n_rows,weightMatrix.n_cols);

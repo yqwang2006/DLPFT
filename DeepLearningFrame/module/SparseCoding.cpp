@@ -59,7 +59,7 @@ void SparseCoding::pretrain(const arma::mat data,NewParam param){
 	sc_opt->display = false;
 
 	arma::mat minibatch = arma::zeros(visible_size,batch_size);
-	rand_data(data,minibatch,samples_num,batch_size);
+	
 	
 	
 	int num_batches = ceil((double)samples_num/batch_size);
@@ -68,6 +68,8 @@ void SparseCoding::pretrain(const arma::mat data,NewParam param){
 	arma::mat error_mat = arma::zeros(feature_num,batch_size);
 	//begin iteration:
 	for(int iter = 0;iter < max_epoch; iter++){
+		rand_data(data,minibatch,samples_num,batch_size);
+
 		for(int batch = 0;batch < num_batches;batch++){
 			error_mat = sc_cost_func->weightMatrix.t() * sc_cost_func->coefficient - minibatch;
 			

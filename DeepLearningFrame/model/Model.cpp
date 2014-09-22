@@ -108,7 +108,6 @@ void Model::train(arma::mat data, arma::mat labels,vector<NewParam> model_param)
 	if(weight_dec == 0) weight_dec = 3e-3;
 
 	int batch_num = sample_num / batch_size;
-	arma::mat *minibatches = new arma::mat[batch_num];
 
 
 	ModelCost* costfunc = new ModelCost(modules,data,labels,model_param,weight_dec);
@@ -129,7 +128,6 @@ void Model::train(arma::mat data, arma::mat labels,vector<NewParam> model_param)
 
 	modelParamsToStack(costfunc->coefficient,model_param);
 
-	delete []minibatches;
 }
 arma::mat Model::predict(const arma::mat testdata, const arma::mat testlabels,vector<NewParam> params){
 	arma::mat features = testdata;

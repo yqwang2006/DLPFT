@@ -1,40 +1,38 @@
-Layer_num:4
+Layer_num:3
 Model_type:UnsuperviseModel
+
 Finetune_switch:1,ON
 Global_optimize_method:1,sgd
 Global_max_epoch:1,50
 Global_batch_size:1,100
 Global_weight_decay:1,3e-3
-Global_learning_rate:1,0.05
-Global_learning_rate_decayrate:1,0.95
+Global_learning_rate:1,2
+Global_learning_rate_decayrate:1,0.99
+
 Layer_order:1
 Algorithm:RBM
 Optimize_method:1,CD
-Hid_num:1,400
-Max_epoch:1,50
-Batch_size:1,1000
+Hid_num:1,100
+Max_epoch:1,5
+Batch_size:1,100
 Learning_rate:1,0.1
+
 Layer_order:2
 Algorithm:RBM
 Optimize_method:1,CD
-Hid_num:1,250
-Max_epoch:1,50
-Batch_size:1,200
-Learning_rate:1,0.1
-Layer_order:3
-Algorithm:RBM
-Optimize_method:1,CD
-Hid_num:1,200
-Max_epoch:1,50
+Hid_num:1,100
+Max_epoch:1,5
 Batch_size:1,100
 Learning_rate:1,0.1
-Layer_order:4
+
+Layer_order:3
 Algorithm:SoftMax
-Max_epoch:1,100
+Max_epoch:1,400
 Hid_num:1,10
 Optimize_method:1,cg
-Lambda:1,1e-3
-trainData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTrainData_5000.txt,txt,5000,784
-trainLabels:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTrainLabels_5000.txt,txt,5000,1
-testData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTestData_1000.txt,txt,1000,784
-testLabels:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTestLabels_1000.txt,txt,1000,1
+Weight_decay:1,1e-4
+
+trainData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\data\mnist60000_data.txt,txt,60000,784
+trainLabels:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\data\mnist60000_labels.txt,txt,60000,1
+testData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\data\mnist10000_data.txt,txt,10000,784
+testLabels:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\data\mnist10000_labels.txt,txt,10000,1

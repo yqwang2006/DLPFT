@@ -13,7 +13,6 @@ double ModelCost::value_gradient(arma::mat& grad){
 
 	int image_dim = sqrt(data.n_rows);
 	int num_images = data.n_cols;
-	double lambda = 3e-3;
 	arma::mat *delta = new arma::mat[layer_num+1];
 	grad = zeros(coefficient.size(),1);
 	paramsToStack();
@@ -42,7 +41,7 @@ double ModelCost::value_gradient(arma::mat& grad){
 	if(modules[layer_num-1]->name == "SoftMax"){
 
 		desired_out = onehot(activations[layer_num-1].n_rows,activations[layer_num-1].n_cols,labels);
-		cost += (lambda/2)*arma::sum(arma::sum(arma::pow(modules[layer_num-1]->weightMatrix,2)));
+		cost += (weight_decay/2)*arma::sum(arma::sum(arma::pow(modules[layer_num-1]->weightMatrix,2)));
 
 	}
 	else

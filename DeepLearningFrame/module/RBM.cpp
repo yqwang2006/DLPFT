@@ -9,9 +9,7 @@ void RBM::pretrain(const arma::mat data,NewParam param){
 	double learn_rate = atof(param.params[params_name[LEARNRATE]].c_str());
 
 
-	double inittialmomentum = 0.5;
-	double finalmomentum = 0.9;
-	double momentum = 0;
+	double momentum = 0.5;
 
 	double weightcost = 0.0002;
 
@@ -30,7 +28,7 @@ void RBM::pretrain(const arma::mat data,NewParam param){
 
 	arma::mat* minibatches = new arma::mat[num_batches];
 
-	rand_data(data,minibatches,sample_num,batch_size);
+	
 
 	arma::mat deltaW = zeros(hid_size,visible_size);
 	arma::mat deltab = zeros(hid_size,1);
@@ -41,38 +39,35 @@ void RBM::pretrain(const arma::mat data,NewParam param){
 	for(int epoch = 0; epoch < max_epoch; epoch++){
 		errsum = 0;
 		
+		rand_data(data,minibatches,sample_num,batch_size);
+
 		for(int batch = 0; batch < num_batches; batch++){
-			
-			
+
 			CD_k(1,minibatches[batch],c_bias);
 			
-			
-			if(batch < 5)
-				momentum = inittialmomentum;
-			else
-				momentum = finalmomentum;
 			
 			
 			//update W,b,c
 			
 			deltaW = momentum * deltaW + learn_rate *
-				((h_means * minibatches[batch].t() - nh_means * nv_means.t())/batch_size - weightcost * weightMatrix);
+				((h_samples * minibatches[batch].t() - nh_means * nv_samples.t())/batch_size - weightcost * weightMatrix);
 			deltac = momentum * deltac + (learn_rate/batch_size) * 
-				(sum(minibatches[batch],1) - sum(nv_means,1));
+				(sum(minibatches[batch],1) - sum(nv_samples,1));
 			deltab = momentum * deltab + (learn_rate/batch_size) *
-				(sum(h_means,1) - sum(nh_means,1));
+				(sum(h_samples,1) - sum(nh_means,1));
 
 
 			weightMatrix += deltaW ;
 			bias += deltab ;
 			c_bias = c_bias + deltac ;
 
-			double err = arma::sum(arma::sum(arma::pow((minibatches[batch]-nv_means),2)));
+			double err = arma::sum(arma::sum(arma::pow((minibatches[batch]-nv_samples),2)))/batch_size;
+
 			errsum += err;
 		}
 
-		LogOut << "Ended epoch " << epoch << "/" << max_epoch << ". Reconstruction error is " << errsum << endl;
-		cout << "Ended epoch " << epoch << "/" << max_epoch << ". Reconstruction error is " << errsum << endl;
+		LogOut << "Ended epoch " << epoch << "/" << max_epoch << ". Reconstruction error is " << errsum / num_batches << endl;
+		cout << "Ended epoch " << epoch << "/" << max_epoch << ". Reconstruction error is " << errsum / num_batches  << endl;
 
 	}
 

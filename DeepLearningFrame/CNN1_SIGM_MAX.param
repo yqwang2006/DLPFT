@@ -1,36 +1,42 @@
 Layer_num:5
 Model_type:SuperviseModel
 Global_optimize_method:1,sgd
-Global_max_epoch:1,3
+Global_max_epoch:1,10
 Global_batch_size:1,100
 Global_weight_decay:1,3e-3
-Global_learning_rate:1,0.15
+Global_learning_rate:1,2
 Global_learning_rate_decayrate:1,0.98
+
 Layer_order:1
 Algorithm:ConvolveModule
 Active_function:1,SIGMOID
 Filter_dim:1,5
 Features_num:1,6
+
 Layer_order:2
 Algorithm:Pooling
 Pooling_dim:1,2
 Pooling_type:1,MAX
+
 Layer_order:3
 Algorithm:ConvolveModule
 Active_function:1,SIGMOID
 Filter_dim:1,5
 Features_num:1,12
+
 Layer_order:4
 Algorithm:Pooling
 Pooling_dim:1,2
 Pooling_type:1,MAX
+
 Layer_order:5
 Algorithm:SoftMax
 Max_epoch:1,100
 Hid_num:1,10
 Active_function:1,SIGMOID
 Optimize_method:1,cg
-Lambda:1,1e-3
+Weight_decay:1,1e-4
+
 trainData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTrainData_5000.txt,txt
 trainLabels:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTrainLabels_5000.txt,txt
 testData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTestData_1000.txt,txt

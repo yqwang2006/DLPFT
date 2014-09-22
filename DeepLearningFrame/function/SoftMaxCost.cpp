@@ -28,7 +28,7 @@ double dlpft::function::SoftMaxCost::value_gradient(arma::mat& grad){
 	bgrad = ((double)-1/numCases) * sum((groundTruth - M),1);
 	
 	
-	groundTruth.reshape(1,groundTruth.size());
+	groundTruth.reshape(groundTruth.size(),1);
 	M.reshape(M.size(),1);
 	W.reshape(W.size(),1);
 	
