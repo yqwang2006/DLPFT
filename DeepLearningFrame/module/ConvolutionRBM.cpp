@@ -38,18 +38,21 @@ void ConvolutionRBM::pretrain(const arma::mat data, NewParam param){
 
 	arma::mat* minibatches = new arma::mat[num_batches];
 
-	rand_data(data,minibatches,sample_num,batch_size);
+	
 
 	for(int epoch = 1; epoch <=  max_epoch; epoch++){
 		double errsum = 0;
-		for(int batch = 0; batch < num_batches; batch++){
 
+		rand_data(data,minibatches,sample_num,batch_size);
+
+		for(int batch = 0; batch < num_batches; batch++){
 
 
 			double error = 0;
 			arma::mat Wgrad = zeros(weightMatrix.n_rows,weightMatrix.n_cols);
 			arma::mat hgrad = zeros(outputImageNum,1);
 			double vgrad = 0;
+
 			crbmGradients(1,minibatches[batch],param,v_bias,Wgrad,hgrad,vgrad,error);
 
 
@@ -68,9 +71,7 @@ void ConvolutionRBM::pretrain(const arma::mat data, NewParam param){
 		cout << "Ended epoch " << epoch << "/" << max_epoch << ". Reconstruction error is " << errsum << endl;
 
 	}
-
-	delete[] minibatches;
-
+	delete []minibatches;
 }
 void ConvolutionRBM::crbmGradients(int k,arma::mat minibatch,NewParam param,double v_bias, arma::mat& Wgrad, arma::mat& hgrad, double& vgrad, double& error){
 	arma::mat h_means, h_samples,nh_samples,nv_means,nv_samples,nh_means;

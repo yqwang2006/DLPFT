@@ -1,5 +1,6 @@
 #include "SparseCoding.h"
 #include "../util/create_optimizer.h"
+#include "../util/randdata.h"
 using namespace dlpft::module;
 using namespace dlpft::param;
 using namespace dlpft::function;
@@ -57,21 +58,21 @@ void SparseCoding::pretrain(const arma::mat data,NewParam param){
 	Optimizer *sc_opt = create_optimizer(param,sc_cost_func);
 	
 	sc_opt->display = false;
-
-	arma::mat minibatch = arma::zeros(visible_size,batch_size);
-	
 	
 	
 	int num_batches = ceil((double)samples_num/batch_size);
+
+	arma::mat* minibatches = new arma::mat[num_batches];
 	
 	double error = 0;
 	arma::mat error_mat = arma::zeros(feature_num,batch_size);
 	//begin iteration:
 	for(int iter = 0;iter < max_epoch; iter++){
-		rand_data(data,minibatch,samples_num,batch_size);
-
+		
+		rand_data(data,minibatches,samples_num,batch_size);
 		for(int batch = 0;batch < num_batches;batch++){
-			error_mat = sc_cost_func->weightMatrix.t() * sc_cost_func->coefficient - minibatch;
+			
+			error_mat = sc_cost_func->weightMatrix.t() * sc_cost_func->coefficient - minibatches[batch];
 			
 			error = arma::sum(arma::sum(arma::pow(error_mat,2)))/batch_size;
 			//cout << "error = " << error << endl;
@@ -87,12 +88,10 @@ void SparseCoding::pretrain(const arma::mat data,NewParam param){
 				<< "    "<< Jsparsity << "    " << Jweight << endl;
 
 			
-			rand_data(data,minibatch,samples_num,batch_size);
+			sc_cost_func->coefficient = forwardpropagate(minibatches[batch],param);
 			
-			sc_cost_func->coefficient = forwardpropagate(minibatch,param);
-			
-			sc_cost_func->data = minibatch;
-			sc_cost_func->labels = zeros<mat>(minibatch.n_cols,1);
+			sc_cost_func->data = minibatches[batch];
+			sc_cost_func->labels = zeros<mat>(minibatches[batch].n_cols,1);
 			sc_cost_func->coefficient.reshape(feature_num*batch_size,1);
 
 			
@@ -105,40 +104,16 @@ void SparseCoding::pretrain(const arma::mat data,NewParam param){
 
 			sc_cost_func->coefficient.reshape(feature_num,batch_size);
 
-			sc_cost_func->weightMatrix = ((minibatch*sc_cost_func->coefficient.t())
+			sc_cost_func->weightMatrix = ((minibatches[batch]*sc_cost_func->coefficient.t())
 				*arma::inv((weightdecay*batch_size*eye(feature_num,feature_num)+sc_cost_func->coefficient*sc_cost_func->coefficient.t()) )).t();
 
 
 		}
 	}
 	weightMatrix = sc_cost_func->weightMatrix;
-
+	delete []minibatches;
 }
-void SparseCoding::rand_data(const arma::mat input, arma::mat& batch,int sample_num, int batch_size){
-	if(load_weight == "YES"){
-		if(weight_addr != "" && bias_addr != ""){
-			initial_weights_bias_from_file(weight_addr,bias_addr);
-		}
-	}else{
-		srand(unsigned(time(NULL)));
-		int batches_num = sample_num / batch_size;
-		int visible_size = input.n_rows;
-		vector<int> groups;
-		for(int i = 0;i < sample_num; i++){
-				groups.push_back(i);
-		}
 
-		random_shuffle(groups.begin(),groups.end());
-
-		for(int i = 0;i < batch_size; i++)
-		{
-			batch.col(i) = input.col(groups[i]);
-		}
-
-	}
-
-
-}
 void SparseCoding::cirshift(arma::cube& group_cube,int dim, int dir){
 	arma::cube temp_cube = group_cube;
 	if(dim == 0){

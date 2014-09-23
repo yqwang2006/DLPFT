@@ -102,7 +102,6 @@ void Model::train(arma::mat data, arma::mat labels,vector<NewParam> model_param)
 	
 	int batch_size = atoi(model_param[layerNumber].params[params_name[GLOBALBATCHSIZE]].c_str());
 
-	arma::mat features = data;
 	double error = 0;
 
 	if(weight_dec == 0) weight_dec = 3e-3;

@@ -43,6 +43,8 @@ void RBM::pretrain(const arma::mat data,NewParam param){
 
 		for(int batch = 0; batch < num_batches; batch++){
 
+			
+
 			CD_k(1,minibatches[batch],c_bias);
 			
 			
@@ -72,7 +74,6 @@ void RBM::pretrain(const arma::mat data,NewParam param){
 	}
 
 	//result_model.features = RBM_VtoH(data, result_model);
-
 	delete []minibatches;
 }
 arma::mat RBM::forwardpropagate(const arma::mat data,  NewParam param){
