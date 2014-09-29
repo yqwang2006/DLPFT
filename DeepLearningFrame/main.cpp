@@ -2,13 +2,13 @@
 #include <string>
 #include <time.h>
 #include <iostream>
-#include "io/LoadData.h"
-#include "io/LoadParam.h"
+#include "io\LoadData.h"
+#include "io\LoadParam.h"
 #include "RegisterProduct.h"
 #include "module\AllModule.h"
-#include "param/AllParam.h"
-#include "io/AllDataAddr.h"
-#include "io/SaveResult.h"
+#include "param\AllParam.h"
+#include "io\AllDataAddr.h"
+#include "io\SaveResult.h"
 #include "model\Model.h"
 #include "util\convolve.h"
 #include "util\onehot.h"
@@ -24,6 +24,7 @@ void load_data(string ,arma::mat&);
 void load_data(string ,arma::mat&);
 void load_data(DataInfo ,arma::mat&);
 void load_data(DataInfo ,arma::mat&);
+
 SaveResult save_result;
 int snap_num = 0;
 int main(int argc, char**argv){
@@ -32,36 +33,44 @@ int main(int argc, char**argv){
 		exit(-1);
 	}
 	string paramFileFullPath = argv[1];
+	string split_symbol;		//the split symbol in the full path of param file
+	string paramFullName;		//the full name of param file, it includes ".param"
+	string paramFullpath;		//the full path of param file. eg. if paramFullName = a/b/d.param,then paramFullpath = a/b/
+	string paramFileName;		//the name of param file. paramFileName = paramFullName - paramFullPath - ".param"
+	string filedir;				//the result file dir.
 
 
 
-	string paramFullName;
+	/*parse the param file name received from argv*/
+
 	if(paramFileFullPath.find(".param") != string::npos){
 		paramFullName = paramFileFullPath;
 	}else{
 		paramFullName = paramFileFullPath + ".param";
 	}
 	
-	string split_symbol;
+	
 
 	if(paramFileFullPath.find("\\") != string::npos){
 		split_symbol = "\\";
 	}else{
 		split_symbol = "/";
 	}
-	string paramFullpath;
+	
 	string::size_type pos = 0;
 	if((pos = paramFullName.find_last_of(split_symbol)) != string::npos){
 		paramFullpath = paramFullName.substr(0,pos);
 	}else{
 		paramFullpath = "";
 	}
-	string paramFileName = paramFullName.substr(paramFullName.find_last_of(split_symbol)+1,paramFullName.find(".param")-paramFullName.find_last_of(split_symbol)-1);
+	paramFileName = paramFullName.substr(paramFullName.find_last_of(split_symbol)+1,paramFullName.find(".param")-paramFullName.find_last_of(split_symbol)-1);
 
 	RegisterFunction();
 	RegisterOptimizer();
 
-	string filedir;
+	
+
+	/*get the result file path to save the result files*/
 
 	string param_path = "param";
 
@@ -78,14 +87,13 @@ int main(int argc, char**argv){
 	open_file(filedir,"LogOut.txt");
 	
 	
-	//load param file
+	/*load param file from param file*/
+
 	dlpft::io::LoadParam load_param(paramFullName);
 	vector<vector<NewParam>> params;
 	AllDataAddr data_addr;
 	NewParam global_info;
 	
-
-
 	//params存放所有层的参数，其中params[layer_num]存放全局参数
 	load_param.load(params,data_addr,global_info);
 	arma::mat train_data,test_data,finetune_data;
@@ -102,11 +110,9 @@ int main(int argc, char**argv){
 	LogOut << "Loading train data!" << endl;
 	cout << "Loading train data!" << endl;
 
-	//load_data(data_addr.train_data_addr,train_data,18900,588);
 	load_data(data_addr.train_data_info,train_data);
 	train_data = train_data.t();
 	if(data_addr.train_labels_info.name != ""){
-		//load_data(data_addr.train_labels_addr,train_labels,18900,1);
 		load_data(data_addr.train_labels_info,train_labels);
 	}
 	
@@ -115,11 +121,9 @@ int main(int argc, char**argv){
 	if(data_addr.test_data_info.name != ""){
 		LogOut << "Loading test data!" << endl;
 		cout << "Loading test data!" << endl;
-		//load_data(data_addr.test_data_addr,test_data,120617,588);
 		load_data(data_addr.test_data_info,test_data);
 		test_data = test_data.t();
 		if(data_addr.test_labels_info.name != ""){
-			//load_data(data_addr.test_labels_addr,test_labels,120617,1);
 			load_data(data_addr.test_labels_info,test_labels);		
 		}
 	}
@@ -153,6 +157,8 @@ int main(int argc, char**argv){
 
 	LogOut << "Begin trainning!" << endl;
 	cout << "Begin trainning!" << endl;
+
+
 	//只训练第一个参数文件，此处可加循环将所有的参数文件都训练一遍。
 	
 	string init_mat_from_file = global_info.params[params_name[LOADWEIGHT]];

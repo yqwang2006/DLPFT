@@ -15,6 +15,7 @@ double ModelCost::value_gradient(arma::mat& grad){
 	int num_images = data.n_cols;
 	arma::mat *delta = new arma::mat[layer_num+1];
 	grad = zeros(coefficient.size(),1);
+	
 	paramsToStack();
 
 	arma::mat* activations = new arma::mat[layer_num];
@@ -57,7 +58,6 @@ double ModelCost::value_gradient(arma::mat& grad){
 
 	delta[layer_num] = -(desired_out - activations[layer_num-1]);
 	arma::mat next_delta = delta[layer_num];
-	arma::mat input_data,next_layer_weight;
 	
 	int curr_loc = coefficient.size()-1;
 	for(int i = layer_num-1;i >=0 ;i--){
@@ -65,26 +65,24 @@ double ModelCost::value_gradient(arma::mat& grad){
 		arma::mat b_grad = zeros(modules[i]->bias.size(),1);
 		
 		if(layer_num == 1){
-			input_data = data;
-			next_layer_weight = zeros(modules[i]->weightMatrix.size(),1);
+			delta[i] = modules[i]->backpropagate(modules[i]->weightMatrix,next_delta,activations[i],params[i]);
+			modules[i]->calculate_grad_using_delta(data,delta[i],params[i],weight_decay,w_grad,b_grad);
+
 		}
 		else if(i == layer_num-1){
-			input_data = activations[i-1];
+			delta[i] = modules[i]->backpropagate(modules[i]->weightMatrix,next_delta,activations[i],params[i]);
+			modules[i]->calculate_grad_using_delta(activations[i-1],delta[i],params[i],weight_decay,w_grad,b_grad);
 		}
 		else if(i == 0){
-			input_data = data;
-			next_layer_weight = modules[i+1]->weightMatrix;
-
+			delta[i] = modules[i]->backpropagate(modules[i+1]->weightMatrix,next_delta,activations[i],params[i]);
+			modules[i]->calculate_grad_using_delta(data,delta[i],params[i],weight_decay,w_grad,b_grad);
 			
 		}
 		else{
-			input_data = activations[i-1];
-			next_layer_weight = modules[i+1]->weightMatrix;
-
+			delta[i] = modules[i]->backpropagate(modules[i+1]->weightMatrix,next_delta,activations[i],params[i]);
+			modules[i]->calculate_grad_using_delta( activations[i-1],delta[i],params[i],weight_decay,w_grad,b_grad);
 		}
 
-		delta[i] = modules[i]->backpropagate(next_layer_weight,next_delta,activations[i],params[i]);
-		modules[i]->calculate_grad_using_delta(input_data,delta[i],params[i],weight_decay,w_grad,b_grad);
 
 		if(i > 0){
 			next_delta = modules[i]->process_delta(delta[i]);

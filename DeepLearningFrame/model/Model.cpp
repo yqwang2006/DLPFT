@@ -5,24 +5,29 @@ using namespace dlpft::model;
 using namespace dlpft::function;
 void Model::pretrain(const arma::mat data, vector<NewParam> params){
 
-	arma::mat features = data;
+	// the first layer using data as input
+	modules[0]->pretrain(data,params[0]);
+	arma::mat features = modules[0]->forwardpropagate(data,params[0]);
+	
 	if((params[layerNumber-1].params[params_name[ALGORITHM]] == "SoftMax")){
-		for(int i = 0;i < layerNumber-1;i++){
+		for(int i = 1;i < layerNumber-1;i++){
 			modules[i]->pretrain(features,params[i]);
 			if(i < layerNumber-2)
 				features = modules[i]->forwardpropagate(features,params[i]);
 		}
 	}else{
-		for(int i = 0;i < layerNumber;i++){
+		for(int i = 1;i < layerNumber;i++){
 			modules[i]->pretrain(features,params[i]);
 			if(i < layerNumber-1)
-			features = modules[i]->forwardpropagate(features,params[i]);
+				features = modules[i]->forwardpropagate(features,params[i]);
 		}
 	}
 }
 void Model::train_classifier(const arma::mat data, const arma::mat labels, vector<NewParam> param){
-	arma::mat features = data;
-	for(int i = 0;i < layerNumber-1;i++){
+	
+	arma::mat features = modules[0]->forwardpropagate(data,param[0]);
+	
+	for(int i = 1;i < layerNumber-1;i++){
 		features = modules[i]->forwardpropagate(features,param[i]);
 	}
 	if(param[layerNumber-1].params[params_name[ALGORITHM]] == "SoftMax"){

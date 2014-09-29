@@ -157,8 +157,10 @@ void dlpft::io::LoadData::getdatainfo(std::string file_name,int& rows,int& cols)
 			std::string pattern ;
 			if(line.find("\t")!=std::string::npos)
 				pattern = "\t";
-			else
+			else if(line.find(" ")!=std::string::npos)
 				pattern = " ";
+			else if(line.find(",")!=std::string::npos)
+				pattern = ",";
 			std::vector<std::string> words = split(line,pattern);
 			cols = words.size();
 		}
