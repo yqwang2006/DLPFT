@@ -32,7 +32,9 @@ void Model::train_classifier(const arma::mat data, const arma::mat labels, vecto
 	}
 	if(param[layerNumber-1].params[params_name[ALGORITHM]] == "SoftMax"){
 		((SoftMax *)modules[layerNumber-1])->train(features,labels,param[layerNumber-1]);
-	} 
+	}else if(param[layerNumber-1].params[params_name[ALGORITHM]] == "SVM"){
+		((SvmModule *)modules[layerNumber-1])->train(features,labels,param[layerNumber-1]);
+	}
 
 }
 Module* Model::create_module(NewParam& param,int& in_size,int& in_num,int layer_id){
@@ -60,6 +62,8 @@ Module* Model::create_module(NewParam& param,int& in_size,int& in_num,int layer_
 	}else if(m_name == "SoftMax"){
 		module = new SoftMax(in_size,out_size,load_w,w_addr,b_addr,act_choice,weight_decay);
 		in_size = out_size;
+	}else if(m_name == "SVM"){
+		module = new SvmModule();
 	}else if(m_name == "ConvolveModule"){
 		int in_dim = sqrt(in_size / in_num);
 		int filter_dim = atoi(param.params[params_name[FILTERDIM]].c_str());
@@ -109,7 +113,6 @@ void Model::train(arma::mat data, arma::mat labels,vector<NewParam> model_param)
 
 	double error = 0;
 
-	if(weight_dec == 0) weight_dec = 3e-3;
 
 	int batch_num = sample_num / batch_size;
 
@@ -139,11 +142,11 @@ arma::mat Model::predict(const arma::mat testdata, const arma::mat testlabels,ve
 	arma::mat max_vals;
 	arma::mat pred_labels = zeros<arma::mat>(testdata.n_cols,size(testlabels,1));
 
-	for(int i = 0;i < layerNumber;i++){
+	for(int i = 0;i < layerNumber-1;i++){
 		features = modules[i]->forwardpropagate(features,params[i]);
 	}
 	if(params[layerNumber-1].params["Algorithm"] == "SoftMax"){
-		
+		features = modules[layerNumber-1]->forwardpropagate(features,params[layerNumber-1]);
 		max_vals = max(features);
 
 		for(int i = 0;i < features.n_cols;i++){
@@ -156,8 +159,21 @@ arma::mat Model::predict(const arma::mat testdata, const arma::mat testlabels,ve
 			}
 
 		}
+	}else if(params[layerNumber-1].params["Algorithm"] == "SVM"){
+		for(int i = 0;i < features.n_cols; i++){
+			svm_node* test_case = new svm_node[features.n_rows+1];
+			for(int j = 0;j < features.n_rows; j++){
+				
+				test_case[j].index = j+1;
+				test_case[j].value = features(j,i);
+			}
+			test_case[features.n_rows].index = -1;
+			pred_labels[i] = (int)svm_predict(((SvmModule*)modules[layerNumber-1])->svmmodel,test_case);
+			delete []test_case;
+			test_case = NULL;
+		}
 	}else{
-		
+		features = modules[layerNumber-1]->forwardpropagate(features,params[layerNumber-1]);
 		pred_labels = features.t();
 	}
 	return pred_labels;

@@ -32,11 +32,11 @@ namespace dlpft{
 		public:
 			Module(){
 				name = "";
-				activeFuncChoice = SIGMOID;
+				activeFuncChoice = SIGMOIDFUNC;
 			}
 			Module(int in_size,int out_size,
 				const string load_w = "NO",const string w_addr = "",const string b_addr = "",
-				const ActivationFunction active_func=SIGMOID,const double weightdecay = 3e-3)
+				const ActivationFunction active_func=SIGMOIDFUNC,const double weightdecay = 3e-3)
 				:inputSize(in_size),outputSize(out_size){
 				inputSize = in_size;
 				outputSize = out_size;

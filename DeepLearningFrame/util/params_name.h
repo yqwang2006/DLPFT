@@ -10,7 +10,7 @@ static enum PARAMSNAME {
 	POOLINGTYPE,POOLINGDIM,EPSILON,
 	FINETUNESWITCH,FEATUREMAPSNUM,FILTERDIM,
 	TRAINDATA,TRAINLABELS,TESTDATA,TESTLABELS,FINETUNEDATA,FINETUNELABELS,ACTIVEFUNCTION,
-	LOADWEIGHT,WEIGHTADDRESS,BIASADDRESS
+	LOADWEIGHT,WEIGHTADDRESS,BIASADDRESS,SVMTYPE,SVMKERNELTYPE,SVMEPSILON,SVMCOST
 };
 
 static map<PARAMSNAME,string> fill_param_map(){
@@ -48,6 +48,10 @@ static map<PARAMSNAME,string> fill_param_map(){
 	params_name[LOADWEIGHT] = "Init_weight_from_file";
 	params_name[WEIGHTADDRESS] = "Weight_addr";
 	params_name[BIASADDRESS] = "Bias_addr";
+	params_name[SVMTYPE] = "Svm_type";
+	params_name[SVMKERNELTYPE] = "Svm_kernel_type";
+	params_name[SVMEPSILON] = "Svm_epsilon";
+	params_name[SVMCOST] = "Svm_cost";
 	return params_name;
 }
 static map<PARAMSNAME,string> params_name = fill_param_map();

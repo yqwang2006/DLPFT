@@ -17,7 +17,7 @@ namespace dlpft{
 			ActivationFunction activeFuncChoice;
 		public:
 			CostFunction(void):function_name(""){
-				activeFuncChoice = SIGMOID;
+				activeFuncChoice = SIGMOIDFUNC;
 			}
 			~CostFunction(void){
 				cout << "~CostFunction" << endl;

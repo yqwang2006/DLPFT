@@ -4,18 +4,18 @@
 #include "armadillo"
 
 
-	enum ActivationFunction {SIGMOID, TANH, RECTIFIER, LINEAR,SOFTMAX};
+	enum ActivationFunction {LINEARFUNC,TANHFUNC,RECTIFIERFUNC,SIGMOIDFUNC,SOFTMAXFUNC};
 	static ActivationFunction get_activation_function(std::string name){
 		if(name == "LINEAR"){
-			return LINEAR;
+			return LINEARFUNC;
 		}else if(name == "TANH"){
-			return TANH;
+			return TANHFUNC;
 		}else if(name == "RECTIFIER"){
-			return RECTIFIER;
+			return RECTIFIERFUNC;
 		}else if(name == "SOFTMAX"){
-			return SOFTMAX;
+			return SOFTMAXFUNC;
 		}else{
-			return SIGMOID;
+			return SIGMOIDFUNC;
 		}
 	}
 
@@ -66,19 +66,19 @@
 		arma::mat z = arma::zeros(a.n_rows,a.n_cols);
 		switch(act)
 		{
-		case SIGMOID:
+		case SIGMOIDFUNC:
 			sigmoid(a,z);
 			break;
-		case TANH:
+		case TANHFUNC:
 			tanh(a,z);
 			break;
-		case RECTIFIER:
+		case RECTIFIERFUNC:
 			rectifier(a,z);
 			break;
-		case LINEAR:
+		case LINEARFUNC:
 			linear(a, z);
 			break;
-		case SOFTMAX:
+		case SOFTMAXFUNC:
 			softmax(a,z);
 			break;
 		default:
@@ -91,19 +91,19 @@
 		arma::mat g = arma::zeros(z.n_rows,z.n_cols);
 		switch(act)
 		{
-		case SIGMOID:
+		case SIGMOIDFUNC:
 			sigmoid_dev(z, g);
 			break;
-		case TANH:
+		case TANHFUNC:
 			tanh_dev(z, g);
 			break;
-		case RECTIFIER:
+		case RECTIFIERFUNC:
 			rectifier_dev(z, g);
 			break;
-		case LINEAR:
+		case LINEARFUNC:
 			linear_dev(g);
 			break;
-		case SOFTMAX:
+		case SOFTMAXFUNC:
 			softmax_dev(z,g);
 			break;
 		default:

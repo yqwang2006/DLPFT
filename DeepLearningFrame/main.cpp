@@ -39,8 +39,6 @@ int main(int argc, char**argv){
 	string paramFileName;		//the name of param file. paramFileName = paramFullName - paramFullPath - ".param"
 	string filedir;				//the result file dir.
 
-
-
 	/*parse the param file name received from argv*/
 
 	if(paramFileFullPath.find(".param") != string::npos){
@@ -48,7 +46,6 @@ int main(int argc, char**argv){
 	}else{
 		paramFullName = paramFileFullPath + ".param";
 	}
-	
 	
 
 	if(paramFileFullPath.find("\\") != string::npos){

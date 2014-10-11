@@ -18,7 +18,7 @@ namespace dlpft{
 			}
 			Pooling(int input_image_dim,int input_image_num,int pooling_dim, string pooling_type,
 				const string load_w = "NO",const string w_addr = "",const string b_addr = "",
-				const ActivationFunction act = SIGMOID, const double weight = 3e-3){
+				const ActivationFunction act = SIGMOIDFUNC, const double weight = 3e-3){
 				inputImageDim = input_image_dim;
 				inputImageNum = input_image_num;
 				poolingDim = pooling_dim;

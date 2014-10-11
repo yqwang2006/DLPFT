@@ -20,7 +20,7 @@ double dlpft::function::SoftMaxCost::value_gradient(arma::mat& grad){
 
 	//bxsfun(minus)
 	arma::mat M = W * data + repmat(bias,1,data.n_cols);;
-	M = active_function(SOFTMAX,M);
+	M = active_function(SOFTMAXFUNC,M);
 	
 	Wgrad = ((double)-1/numCases) * ((groundTruth - M)) * data.t() + weightDecay * W;
 	Wgrad.reshape(Wgrad.size(),1);

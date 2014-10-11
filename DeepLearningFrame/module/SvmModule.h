@@ -1,38 +1,29 @@
-#ifndef AUTOENCODER_H
-#define AUTOENCODER_H
-#include "armadillo"
+#ifndef SVMMODULE_H
+#define SVMMODULE_H
+
 #include "Module.h"
-#include "../function/SAECostFunction.h"
+#include "svm.h"
 namespace dlpft{
 	namespace module{
-		class AutoEncoder : public Module{
-		public:
-			arma::mat backwardWeight;
-			arma::mat backwardBias;
-
-			AutoEncoder():Module(){
-				name = "AutoEncoder";
+		class SvmModule : public Module{
+			public:
+				svm_model* svmmodel;
+				svm_problem prob;
+			SvmModule():Module(){
+				name = "SvmModule";
 			}
-			AutoEncoder(int in_size,int out_size,
-				const string load_w = "NO",const string w_addr = "",const string b_addr = "",
-				const ActivationFunction active_func=SIGMOIDFUNC,const double weightdecay = 3e-3)
-				:Module(in_size,out_size,load_w,w_addr,b_addr,active_func,weightdecay){
-				name = "AutoEncoder";
-				
-				initial_weights_bias();
+			~SvmModule(){
+				delete svmmodel;
 			}
-			~AutoEncoder(){
-			}
-			
-			void pretrain(const arma::mat data, NewParam param);
+			void pretrain(const arma::mat data,NewParam param){}
+			void train(const arma::mat data, const arma::mat labels, NewParam param);
 			arma::mat backpropagate(arma::mat next_layer_weight,const arma::mat next_delta, const arma::mat features, NewParam param);
 			arma::mat forwardpropagate(const arma::mat data,  NewParam param);
 			void initial_weights_bias();
-			void set_init_coefficient(arma::mat& coefficeint);
+			void set_init_coefficient(arma::mat& coefficient);
 			arma::mat process_delta(arma::mat curr_delta)
 			{
-				arma::mat next_delta = zeros(weightMatrix.n_cols,curr_delta.n_cols);
-				next_delta = weightMatrix.t()*curr_delta;
+				arma::mat next_delta = weightMatrix.t()*curr_delta;
 				return next_delta;
 			}
 			bool initial_weights_bias_from_file(string weight_addr,string bias_addr){
@@ -54,8 +45,9 @@ namespace dlpft{
 				return true;
 			}
 			void calculate_grad_using_delta(const arma::mat input_data,const arma::mat delta,NewParam param,double weight_decay, arma::mat& Wgrad, arma::mat& bgrad);
+
 		};
+
 	};
 };
-
 #endif

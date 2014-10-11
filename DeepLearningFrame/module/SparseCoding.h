@@ -11,7 +11,7 @@ namespace dlpft{
 			SparseCoding():Module(){name = "Sparse Coding";}
 			SparseCoding(int in_size,int out_size,
 				const string load_w = "NO",const string w_addr = "",const string b_addr = "",
-				const ActivationFunction active_func=SIGMOID,const double weightdecay = 3e-3)
+				const ActivationFunction active_func=SIGMOIDFUNC,const double weightdecay = 3e-3)
 				:Module(in_size,out_size,load_w,w_addr,b_addr,active_func,weightdecay){
 				name = "Sparse Coding";
 				initial_weights_bias();

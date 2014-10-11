@@ -39,7 +39,7 @@ arma::mat SoftMax::forwardpropagate(const arma::mat data,  NewParam param){
 
 	arma::mat features = weightMatrix * data + repmat(bias,1,data.n_cols);
 	//arma::mat features = weightMatrix * data;
-	features = active_function(SOFTMAX,features);
+	features = active_function(SOFTMAXFUNC,features);
 	return features;
 
 }

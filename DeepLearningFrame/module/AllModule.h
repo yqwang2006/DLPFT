@@ -8,5 +8,7 @@
 #include "Pooling.h"
 #include "FullConnectModule.h"
 #include "ConvolutionRBM.h"
+#include "SvmModule.h"
 using namespace dlpft::module;
+
 #endif
