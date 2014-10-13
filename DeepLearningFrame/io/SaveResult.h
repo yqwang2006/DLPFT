@@ -24,7 +24,7 @@ namespace dlpft{
 					mkdir(dir_name.c_str());
 				}
 				
-				for(int i = 0;i < params.size()-1;i++){
+				for(int i = 0;i < params.size()-2;i++){
 					/*string param_dir = dir_name + "\\result_param_" + getstring(i);
 					if(_access(param_dir.c_str(),6) == -1){
 						mkdir(param_dir.c_str());
@@ -35,13 +35,25 @@ namespace dlpft{
 					m[i]->weightMatrix.quiet_save(ofs,raw_ascii);
 					ofs.close();
 				}
+				if(params[params.size()-2].params[params_name[ALGORITHM]]=="SVM"){
+					string W_name = dir_name + "\\svmmodel.txt";
+					svm_save_model(W_name.c_str(),((SvmModule*)m[params.size()-1])->svmmodel); 
+				}else{
+					string W_name = dir_name + "\\WeightMat_" + getstring((int)(params.size()-1)) + ".txt";
+					ofstream ofs;
+					ofs.open(W_name);
+					m[params.size()-1]->weightMatrix.quiet_save(ofs,raw_ascii);
+					ofs.close();
+				}
+
+
 			}
 			void save_result(Module** m,vector<NewParam> params, string dir_name, mat pred_labels,string header_info){
 				if(_access(dir_name.c_str(),6) == -1){
 					mkdir(dir_name.c_str());
 				}
 				
-				for(int i = 0;i < params.size()-1;i++){
+				for(int i = 0;i < params.size()-2;i++){
 					/*string param_dir = dir_name + "\\result_param_" + getstring(i);
 					if(_access(param_dir.c_str(),6) == -1){
 						mkdir(param_dir.c_str());
@@ -56,6 +68,22 @@ namespace dlpft{
 					m[i]->bias.quiet_save(ofs,raw_ascii);
 					ofs.close();
 				}
+				if(params[params.size()-2].params[params_name[ALGORITHM]]=="SVM"){
+					string W_name = dir_name + "\\svmmodel.txt";
+					svm_save_model(W_name.c_str(),((SvmModule*)m[params.size()-2])->svmmodel); 
+				}else{
+					string W_name = dir_name + "\\WeightMat_" + getstring((int)(params.size()-1)) + ".txt";
+					ofstream ofs;
+					ofs.open(W_name);
+					m[params.size()-1]->weightMatrix.quiet_save(ofs,raw_ascii);
+					ofs.close();
+					string b_name = dir_name + "\\bias_" + getstring((int)(params.size()-1)) + ".txt";
+					ofs.open(b_name);
+					m[params.size()-1]->bias.quiet_save(ofs,raw_ascii);
+					ofs.close();
+				}
+
+
 				string labels_name = dir_name+"\\predict_labels.txt";
 				ofstream ofs;
 				ofs.open(labels_name);

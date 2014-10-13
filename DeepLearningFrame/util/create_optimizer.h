@@ -11,7 +11,7 @@ static Optimizer* create_optimizer(NewParam& param,CostFunction* cost_ptr){
 	
 	int max_epoch = 100;
 	double learning_rate = 0.1;
-	double learning_rate_decay = 0.98;
+	double learning_rate_decay = 1;
 	int batch_size = 100;
 
 	string m_name = param.params[params_name[OPTIMETHOD]];
@@ -33,7 +33,7 @@ static Optimizer* create_optimizer(NewParam& param,CostFunction* cost_ptr){
 	if(learning_rate == 0)
 		learning_rate = 0.1;
 	if(learning_rate_decay == 0)
-		learning_rate_decay = 0.98;
+		learning_rate_decay = 1;
 	if(batch_size == 0)
 		batch_size = 100;
 
