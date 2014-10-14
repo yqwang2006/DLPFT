@@ -1,11 +1,11 @@
 Layer_num:2
 Model_type:UnsuperviseModel
-Finetune_switch:1,OFF
+Finetune_switch:1,ON
 Global_optimize_method:1,sgd
-Global_max_epoch:1,10
+Global_max_epoch:1,100
 Global_batch_size:1,100
 Global_weight_decay:1,3e-3
-Global_learning_rate:1,2
+Global_learning_rate:1,1
 Global_learning_rate_decayrate:1,0.98
 
 Layer_order:1
@@ -18,11 +18,11 @@ Learning_rate:1,0.1
 Active_function:1,SIGMOID
 
 Layer_order:2
-Algorithm:SVM
-Svm_type:1,0
-Svm_kernel_type:1,2
-Svm_epsilon:1,1e-3
-Svm_cost:1,8
+Algorithm:SoftMax
+Max_epoch:1,400
+Hid_num:1,10
+Weight_decay:1,1e-3
+Optimize_method:1,cg
 
 trainData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\data\MnistTrainData_5000.txt,txt,5000,784
 trainLabels:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\data\MnistTrainLabels_5000.txt,txt,5000,1

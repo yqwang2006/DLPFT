@@ -23,7 +23,7 @@
 		y = 1/(1+arma::exp(-x));
 	}
 	static void tanh(const arma::mat x, arma::mat& y){
-		y = arma::tanh(-x);
+		y = arma::tanh(x);
 	}
 	static void rectifier(const arma::mat x, arma::mat& y){
 		for(int i = 0;i < x.size();i++){
@@ -38,7 +38,7 @@
 	}
 	static void tanh_dev(const arma::mat z, arma::mat& g){
 		arma::mat t = arma::ones(z.n_rows,z.n_cols);
-		g = t-arma::pow(z,2);
+		g = t+arma::pow(z,2);
 	}
 	static void rectifier_dev(const arma::mat z, arma::mat& g){
 		for(int i = 0;i < z.size();i++){

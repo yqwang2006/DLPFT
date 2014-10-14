@@ -39,10 +39,10 @@ namespace dlpft{
 					string W_name = dir_name + "\\svmmodel.txt";
 					svm_save_model(W_name.c_str(),((SvmModule*)m[params.size()-1])->svmmodel); 
 				}else{
-					string W_name = dir_name + "\\WeightMat_" + getstring((int)(params.size()-1)) + ".txt";
+					string W_name = dir_name + "\\WeightMat_" + getstring((int)(params.size()-2)) + ".txt";
 					ofstream ofs;
 					ofs.open(W_name);
-					m[params.size()-1]->weightMatrix.quiet_save(ofs,raw_ascii);
+					m[params.size()-2]->weightMatrix.quiet_save(ofs,raw_ascii);
 					ofs.close();
 				}
 
@@ -72,14 +72,14 @@ namespace dlpft{
 					string W_name = dir_name + "\\svmmodel.txt";
 					svm_save_model(W_name.c_str(),((SvmModule*)m[params.size()-2])->svmmodel); 
 				}else{
-					string W_name = dir_name + "\\WeightMat_" + getstring((int)(params.size()-1)) + ".txt";
+					string W_name = dir_name + "\\WeightMat_" + getstring((int)(params.size()-2)) + ".txt";
 					ofstream ofs;
 					ofs.open(W_name);
-					m[params.size()-1]->weightMatrix.quiet_save(ofs,raw_ascii);
+					m[params.size()-2]->weightMatrix.quiet_save(ofs,raw_ascii);
 					ofs.close();
-					string b_name = dir_name + "\\bias_" + getstring((int)(params.size()-1)) + ".txt";
+					string b_name = dir_name + "\\bias_" + getstring((int)(params.size()-2)) + ".txt";
 					ofs.open(b_name);
-					m[params.size()-1]->bias.quiet_save(ofs,raw_ascii);
+					m[params.size()-2]->bias.quiet_save(ofs,raw_ascii);
 					ofs.close();
 				}
 
