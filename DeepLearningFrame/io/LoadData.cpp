@@ -44,15 +44,9 @@ bool dlpft::io::LoadData::load_data(arma::mat& data_mat){
 		}
 		else
 		{
-			load_type = arma::diskio::guess_file_type(load_stream);
-
-			if (load_type == arma::raw_ascii) 
-				string_type = "raw ASCII formatted data";
-			else if (load_type == arma::csv_ascii)
-				string_type = "CSV data";
-			else 
-				string_type = "raw ASCII formatted data";
-				//unknow_type = true;
+			load_type = arma::raw_ascii;
+			string_type = "raw ASCII formatted data";
+				
 		}
 		delete[] raw_header;
 	}else if(file_type_name == "pgm"){
