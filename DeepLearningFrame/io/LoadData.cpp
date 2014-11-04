@@ -1,4 +1,6 @@
 #include "LoadData.h"
+#include <mat.h>
+#include <mex.h>
 #include "../util/global_vars.h"
 bool dlpft::io::LoadData::load_data(arma::mat& data_mat){
 	assert(file_name!="");
@@ -10,6 +12,34 @@ bool dlpft::io::LoadData::load_data(arma::mat& data_mat){
 		return false;
 	}
 	std::fstream load_stream;
+	std::string file_type_name = file_name.substr(loc+1);
+
+	if(file_type_name == "mat"){
+		MATFile *pmatFile = NULL;
+		mxArray *pMxArray = NULL;
+
+		// 读取.mat文件（例：mat文件名为"initUrban.mat"，其中包含"initA"）
+		double *initA;
+
+		pmatFile = matOpen(file_name.c_str(),"r");
+		pMxArray = matGetVariable(pmatFile, var_name.c_str());
+		
+		//std::cout <<file_name << ";"  <<var_name << std::endl;
+		initA = (double*) mxGetData(pMxArray);
+		int M = mxGetM(pMxArray);
+		int N = mxGetN(pMxArray);
+		
+		data_mat.set_size(M,N);
+		for (int i=0; i<M; i++){
+			for (int j=0; j<N; j++){
+				data_mat(i,j) = initA[M*j+i];
+			}
+		
+		}
+		matClose(pmatFile);
+		mxFree(initA);
+		return true;
+	}
 
 	load_stream.open(file_name.c_str(),std::fstream::in);
 	if(!load_stream.is_open()){
@@ -20,7 +50,7 @@ bool dlpft::io::LoadData::load_data(arma::mat& data_mat){
 	arma::file_type load_type;
 	std::string string_type;
 	//get type string
-	std::string file_type_name = file_name.substr(loc+1);
+	
 	//transform type string to lower case
 	std::transform(file_type_name.begin(), file_type_name.end(), file_type_name.begin(),
 		::tolower);
@@ -89,12 +119,7 @@ bool dlpft::io::LoadData::load_data(arma::mat& data_mat){
 		return false;
 	}
 	bool success = data_mat.load(load_stream,load_type);
-	if(!success){
-		std::cout << std::endl;
-		std::cout << "Loading from " << file_name << " failed!" << std::endl;
-		LogOut << std::endl;
-		LogOut << "Loading from " << file_name << " failed!" << std::endl;
-	}else{
+	if(success){
 		std::cout << "Loading from " << file_name << " successfully!" << std::endl;
 		std::cout << "Size is " << (transpose ? data_mat.n_cols : data_mat.n_rows)
 				  << " x " << (transpose ? data_mat.n_rows : data_mat.n_cols) << ".\n";

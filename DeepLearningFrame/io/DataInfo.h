@@ -7,6 +7,7 @@ namespace dlpft{
 		class DataInfo{
 		public:
 			string name;
+			string var_name;
 			int rows;
 			int cols;
 			DataInfo(){
