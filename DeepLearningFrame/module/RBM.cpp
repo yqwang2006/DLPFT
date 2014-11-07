@@ -35,7 +35,8 @@ void RBM::pretrain(const arma::mat data,NewParam param){
 	arma::mat deltac = zeros(visible_size,1);
 
 	double errsum = 0;
-
+	mat gradW,gradb;
+	double err;
 	for(int epoch = 0; epoch < max_epoch; epoch++){
 		errsum = 0;
 		
@@ -51,8 +52,11 @@ void RBM::pretrain(const arma::mat data,NewParam param){
 			
 			//update W,b,c
 			
+			gradW = ((double)1/batch_size)*(h_samples * minibatches[batch].t() - nh_means * nv_samples.t());
+			gradb = (minibatches[batch]-nv_samples)%(minibatches[batch]-nv_samples);
+
 			deltaW = momentum * deltaW + learn_rate *
-				((h_samples * minibatches[batch].t() - nh_means * nv_samples.t())/batch_size - weightcost * weightMatrix);
+				(gradW - weightcost * weightMatrix);
 			deltac = momentum * deltac + (learn_rate/batch_size) * 
 				(sum(minibatches[batch],1) - sum(nv_samples,1));
 			deltab = momentum * deltab + (learn_rate/batch_size) *
@@ -63,7 +67,7 @@ void RBM::pretrain(const arma::mat data,NewParam param){
 			bias += deltab ;
 			c_bias = c_bias + deltac ;
 
-			double err = arma::sum(arma::sum(arma::pow((minibatches[batch]-nv_samples),2)))/batch_size;
+			err = arma::sum(arma::sum(gradb))/batch_size;
 
 			errsum += err;
 		}

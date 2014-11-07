@@ -1,9 +1,9 @@
 Layer_num:4
 Model_type:UnsuperviseModel
 
-Finetune_switch:1,ON
+Finetune_switch:1,OFF
 Global_optimize_method:1,sgd
-Global_max_epoch:1,100
+Global_max_epoch:1,2
 Global_batch_size:1,100
 Global_weight_decay:1,3e-3
 Global_learning_rate:1,2
@@ -13,7 +13,7 @@ Layer_order:1
 Algorithm:RBM
 Optimize_method:1,CD
 Hid_num:1,400
-Max_epoch:1,100
+Max_epoch:1,2
 Batch_size:1,100
 Learning_rate:1,0.1
 
@@ -21,7 +21,7 @@ Layer_order:2
 Algorithm:RBM
 Optimize_method:1,CD
 Hid_num:1,200
-Max_epoch:1,50
+Max_epoch:1,2
 Batch_size:1,100
 Learning_rate:1,0.1
 
@@ -29,7 +29,7 @@ Layer_order:3
 Algorithm:RBM
 Optimize_method:1,CD
 Hid_num:1,100
-Max_epoch:1,100
+Max_epoch:1,2
 Batch_size:1,100
 Learning_rate:1,0.1
 
@@ -40,7 +40,7 @@ Hid_num:1,10
 Optimize_method:1,cg
 Weight_decay:1,1e-4
 
-trainData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\data\MnistTrainData_5000.mat,mat,data
-trainLabels:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\data\MnistTrainLabels_5000.mat,mat,labels
-testData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\data\MnistTestData_1000.mat,mat,data
-testLabels:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\data\MnistTestLabels_1000.mat,mat,labels
+trainData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\data\TrainData_60000.mat,mat,data
+trainLabels:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\data\TrainLabels_60000.mat,mat,labels
+testData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\data\TestData_10000.mat,mat,data
+testLabels:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\data\TestLabels_10000.mat,mat,labels

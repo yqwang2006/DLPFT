@@ -235,7 +235,7 @@ void Model::modelParamsToStack(arma::mat theta,vector<NewParam> params){
 		curr_loc += modules[i]->bias.size();
 	}
 }
-double Model::predict_acc(const arma::mat predict_labels, const arma::mat labels){
+double Model::predict_acc(const arma::mat predict_labels, arma::mat labels,int class_number){
 	//fstream ofs;
 	//ofs.open("pred_labels.txt",fstream::out);
 	//predict_labels.quiet_save(ofs,raw_ascii);

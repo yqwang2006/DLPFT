@@ -14,6 +14,7 @@
 #include "util\onehot.h"
 #include "util\global_vars.h"
 
+
 using namespace std;
 using namespace arma;
 using namespace dlpft::factory;
@@ -25,12 +26,19 @@ void load_data(DataInfo ,arma::mat&);
 
 SaveResult save_result;
 int snap_num = 0;
+
+
 int main(int argc, char**argv){
 
-	if(argc < 2){
-		exit(-1);
+	string paramFileFullPath;
+
+	if(argc != 2){
+		cout << "请输入参数文件路径和名称:" <<endl;
+		getline(cin, paramFileFullPath);
+	}else{
+		paramFileFullPath = argv[1];
 	}
-	string paramFileFullPath = argv[1];
+	cout << paramFileFullPath << endl;
 	string split_symbol;		//the split symbol in the full path of param file
 	string paramFullName;		//the full name of param file, it includes ".param"
 	string paramFullpath;		//the full path of param file. eg. if paramFullName = a/b/d.param,then paramFullpath = a/b/
@@ -95,6 +103,8 @@ int main(int argc, char**argv){
 	arma::mat train_labels,test_labels,finetune_labels;
 
 
+	int layer_num = params[0].size();
+	int class_number = atoi(params[0][layer_num-2].params[params_name[HIDNUM]].c_str());
 	//load train data
 	if(data_addr.train_data_info.name == ""){
 		LogOut << "Please set the address of the train data at the param file!" << endl;
@@ -109,19 +119,10 @@ int main(int argc, char**argv){
 	train_data = train_data.t();
 	if(data_addr.train_labels_info.name != ""){
 		load_data(data_addr.train_labels_info,train_labels);
+		train_labels(find(train_labels==0))+=class_number;
 	}
 
 
-	//load test data, if test data == null, test labels must be null.
-	if(data_addr.test_data_info.name != ""){
-		LogOut << "Loading test data!" << endl;
-		cout << "Loading test data!" << endl;
-		load_data(data_addr.test_data_info,test_data);
-		test_data = test_data.t();
-		if(data_addr.test_labels_info.name != ""){
-			load_data(data_addr.test_labels_info,test_labels);		
-		}
-	}
 
 	bool finetune_data_switch = false;
 
@@ -160,7 +161,15 @@ int main(int argc, char**argv){
 	string file_path = global_info.params[params_name[WEIGHTADDRESS]];
 
 	Model model(input_size,params[0],init_mat_from_file,file_path);
-	int layer_num = params[0].size();
+
+	//load test data, if test data == null, test labels must be null.
+	if(data_addr.test_data_info.name != ""){
+
+	}
+
+
+
+
 	if(global_info.params[params_name[MODELTYPE]] == "UnsuperviseModel"){
 
 		model.pretrain(train_data,params[0]);
@@ -173,14 +182,6 @@ int main(int argc, char**argv){
 
 			model.train(finetune_data,finetune_labels,params[0]);
 		}
-		if(data_addr.test_data_info.name != ""){
-			LogOut << "Begin predicting!" << endl;
-			cout << "Begin predicting!" << endl;
-			pred_labels = model.predict(test_data,test_labels,params[0]);
-			if(data_addr.test_labels_info.name != ""){
-				pred_acc = model.predict_acc(pred_labels,test_labels);
-			}
-		}
 
 	}
 	else{
@@ -190,19 +191,34 @@ int main(int argc, char**argv){
 			exit(-1);
 		}
 		model.train(train_data,train_labels,params[0]);
-		if(data_addr.test_data_info.name != ""){
+
+
+	}
+
+	if(data_addr.test_data_info.name != ""){
+		LogOut << "Loading test data!" << endl;
+		cout << "Loading test data!" << endl;
+		load_data(data_addr.test_data_info,test_data);
+		test_data = test_data.t();
+		if(data_addr.test_labels_info.name != ""){
+			load_data(data_addr.test_labels_info,test_labels);
+
+			test_labels(find(test_labels==0))+=class_number;
+
 			LogOut << "Begin predicting!" << endl;
 			cout << "Begin predicting!" << endl;
+
 			pred_labels = model.predict(test_data,test_labels,params[0]);
-			if(data_addr.test_labels_info.name != ""){
-				pred_acc = model.predict_acc(pred_labels,test_labels);
-			}
+
+			pred_acc = model.predict_acc(pred_labels,test_labels,class_number);
+
+			LogOut << "predict accu: " << pred_acc*100 << "%"<< endl;
+			cout << "predict accu: " << pred_acc*100 << "%"<< endl;
 		}
 
 	}
 
-	LogOut << "predict accu: " << pred_acc*100 << "%"<< endl;
-	cout << "predict accu: " << pred_acc*100 << "%"<< endl;
+
 	end = clock();
 	duration = (double)(end-start)/CLOCKS_PER_SEC;
 	LogOut << duration << endl;

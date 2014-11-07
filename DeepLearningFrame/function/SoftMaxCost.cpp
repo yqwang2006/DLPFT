@@ -1,5 +1,5 @@
 #include "SoftMaxCost.h"
-
+#include "../util/onehot.h"
 
 double dlpft::function::SoftMaxCost::value_gradient(arma::mat& grad){
 	
@@ -10,10 +10,7 @@ double dlpft::function::SoftMaxCost::value_gradient(arma::mat& grad){
 	W.reshape(classesNum,visiableSize);
 	
 	arma::mat bias = coefficient.rows(classesNum*visiableSize,coefficient.size()-1);
-	arma::mat groundTruth = zeros(classesNum,numCases);
-	for(int i = 0;i < numCases; i++){
-			groundTruth(labels(i)-1,i) = 1;
-	} 
+	arma::mat groundTruth = onehot(classesNum,numCases,labels);
 
 	arma::mat Wgrad = zeros(classesNum,visiableSize);
 	arma::mat bgrad = zeros(classesNum,1);

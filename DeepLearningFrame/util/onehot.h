@@ -3,9 +3,10 @@
 #include "armadillo"
 static arma::mat onehot(int rows, int cols, arma::mat labels){
 	arma::mat desired_out = arma::zeros(rows,cols);
+	
 	for(int i = 0;i < cols; i++){
-		
-			desired_out(labels(i)-1,i) = 1;
+		if(labels(i) == 0) labels(i) = rows;
+		desired_out(labels(i)-1,i) = 1;
 		//desired_out(labels(i)-1,i) = 1;
 	}
 

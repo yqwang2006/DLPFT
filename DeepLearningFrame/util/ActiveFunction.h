@@ -2,7 +2,7 @@
 #define ACTIVEFUNCTION_H
 
 #include "armadillo"
-
+#include <xmmintrin.h>
 
 	enum ActivationFunction {LINEARFUNC,TANHFUNC,RECTIFIERFUNC,SIGMOIDFUNC,SOFTMAXFUNC};
 	static ActivationFunction get_activation_function(std::string name){
@@ -19,7 +19,7 @@
 		}
 	}
 
-	static void sigmoid(const arma::mat x, arma::mat& y){
+	inline static void sigmoid(const arma::mat x, arma::mat& y){
 		y = 1/(1+arma::exp(-x));
 	}
 	static void tanh(const arma::mat x, arma::mat& y){

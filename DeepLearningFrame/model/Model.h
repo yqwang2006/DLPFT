@@ -43,7 +43,7 @@ namespace dlpft{
 			void train(arma::mat data, arma::mat labels,vector<NewParam> model_param);
 			void initParams(arma::mat& theta,vector<NewParam> param);
 			void modelParamsToStack(arma::mat theta,vector<NewParam> params);
-			double predict_acc(const arma::mat predict_labels, const arma::mat labels);
+			double predict_acc(const arma::mat predict_labels, arma::mat labels, int class_number);
 		};
 	};
 };
