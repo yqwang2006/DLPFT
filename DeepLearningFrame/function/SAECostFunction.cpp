@@ -5,6 +5,13 @@ double dlpft::function::SAECostFunction::value_gradient(arma::mat& grad){
 	/*clock_t start,end;
 	double dur;
 	start = clock();*/
+	arma::mat noiseData = data;
+	if(inputZeroMaskedFraction > 0){
+		arma::mat rand_mat = arma::randu(data.n_rows,data.n_cols);
+		arma::uvec indeies = find(data<=rand_mat);
+		noiseData(indeies) = zeros(indeies.size());
+		
+	}
 	double cost = 0, Jcost = 0, Jweight = 0, Jsparse = 0;
 	int n = data.n_rows;
 	int m = data.n_cols;
@@ -22,9 +29,13 @@ double dlpft::function::SAECostFunction::value_gradient(arma::mat& grad){
 	cout << "part 1:" << dur << "s" << endl;
 	start = clock();*/
 
+	if(inputZeroMaskedFraction > 0){
+		
+	}
+
 	fstream stream;
 
-	arma::mat z2 = W1 * data + repmat(b1,1,m);
+	arma::mat z2 = W1 * noiseData + repmat(b1,1,m);
 	
 	arma::mat a2 = active_function(activeFuncChoice,z2);
 	arma::mat z3 = W2 * a2 + repmat(b2,1,m);

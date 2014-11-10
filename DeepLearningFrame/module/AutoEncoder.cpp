@@ -12,8 +12,9 @@ void AutoEncoder::pretrain(const arma::mat data, NewParam param){
 	double sparsity_coeff = atof(param.params[params_name[SPARSITY]].c_str());
 	double weight_decay_rate = atof(param.params[params_name[WEIGHTDECAY]].c_str());
 	double KL_Rho_dist = atof(param.params[params_name[KLRHO]].c_str());
+	inputZeroMaskedFraction = atof(param.params[params_name[INPUTMASKEDZEROFRACTION]].c_str());
 
-	SAECostFunction* costfunc = new SAECostFunction(inputSize,outputSize,sparsity_coeff,weight_decay_rate,KL_Rho_dist);
+	SAECostFunction* costfunc = new SAECostFunction(inputSize,outputSize,inputZeroMaskedFraction,sparsity_coeff,weight_decay_rate,KL_Rho_dist);
 	arma::mat grad;
 	costfunc->data = data;
 	costfunc->labels = zeros<arma::mat>(data.n_cols,1);

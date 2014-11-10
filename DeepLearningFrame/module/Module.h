@@ -24,6 +24,7 @@ namespace dlpft{
 			int inputSize;
 			int outputSize;
 			double weightDecay;
+			double inputZeroMaskedFraction;
 			std::string load_weight;
 			arma::mat weightMatrix;
 			arma::mat bias;

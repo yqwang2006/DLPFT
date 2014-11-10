@@ -14,6 +14,7 @@ namespace dlpft{
 			arma::mat coefficient;
 			arma::mat data;
 			arma::mat labels;
+			double inputZeroMaskedFraction;
 			ActivationFunction activeFuncChoice;
 		public:
 			CostFunction(void):function_name(""){

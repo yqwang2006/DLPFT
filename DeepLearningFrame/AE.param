@@ -1,21 +1,21 @@
 Layer_num:2
 Model_type:UnsuperviseModel
 Finetune_switch:1,ON
-Global_optimize_method:1,lbfgs
-Global_max_epoch:1,100
+Global_optimize_method:1,sgd
+Global_max_epoch:1,10
 Global_batch_size:1,100
 Global_weight_decay:1,3e-3
-Global_learning_rate:1,0.1
+Global_learning_rate:1,2
 Global_learning_rate_decayrate:1,0.98
 
 Layer_order:1
 Algorithm:AutoEncoder
-Optimize_method:1,lbfgs
-Hid_num:1,200
-Max_epoch:1,200
-Sparsity:1,3
-Weight_decay:1,3e-3
-KL_rho:1,0.1
+Optimize_method:1,sgd
+Hid_num:1,400
+Max_epoch:1,10
+Sparsity:1,1
+Weight_decay:1,1e-3
+KL_rho:1,0.5
 Learning_rate:1,0.1
 Batch_size:1,100
 
@@ -23,10 +23,10 @@ Layer_order:2
 Algorithm:SoftMax
 Max_epoch:1,200
 Hid_num:1,10
-Optimize_method:1,lbfgs
+Optimize_method:1,cg
 Lambda:1,1e-4
 
-trainData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTrainData_5000.txt,txt,5000,784
-trainLabels:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTrainLabels_5000.txt,txt,5000,1
-testData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTestData_1000.txt,txt,1000,784
-testLabels:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTestLabels_1000.txt,txt,1000,1
+trainData:M%\C++ Project\DeepLearningFrame\DeepLearningFrame\data\TrainData_60000.mat,mat,data
+trainLabels:M%\C++ Project\DeepLearningFrame\DeepLearningFrame\data\TrainLabels_60000.mat,mat,labels
+testData:M%\C++ Project\DeepLearningFrame\DeepLearningFrame\data\TestData_10000.mat,mat,data
+testLabels:M%\C++ Project\DeepLearningFrame\DeepLearningFrame\data\TestLabels_10000.mat,mat,labels
