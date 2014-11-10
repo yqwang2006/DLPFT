@@ -31,7 +31,7 @@ void SoftMax::train(const arma::mat data, const arma::mat labels, NewParam param
 
 
 } 
-arma::mat SoftMax::backpropagate(arma::mat next_layer_weight,const arma::mat next_delta, const arma::mat features, NewParam param){
+arma::mat SoftMax::backpropagate(const arma::mat next_delta, const arma::mat features, NewParam param){
 	arma::mat curr_delta = next_delta;
 	return curr_delta;
 }

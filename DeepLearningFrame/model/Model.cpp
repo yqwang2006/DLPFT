@@ -138,12 +138,16 @@ void Model::train(arma::mat data, arma::mat labels,vector<NewParam> model_param)
 }
 arma::mat Model::predict(const arma::mat testdata, const arma::mat testlabels,vector<NewParam> params){
 	arma::mat features = testdata;
-
+	double dropoutfraction = atof(params[layerNumber].params[params_name[DROPOUTFRACTION]].c_str());
+	
 	arma::mat max_vals;
 	arma::mat pred_labels = zeros<arma::mat>(testdata.n_cols,size(testlabels,1));
 
 	for(int i = 0;i < layerNumber-1;i++){
 		features = modules[i]->forwardpropagate(features,params[i]);
+		if(dropoutfraction > 0){
+			features = (1-dropoutfraction)*features;
+		}
 	}
 	if(params[layerNumber-1].params["Algorithm"] == "SoftMax"){
 		features = modules[layerNumber-1]->forwardpropagate(features,params[layerNumber-1]);

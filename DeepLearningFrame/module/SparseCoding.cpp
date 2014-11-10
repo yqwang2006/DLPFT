@@ -154,7 +154,7 @@ void SparseCoding::cirshift(arma::cube& group_cube,int dim, int dir){
 	}
 
 }
-arma::mat SparseCoding::backpropagate(arma::mat next_layer_weight,const arma::mat next_delta, const arma::mat features, NewParam param){
+arma::mat SparseCoding::backpropagate(const arma::mat next_delta, const arma::mat features, NewParam param){
 	arma::mat curr_delta;
 	curr_delta.fill(1.0);
 	return curr_delta;

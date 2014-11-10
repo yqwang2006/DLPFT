@@ -34,6 +34,8 @@ namespace dlpft{
 					if(weight_decay == 0) weight_decay = 3e-3;
 					initialParam();
 					function_name = func_name;
+					
+	
 			}
 
 
@@ -45,7 +47,12 @@ namespace dlpft{
 
 			void initialParam();
 			double value_gradient(arma::mat& grad);
+			
+			void modelff(const arma::mat inputdata,arma::mat *output,arma::mat* dropoutMask);
+			double modelbp(const arma::mat* features,arma::mat* dropoutMask,arma::mat *outputdelta,const int num_samples);
+
 			void gradient(arma::mat& grad);
+
 			void hessian(arma::mat& grad, arma::mat& hess);
 			void paramsToStack();
 		};

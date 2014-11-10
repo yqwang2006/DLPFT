@@ -58,7 +58,7 @@ void SvmModule::train(const arma::mat data, const arma::mat labels, NewParam par
 	svm_save_model("model.txt",svmmodel);
 
 } 
-arma::mat SvmModule::backpropagate(arma::mat next_layer_weight,const arma::mat next_delta, const arma::mat features, NewParam param){
+arma::mat SvmModule::backpropagate(const arma::mat next_delta, const arma::mat features, NewParam param){
 	arma::mat curr_delta = next_delta;
 	return curr_delta;
 }

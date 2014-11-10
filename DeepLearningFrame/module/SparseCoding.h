@@ -18,7 +18,7 @@ namespace dlpft{
 			}
 			~SparseCoding(){}
 			void pretrain(const arma::mat data, NewParam param);
-			arma::mat backpropagate(arma::mat next_layer_weight,const arma::mat next_delta, const arma::mat features, NewParam param);
+			arma::mat backpropagate(const arma::mat next_delta, const arma::mat features, NewParam param);
 			void cirshift(arma::cube& group_cube,int dim, int dir);
 			arma::mat forwardpropagate(const arma::mat data, NewParam param);
 			void initial_weights_bias();

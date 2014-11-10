@@ -30,7 +30,7 @@ void AutoEncoder::pretrain(const arma::mat data, NewParam param){
 
 }
 
-arma::mat AutoEncoder::backpropagate(arma::mat next_layer_weight,const arma::mat next_delta, const arma::mat features, NewParam param){
+arma::mat AutoEncoder::backpropagate(const arma::mat next_delta, const arma::mat features, NewParam param){
 	arma::mat curr_delta = active_function_dev(activeFuncChoice,features) % next_delta; 
 	return curr_delta;
 }

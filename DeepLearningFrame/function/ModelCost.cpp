@@ -5,43 +5,35 @@ using namespace dlpft::param;
 using namespace dlpft::function;
 void ModelCost::initialParam(){
 }
-double ModelCost::value_gradient(arma::mat& grad){
-	clock_t start_time = clock();
-	clock_t end_time;
-	double duration = 0;
-
-
-	int image_dim = sqrt(data.n_rows);
-	int num_images = data.n_cols;
-	arma::mat *delta = new arma::mat[layer_num+1];
-	grad = zeros(coefficient.size(),1);
-	
-	paramsToStack();
-
-	arma::mat* activations = new arma::mat[layer_num];
-	double cost = 0;
-	//forward Propagation
-	
-	
+void ModelCost::modelff(const arma::mat inputdata,arma::mat *output,arma::mat* dropoutMask){
+	double dropoutfraction = atof(params[layer_num].params[params_name[DROPOUTFRACTION]].c_str());
 	for(int i = 0;i < layer_num;i ++){
 
 		if(i == 0){
-			activations[i] = modules[i]->forwardpropagate(data,params[i]);
+			output[i] = modules[i]->forwardpropagate(data,params[i]);
 		}else{
-
-			activations[i] = modules[i]->forwardpropagate(activations[i-1],params[i]);
+			output[i] = modules[i]->forwardpropagate(output[i-1],params[i]);
 		}
 
-		/*ofstream ofs;
-		ofs.open("weightMat.txt");
-		modules[i]->weightMatrix.quiet_save(ofs,raw_ascii);
-		ofs.close();*/
-
+		if(dropoutfraction > 0 && i != layer_num-1){
+			arma::mat rand_mat = arma::randu(output[i].n_rows,output[i].n_cols);
+			arma::uvec indeies = find(output[i]>rand_mat);
+			dropoutMask[i] = arma::zeros(output[i].n_rows,output[i].n_cols);
+			dropoutMask[i](indeies) = ones(indeies.size());
+		}
 	}
+	
+	
+
+}
+//return modelcost value
+double ModelCost::modelbp(const arma::mat* features,arma::mat* dropoutMask,arma::mat *outputdelta,const int num_samples){
 	arma::mat desired_out;
+	double dropoutfraction = atof(params[layer_num].params[params_name[DROPOUTFRACTION]].c_str());
+	double cost = 0;
 	if(modules[layer_num-1]->name == "SoftMax"){
 
-		desired_out = onehot(activations[layer_num-1].n_rows,activations[layer_num-1].n_cols,labels);
+		desired_out = onehot(features[layer_num-1].n_rows,features[layer_num-1].n_cols,labels);
 		cost += (weight_decay/2)*arma::sum(arma::sum(arma::pow(modules[layer_num-1]->weightMatrix,2)));
 
 	}
@@ -49,50 +41,77 @@ double ModelCost::value_gradient(arma::mat& grad){
 		desired_out = labels.t();
 	//arma::mat gm = reshape(desired_out,desired_out.size(),1).t()*log(reshape(activations[layer_num-1],activations[layer_num-1].size(),1));
 
-	double gm_cost = dot(reshape(desired_out,desired_out.size(),1),log(reshape(activations[layer_num-1],activations[layer_num-1].size(),1)));
+	double gm_cost = dot(reshape(desired_out,desired_out.size(),1),log(reshape(features[layer_num-1],features[layer_num-1].size(),1)));
 
-	cost += ((double)-1/num_images)*gm_cost;
+	cost += ((double)-1/num_samples)*gm_cost;
 	
 
 	//backward propagation to compute delta
 
-	delta[layer_num] = -(desired_out - activations[layer_num-1]);
-	arma::mat next_delta = delta[layer_num];
+	outputdelta[layer_num] = -(desired_out - features[layer_num-1]);
+	arma::mat next_delta = outputdelta[layer_num];
 	
+	for(int i = layer_num-1;i >=0 ;i--){
+		
+		outputdelta[i] = modules[i]->backpropagate(next_delta,features[i],params[i]);
+
+		if(i > 0){
+			next_delta = modules[i]->process_delta(outputdelta[i]);
+		}
+		if(i != layer_num-1 && dropoutfraction > 0){
+			outputdelta[i] = outputdelta[i] % dropoutMask[i];
+		}
+
+	}
+
+	return cost;
+}
+
+double ModelCost::value_gradient(arma::mat& grad){
+
+	double cost = 0;
+	int num_samples = data.n_cols;
+	arma::mat* activations = new arma::mat[layer_num];
+	arma::mat *delta = new arma::mat[layer_num+1];
+	
+	arma::mat* dropoutMask = NULL;
+	double dropoutfraction = atof(params[layer_num].params[params_name[DROPOUTFRACTION]].c_str());
+	if(dropoutfraction > 0){
+		dropoutMask = new arma::mat[layer_num];
+	}
+
+
+	grad = zeros(coefficient.size(),1);
+	
+	paramsToStack();
+
+
+	//forward Propagation
+	
+	modelff(data,activations,dropoutMask);
+
+	//backward propagation
+	cost = modelbp(activations,dropoutMask,delta,num_samples);
+
+	
+
+	//compute gradient using delta
+
 	int curr_loc = coefficient.size()-1;
 	for(int i = layer_num-1;i >=0 ;i--){
 		arma::mat w_grad = zeros(modules[i]->weightMatrix.n_rows,modules[i]->weightMatrix.n_cols);
 		arma::mat b_grad = zeros(modules[i]->bias.size(),1);
-		
-		if(layer_num == 1){
-			delta[i] = modules[i]->backpropagate(modules[i]->weightMatrix,next_delta,activations[i],params[i]);
-			modules[i]->calculate_grad_using_delta(data,delta[i],params[i],weight_decay,w_grad,b_grad);
-
-		}
-		else if(i == layer_num-1){
-			delta[i] = modules[i]->backpropagate(modules[i]->weightMatrix,next_delta,activations[i],params[i]);
-			modules[i]->calculate_grad_using_delta(activations[i-1],delta[i],params[i],weight_decay,w_grad,b_grad);
-		}
-		else if(i == 0){
-			delta[i] = modules[i]->backpropagate(modules[i+1]->weightMatrix,next_delta,activations[i],params[i]);
+		if(i == 0){
 			modules[i]->calculate_grad_using_delta(data,delta[i],params[i],weight_decay,w_grad,b_grad);
 			
 		}
 		else{
-			delta[i] = modules[i]->backpropagate(modules[i+1]->weightMatrix,next_delta,activations[i],params[i]);
 			modules[i]->calculate_grad_using_delta( activations[i-1],delta[i],params[i],weight_decay,w_grad,b_grad);
 		}
-
-
-		if(i > 0){
-			next_delta = modules[i]->process_delta(delta[i]);
-		}
-
 		grad.rows(curr_loc - b_grad.size()+1, curr_loc) = reshape(b_grad,b_grad.size(),1);
 		grad.rows(curr_loc-b_grad.size()-w_grad.size()+1,curr_loc-b_grad.size()) = reshape(w_grad,w_grad.size(),1);
 		
 		curr_loc = curr_loc - w_grad.size() - b_grad.size();
-
 	}
 
 

@@ -213,7 +213,7 @@ arma::mat Pooling::process_delta(arma::mat curr_delta){
 	return up_sampling_delta;
 	
 }
-arma::mat Pooling::backpropagate(arma::mat next_layer_weight,const arma::mat next_delta, const arma::mat features, NewParam param){
+arma::mat Pooling::backpropagate(const arma::mat next_delta, const arma::mat features, NewParam param){
 
 	arma::mat curr_delta = next_delta; 
 

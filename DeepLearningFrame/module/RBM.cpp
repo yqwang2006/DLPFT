@@ -87,7 +87,7 @@ arma::mat RBM::forwardpropagate(const arma::mat data,  NewParam param){
 	activation = active_function(activeFuncChoice,activation);
 	return activation;
 }
-arma::mat RBM::backpropagate(arma::mat next_layer_weight,const arma::mat next_delta, const arma::mat features, NewParam param){
+arma::mat RBM::backpropagate(const arma::mat next_delta, const arma::mat features, NewParam param){
 	arma::mat curr_delta = active_function_dev(activeFuncChoice,features) % next_delta; 
 	return curr_delta;
 }
@@ -96,10 +96,7 @@ arma::mat RBM::BiNomial(const arma::mat mean){
 	arma::mat rand_vec = arma::randu(mean.n_rows,mean.n_cols);
 	arma::uvec indeies = find(mean>rand_vec);
 	arma::mat result = arma::zeros(mean.n_rows,mean.n_cols);
-	for(int i = 0;i < indeies.size();i++){
-		//error
-		result(indeies(i)) = 1;
-	}
+	result(indeies) = arma::ones(indeies.size());
 	return result;
 }
 void RBM::sample_h_given_v(arma::mat& v0_sample, arma::mat& mean, arma::mat& sample){

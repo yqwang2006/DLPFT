@@ -64,7 +64,7 @@ namespace dlpft{
 		    arma::mat propdown(arma::mat& h,double v_bias);
 			void  gibbs_hvh(double v_bias,arma::mat& h0_sample, arma::mat& nv_means, arma::mat& nv_samples, arma::mat& nh_means, arma::mat& nh_samples);
 			arma::mat BiNomial(const arma::mat mean);
-			arma::mat backpropagate(arma::mat next_layer_weight,const arma::mat next_delta, const arma::mat features, NewParam param);
+			arma::mat backpropagate(const arma::mat next_delta, const arma::mat features, NewParam param);
 			arma::mat forwardpropagate(const arma::mat data,  NewParam param);
 			void initial_weights_bias();
 			arma::mat process_delta(arma::mat curr_delta);

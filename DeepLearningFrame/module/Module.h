@@ -72,7 +72,7 @@ namespace dlpft{
 				cout << dur_time << endl;
 				return true;
 			}
-			virtual arma::mat backpropagate(arma::mat next_layer_weight,const arma::mat next_delta, const arma::mat features, NewParam param)=0;
+			virtual arma::mat backpropagate(const arma::mat next_delta, const arma::mat features, NewParam param)=0;
 			
 			virtual arma::mat process_delta(arma::mat curr_delta) = 0;
 

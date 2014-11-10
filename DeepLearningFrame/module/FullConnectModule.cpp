@@ -33,7 +33,7 @@ void FullConnectModule::initial_weights_bias(){
 		bias = zeros(outputSize,1);
 	
 }
-arma::mat FullConnectModule::backpropagate(arma::mat next_layer_weight,const arma::mat next_delta, const arma::mat features, NewParam param){
+arma::mat FullConnectModule::backpropagate(const arma::mat next_delta, const arma::mat features, NewParam param){
 	arma::mat curr_delta = active_function_dev(activeFuncChoice,features) % next_delta; 
 	return curr_delta;
 }

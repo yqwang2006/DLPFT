@@ -238,7 +238,7 @@ arma::mat ConvolutionRBM::process_delta(arma::mat curr_delta){
 	
 	return convn_delta;
 }
-arma::mat ConvolutionRBM::backpropagate(arma::mat next_layer_weight,const arma::mat next_delta, const arma::mat features, NewParam param){
+arma::mat ConvolutionRBM::backpropagate(const arma::mat next_delta, const arma::mat features, NewParam param){
 	//卷基层的下一层一般是pooling层，pooling层和当前的卷基层输出maps个数一样
 	//同时pooling层对每个map乘以一个常数beta(即下面代码中的weightMatrix(i)，和bias(i)
 	//之后再输出多个maps

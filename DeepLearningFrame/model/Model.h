@@ -12,6 +12,8 @@ namespace dlpft{
 		public:
 			int layerNumber;
 			Module** modules;
+			bool dropoutSwitch;
+			int** dropoutMask;
 			string loadWeightFromFile;
 			string filePath;
 			int inputSize;
@@ -41,6 +43,7 @@ namespace dlpft{
 			arma::mat predict(const arma::mat testdata, const arma::mat testlabels,vector<NewParam> params);
 			Module* create_module(NewParam& param,int& in_size,int& in_num,int layer_id);
 			void train(arma::mat data, arma::mat labels,vector<NewParam> model_param);
+			
 			void initParams(arma::mat& theta,vector<NewParam> param);
 			void modelParamsToStack(arma::mat theta,vector<NewParam> params);
 			double predict_acc(const arma::mat predict_labels, arma::mat labels, int class_number);

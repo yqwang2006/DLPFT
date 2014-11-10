@@ -36,7 +36,7 @@ namespace dlpft{
 		    double get_reconstruct_error(arma::mat& v);
 			arma::mat BiNomial(const arma::mat mean);
 			arma::mat forwardpropagate(const arma::mat data,  NewParam param);
-			arma::mat backpropagate(arma::mat next_layer_weight,const arma::mat next_delta, const arma::mat features, NewParam param);
+			arma::mat backpropagate(const arma::mat next_delta, const arma::mat features, NewParam param);
 			void initial_weights_bias();
 			arma::mat process_delta(arma::mat curr_delta)
 			{
