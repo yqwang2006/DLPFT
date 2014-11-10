@@ -1,6 +1,6 @@
 Layer_num:2
 Model_type:UnsuperviseModel
-Finetune_switch:1,ON
+Finetune_switch:1,OFF
 Global_optimize_method:1,lbfgs
 Global_max_epoch:1,100
 Global_batch_size:1,100
@@ -26,7 +26,7 @@ Hid_num:1,10
 Optimize_method:1,lbfgs
 Lambda:1,1e-4
 
-trainData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTrainData_5000.txt,txt,5000,784
-trainLabels:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTrainLabels_5000.txt,txt,5000,1
-testData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTestData_1000.txt,txt,1000,784
-testLabels:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\MnistTestLabels_1000.txt,txt,1000,1
+trainData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\data\MnistTrainData_5000.mat,mat,data
+trainLabels:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\data\MnistTrainLabels_5000.mat,mat,labels
+testData:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\data\MnistTestData_1000.mat,mat,data
+testLabels:F%\C++ Project\DeepLearningFrame\DeepLearningFrame\data\MnistTestLabels_1000.mat,mat,labels
