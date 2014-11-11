@@ -5,6 +5,14 @@ double dlpft::function::SAECostFunction::value_gradient(arma::mat& grad){
 	/*clock_t start,end;
 	double dur;
 	start = clock();*/
+	arma::mat a2,z2,a3,z3;
+	arma::mat noiseData = data;
+	if(inputZeroMaskedFraction > 0){
+		arma::mat rand_mat = arma::randu(data.n_rows,data.n_cols);
+		arma::uvec indeies = find(data<=rand_mat);
+		noiseData(indeies) = zeros(indeies.size());
+		
+	}
 	double cost = 0, Jcost = 0, Jweight = 0, Jsparse = 0;
 	int n = data.n_rows;
 	int m = data.n_cols;
@@ -22,19 +30,16 @@ double dlpft::function::SAECostFunction::value_gradient(arma::mat& grad){
 	cout << "part 1:" << dur << "s" << endl;
 	start = clock();*/
 
-	fstream stream;
+	if(inputZeroMaskedFraction > 0){
+		z2 = W1 * noiseData + repmat(b1,1,m);
+	}else{
+		z2 = W1 * data + repmat(b1,1,m);
+	}
+	a2 = active_function(activeFuncChoice,z2);
+	z3 = W2 * a2 + repmat(b2,1,m);
+	a3 = active_function(activeFuncChoice,z3);
 
-	arma::mat z2 = W1 * data + repmat(b1,1,m);
-	
-	arma::mat a2 = active_function(activeFuncChoice,z2);
-	arma::mat z3 = W2 * a2 + repmat(b2,1,m);
-	arma::mat a3 = active_function(activeFuncChoice,z3);
-	/*
-	
-	end = clock();
-	dur = (double)(end-start)/CLOCKS_PER_SEC;
-	cout << "part 2:" << dur << "s" << endl;
-	start = clock();		;*/
+
 	arma::mat a3_x = pow((a3-data),2);
 
 	Jcost = (0.5/m)*sum(sum(a3_x));

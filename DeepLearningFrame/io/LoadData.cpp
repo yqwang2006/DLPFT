@@ -3,6 +3,7 @@
 #include <mex.h>
 #include "../util/global_vars.h"
 bool dlpft::io::LoadData::load_data(arma::mat& data_mat){
+	//extern float* initA;
 	assert(file_name!="");
 	bool unknow_type = false;
 	size_t loc = file_name.rfind(".");
@@ -19,16 +20,16 @@ bool dlpft::io::LoadData::load_data(arma::mat& data_mat){
 		mxArray *pMxArray = NULL;
 
 		// 读取.mat文件（例：mat文件名为"initUrban.mat"，其中包含"initA"）
-		double *initA;
+		
 
 		pmatFile = matOpen(file_name.c_str(),"r");
 		pMxArray = matGetVariable(pmatFile, var_name.c_str());
 		
 		//std::cout <<file_name << ";"  <<var_name << std::endl;
-		initA = (double*) mxGetData(pMxArray);
+		//initA = (float*) mxGetData(pMxArray);
 		int M = mxGetM(pMxArray);
 		int N = mxGetN(pMxArray);
-		
+		double* initA = (double *)mxGetData(pMxArray);
 		data_mat.set_size(M,N);
 		for (int i=0; i<M; i++){
 			for (int j=0; j<N; j++){

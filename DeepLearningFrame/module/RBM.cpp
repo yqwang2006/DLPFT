@@ -55,6 +55,8 @@ void RBM::pretrain(const arma::mat data,NewParam param){
 			gradW = ((double)1/batch_size)*(h_samples * minibatches[batch].t() - nh_means * nv_samples.t());
 			gradb = (minibatches[batch]-nv_samples)%(minibatches[batch]-nv_samples);
 
+			
+
 			deltaW = momentum * deltaW + learn_rate *
 				(gradW - weightcost * weightMatrix);
 			deltac = momentum * deltac + (learn_rate/batch_size) * 

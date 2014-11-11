@@ -21,9 +21,10 @@ namespace dlpft{
 			}
 
 
-			SAECostFunction(int v, int h,const double sparsity = 3e-3, const double weight_decay=3e-3,
+			SAECostFunction(int v, int h,double inputZeroFraction,const double sparsity = 3e-3, const double weight_decay=3e-3,
 				const double kl_rho_dist=0.05,const string func_name = "sparse autoencoder function")
 				:visiableSize(v),hiddenSize(h),weight_decay(weight_decay),kl_rho(kl_rho_dist),sparsity(sparsity){
+					inputZeroMaskedFraction = inputZeroFraction;
 					function_name = func_name;
 			}
 			~SAECostFunction(void){
