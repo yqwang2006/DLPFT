@@ -64,9 +64,7 @@ arma::mat SvmModule::backpropagate(const arma::mat next_delta, const arma::mat f
 }
 arma::mat SvmModule::forwardpropagate(const arma::mat data,  NewParam param){
 
-	arma::mat features = weightMatrix * data + repmat(bias,1,data.n_cols);
-	//arma::mat features = weightMatrix * data;
-	features = active_function(SIGMOIDFUNC,features);
+	arma::mat features;
 	return features;
 
 }

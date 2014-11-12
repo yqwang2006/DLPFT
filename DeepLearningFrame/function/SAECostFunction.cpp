@@ -6,16 +6,12 @@ double dlpft::function::SAECostFunction::value_gradient(arma::mat& grad){
 	double dur;
 	start = clock();*/
 	arma::mat a2,z2,a3,z3;
-	arma::mat noiseData = data;
-	if(inputZeroMaskedFraction > 0){
-		arma::mat rand_mat = arma::randu(data.n_rows,data.n_cols);
-		arma::uvec indeies = find(data<=rand_mat);
-		noiseData(indeies) = zeros(indeies.size());
-		
-	}
+	arma::mat noiseData;
+	
 	double cost = 0, Jcost = 0, Jweight = 0, Jsparse = 0;
 	int n = data.n_rows;
 	int m = data.n_cols;
+	double m_inv = (double)1/m;
 	int h_v_size = hiddenSize * visiableSize;
 	arma::mat W1(coefficient.rows(0,h_v_size-1));
 	arma::mat W2(coefficient.rows(h_v_size,2*h_v_size-1));
@@ -31,6 +27,10 @@ double dlpft::function::SAECostFunction::value_gradient(arma::mat& grad){
 	start = clock();*/
 
 	if(inputZeroMaskedFraction > 0){
+		noiseData = data;
+		arma::mat rand_mat = arma::randu(data.n_rows,data.n_cols);
+		arma::uvec indeies = find(data<=rand_mat);
+		noiseData(indeies) = zeros(indeies.size());
 		z2 = W1 * noiseData + repmat(b1,1,m);
 	}else{
 		z2 = W1 * data + repmat(b1,1,m);
@@ -40,13 +40,13 @@ double dlpft::function::SAECostFunction::value_gradient(arma::mat& grad){
 	a3 = active_function(activeFuncChoice,z3);
 
 
-	arma::mat a3_x = pow((a3-data),2);
+	arma::mat a3_x = (a3-data)%(a3-data);
 
-	Jcost = (0.5/m)*sum(sum(a3_x));
+	Jcost = (0.5*m_inv)*sum(sum(a3_x));
 	
-	Jweight = 0.5 * (arma::sum(arma::sum(arma::pow(W1,2))) + arma::sum(arma::sum(arma::pow(W2,2))));
+	Jweight = 0.5 * (arma::sum(arma::sum(W1%W1)) + arma::sum(arma::sum(W2%W2)));
 	
-	arma::vec rho = sum(a2,1)/m;
+	arma::vec rho = m_inv*sum(a2,1);
 	
 	Jsparse = sum(kl_rho * log(kl_rho/rho)+(1-kl_rho) * log((1-kl_rho)/(1-rho)));
 	
@@ -75,15 +75,15 @@ double dlpft::function::SAECostFunction::value_gradient(arma::mat& grad){
 	
 
 	W1grad = W1grad + d2 * data.t();
-	W1grad = W1grad/m + weight_decay * W1;
+	W1grad = m_inv*W1grad + weight_decay * W1;
 
 	
 
 	W2grad = W2grad + d3*a2.t();
-	W2grad = W2grad/m + weight_decay*W2;
+	W2grad = m_inv*W2grad + weight_decay*W2;
 
 	b1grad = b1grad + sum(d2,1);
-	b1grad =  b1grad / m;
+	b1grad =  m_inv*b1grad;
 /*
 	fstream fs;
 	fs.open("B1.txt",fstream::out);
@@ -92,7 +92,7 @@ double dlpft::function::SAECostFunction::value_gradient(arma::mat& grad){
 */
 	b2grad = b2grad + sum(d3,1);
 
-	b2grad = b2grad / m;
+	b2grad = m_inv*b2grad;
 
 	
 
