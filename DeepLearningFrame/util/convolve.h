@@ -90,9 +90,8 @@ static arma::cube convn_cube(const arma::cube images, const arma::mat W, string 
 	int image_dim,conv_dim;
 	int filter_dim = W.n_cols;
 	int sample_num = images.n_slices;
-	arma::cube feature;
+	arma::cube feature,patch,feature_map,full_image;
 	arma::mat filter;
-	arma::cube full_image;
 	if(info == "valid"){
 		image_dim = images.n_rows;
 		conv_dim = image_dim - filter_dim + 1;
@@ -119,9 +118,10 @@ static arma::cube convn_cube(const arma::cube images, const arma::mat W, string 
 #endif
 	for(int i = 0;i < conv_dim; i++){
 		for(int j = 0;j < conv_dim;j++){
-			arma::cube patch = full_image.tube(i,j,i+filter_dim-1,j+filter_dim-1);
-			arma::cube feature_map = patch % filter_scale;
+			patch = full_image.tube(i,j,i+filter_dim-1,j+filter_dim-1);
+			feature_map = patch % filter_scale;
 			for(int k = 0;k < sample_num; k++){
+				
 				feature(i,j,k) = arma::sum(arma::sum(feature_map.slice(k)));
 			}
 		}
@@ -134,9 +134,7 @@ static arma::cube convn_cube(const arma::cube images, const arma::cube W, string
 	int image_dim,conv_dim;
 	int filter_dim = W.n_cols;
 	int sample_num = images.n_slices;
-	arma::cube feature;
-	arma::cube filter;
-	arma::cube full_image;
+	arma::cube feature,patch,feature_map,filter,full_image;
 	if(info == "valid"){
 		image_dim = images.n_rows;
 		conv_dim = image_dim - filter_dim + 1;
@@ -158,8 +156,8 @@ static arma::cube convn_cube(const arma::cube images, const arma::cube W, string
 #endif
 	for(int i = 0;i < conv_dim; i++){
 		for(int j = 0;j < conv_dim;j++){
-			arma::cube patch = full_image.tube(i,j,i+filter_dim-1,j+filter_dim-1);
-			arma::cube feature_map = patch % filter;
+			patch = full_image.tube(i,j,i+filter_dim-1,j+filter_dim-1);
+			feature_map = patch % filter;
 			for(int k = 0;k < sample_num; k++){
 				feature(i,j,k) = arma::sum(arma::sum(feature_map.slice(k)));
 			}

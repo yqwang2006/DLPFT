@@ -7,7 +7,7 @@ arma::mat Pooling::down_sample(arma::mat data){
 
 
 	const int samples_num = data.n_cols;
-	
+	arma::mat patch,sto_patch ;
 
 	arma::mat pooling_result = arma::zeros(outputImageDim*outputImageDim*inputImageNum,samples_num);
 	arma::mat temp_pooling_result = arma::zeros(outputImageDim,outputImageDim);
@@ -23,13 +23,13 @@ arma::mat Pooling::down_sample(arma::mat data){
 				int offsetrow = poolrow*poolingDim;
 				for(int poolcol = 0;poolcol < outputImageDim; poolcol++){
 					int offsetcol = poolcol*poolingDim;
-					arma::mat patch = image.submat(offsetrow,offsetcol,offsetrow+poolingDim-1,offsetcol+poolingDim-1);
+					patch = image.submat(offsetrow,offsetcol,offsetrow+poolingDim-1,offsetcol+poolingDim-1);
 					
 					if(poolingType == "MEAN"){
 						temp_pooling_result(poolrow,poolcol) = arma::sum(arma::sum(patch))/patch.size();
 						
 					}else if(poolingType == "STOCHASTIC"){
-						arma::mat sto_patch = patch / (arma::sum(arma::sum(patch)));
+						sto_patch = (double)1/(arma::sum(arma::sum(patch))) * patch ;
 						int sto_sum = 0;
 						double rand_num = std::rand();
 						for(int k = 0;k < sto_patch.size();k++){
@@ -52,8 +52,9 @@ arma::mat Pooling::down_sample(arma::mat data){
 						}
 						
 					}else{//default max
-						temp_pooling_result(poolrow,poolcol) = arma::max(arma::max(patch));
-						arma::uvec id = arma::find(patch==arma::max(arma::max(patch)));
+						double max_patch_val = arma::max(arma::max(patch));
+						temp_pooling_result(poolrow,poolcol) = max_patch_val;
+						arma::uvec id = arma::find(patch==max_patch_val);
 						int max_in_patch_col = id(0)/patch.n_rows;
 						int max_in_patch_row = id(0)-patch.n_rows*max_in_patch_col;
 						int max_in_image_col = offsetcol + max_in_patch_col;
