@@ -18,16 +18,16 @@ namespace dlpft{
 				tolerance = 1e-9;
 				batch_size = 100;
 				momentum = 0.95;
-				learing_rate_decay = 0.98;
-				learning_rate = 0.05;
+				learing_rate_decay = 1;
+				learning_rate = 0.15;
 
 			}
 			SgdOptimizer(CostFunction* func,
 							int max_iter,
 							double learnrate,
 							const int batch_s = 100,
-							const double learnrate_decay = 0.98,
-							const double tol = 1e-9, 
+							const double learnrate_decay = 1,
+							const double tol = 1e-5, 
 							const double mom = 0.95
 							
 							)
@@ -43,11 +43,11 @@ namespace dlpft{
 				if(batch_size == 0)
 					batch_size = 100;
 				if(learning_rate == 0)
-					learning_rate = 0.05;
+					learning_rate = 0.1;
 				if(max_iteration == 0)
 					max_iteration = 10;
 				if(learing_rate_decay == 0)
-					learing_rate_decay = 0.98;
+					learing_rate_decay = 1;
 			}
 			~SgdOptimizer(void){}
 			
