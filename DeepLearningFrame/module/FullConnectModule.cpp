@@ -41,5 +41,6 @@ void FullConnectModule::calculate_grad_using_delta(const arma::mat input_data,co
 	int lambda = atoi(param.params[params_name[WEIGHTDECAY]].c_str());
 	lambda = 3e-3;
 	Wgrad = ((double)1/input_data.n_cols)*delta * input_data.t() + lambda * weightMatrix;
-	bgrad = sum(delta,1)/input_data.n_cols;
+	bgrad = 
+		(delta,1)/input_data.n_cols;
 }

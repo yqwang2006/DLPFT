@@ -30,6 +30,11 @@ int snap_num = 0;
 
 int main(int argc, char**argv){
 
+	
+	cube C = randu<cube>(2,3,5);
+	cout << C <<endl;
+	
+	//cout << sum(C,) << endl;
 	string paramFileFullPath;
 
 	if(argc != 2){

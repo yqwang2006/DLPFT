@@ -34,7 +34,7 @@ double ModelCost::modelbp(const arma::mat* features,arma::mat* dropoutMask,arma:
 	if(modules[layer_num-1]->name == "SoftMax"){
 
 		desired_out = onehot(features[layer_num-1].n_rows,features[layer_num-1].n_cols,labels);
-		cost += (weight_decay/2)*arma::sum(arma::sum(arma::pow(modules[layer_num-1]->weightMatrix,2)));
+		cost += (weight_decay/2)*arma::accu(arma::pow(modules[layer_num-1]->weightMatrix,2));
 
 	}
 	else

@@ -79,7 +79,7 @@ void ConvolutionRBM::crbmGradients(int k,arma::mat minibatch,NewParam param,doub
 
 	CD_k(1,minibatch,v_bias, h_means, h_samples,nv_means,nv_samples,nh_means,nh_samples);
 
-	error = arma::mean(arma::sum(arma::sum(pow(minibatch - nv_means,2))))/batch_size;
+	error = arma::accu(pow(minibatch - nv_means,2))/batch_size;
 	
 	double weight_dec = atof(param.params[params_name[WEIGHTDECAY]].c_str());
 
@@ -93,7 +93,7 @@ void ConvolutionRBM::crbmGradients(int k,arma::mat minibatch,NewParam param,doub
 	hgrad = hgrad - h2grad;
 
 
-	vgrad = ((double)1/minibatch.size())*sum(sum(minibatch-nv_means));
+	vgrad = ((double)1/minibatch.size())*accu(minibatch-nv_means);
 
 
 
@@ -293,6 +293,6 @@ void ConvolutionRBM::calculate_grad_using_delta(const arma::mat input_data,const
 				+lambda*weightMatrix.rows(filterDim * (i*inputImageNum + j),filterDim * (i*inputImageNum + j + 1)-1);
 		}
 
-		bgrad(i) = ((double)1/mbSize)*sum(sum(delta.rows(i*outputImageDim*outputImageDim,(i+1)*outputImageDim*outputImageDim-1)));
+		bgrad(i) = ((double)1/mbSize)*accu(delta.rows(i*outputImageDim*outputImageDim,(i+1)*outputImageDim*outputImageDim-1));
 	}
 }

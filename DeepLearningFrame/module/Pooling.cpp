@@ -26,10 +26,10 @@ arma::mat Pooling::down_sample(arma::mat data){
 					patch = image.submat(offsetrow,offsetcol,offsetrow+poolingDim-1,offsetcol+poolingDim-1);
 					
 					if(poolingType == "MEAN"){
-						temp_pooling_result(poolrow,poolcol) = arma::sum(arma::sum(patch))/patch.size();
+						temp_pooling_result(poolrow,poolcol) = arma::accu(patch)/patch.size();
 						
 					}else if(poolingType == "STOCHASTIC"){
-						sto_patch = (double)1/(arma::sum(arma::sum(patch))) * patch ;
+						sto_patch = (double)1/(arma::accu(patch)) * patch ;
 						int sto_sum = 0;
 						double rand_num = std::rand();
 						for(int k = 0;k < sto_patch.size();k++){

@@ -2,7 +2,7 @@
 #define CONVOLVE_H
 
 #include "armadillo"
-
+#define OPENMP
 
 static arma::mat rot(arma::mat W,int k){
 	if(k == 0) return W;
@@ -79,7 +79,7 @@ static arma::mat convn(const arma::mat image, const arma::mat W, string info){
 	for(int i = 0;i < conv_dim; i++){
 		for(int j = 0;j < conv_dim;j++){
 			arma::mat patch = full_image.submat(i,j,i+filter_dim-1,j+filter_dim-1);
-			feature(i,j) = arma::sum(arma::sum(patch % filter));
+			feature(i,j) = arma::accu(patch % filter);
 		}
 	}
 	
@@ -109,12 +109,13 @@ static arma::cube convn_cube(const arma::cube images, const arma::mat W, string 
 		filter = rot(W,2);
 	}
 	arma::cube filter_scale = zeros(filter_dim,filter_dim,sample_num);	
-
 	for(int i = 0;i < sample_num; i++){
 		filter_scale.slice(i) = filter;
 	}
+
+
 #ifdef OPENMP
-#pragma omp parallel for shared(conv_dim,full_image,filter_scale,filter_dim,feature)
+#pragma omp parallel for shared(feature_map,patch,conv_dim,full_image,filter_scale,filter_dim,feature)
 #endif
 	for(int i = 0;i < conv_dim; i++){
 		for(int j = 0;j < conv_dim;j++){
@@ -122,7 +123,7 @@ static arma::cube convn_cube(const arma::cube images, const arma::mat W, string 
 			feature_map = patch % filter_scale;
 			for(int k = 0;k < sample_num; k++){
 				
-				feature(i,j,k) = arma::sum(arma::sum(feature_map.slice(k)));
+				feature(i,j,k) = arma::accu(feature_map.slice(k));
 			}
 		}
 	}
@@ -159,7 +160,7 @@ static arma::cube convn_cube(const arma::cube images, const arma::cube W, string
 			patch = full_image.tube(i,j,i+filter_dim-1,j+filter_dim-1);
 			feature_map = patch % filter;
 			for(int k = 0;k < sample_num; k++){
-				feature(i,j,k) = arma::sum(arma::sum(feature_map.slice(k)));
+				feature(i,j,k) = arma::accu(feature_map.slice(k));
 			}
 		}
 	}

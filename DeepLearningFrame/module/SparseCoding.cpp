@@ -74,13 +74,13 @@ void SparseCoding::pretrain(const arma::mat data,NewParam param){
 			
 			error_mat = sc_cost_func->weightMatrix.t() * sc_cost_func->coefficient - minibatches[batch];
 			
-			error = arma::sum(arma::sum(arma::pow(error_mat,2)))/batch_size;
+			error = arma::accu(arma::pow(error_mat,2))/batch_size;
 			//cout << "error = " << error << endl;
 			double fResidue = error;
 			arma::mat R = group_mat * arma::pow(sc_cost_func->coefficient,2);
 			R = arma::sqrt(R+epsilon);
-			double Jsparsity = sparsity*arma::sum(arma::sum(R));
-			double Jweight = weightdecay * arma::sum(arma::sum(arma::pow(sc_cost_func->weightMatrix,2)));
+			double Jsparsity = sparsity*arma::accu(R);
+			double Jweight = weightdecay * arma::accu(arma::pow(sc_cost_func->weightMatrix,2));
 
 			LogOut << iter << "  " << batch << "    " << fResidue+Jsparsity+Jweight << "    " << fResidue
 				<< "    "<< Jsparsity << "    " << Jweight << endl;

@@ -151,7 +151,7 @@ void ConvolveModule::calculate_grad_using_delta(const arma::mat input_data,const
 				+lambda*weightMatrix.rows(filterDim * (i*inputImageNum + j),filterDim * (i*inputImageNum + j + 1)-1);
 		}
 
-		bgrad(i) = ((double)1/mbSize)*sum(sum(delta.rows(i*outputImageDim*outputImageDim,(i+1)*outputImageDim*outputImageDim-1)));
+		bgrad(i) = ((double)1/mbSize)*accu(delta.rows(i*outputImageDim*outputImageDim,(i+1)*outputImageDim*outputImageDim-1));
 	}
 
 }

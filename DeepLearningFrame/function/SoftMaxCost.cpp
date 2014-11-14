@@ -33,7 +33,7 @@ double dlpft::function::SoftMaxCost::value_gradient(arma::mat& grad){
 
 	cost = ((double)-1/numCases)*gm_cost;
 
-	cost += weightDecay/2 * sum(sum(pow(W,2)));
+	cost += weightDecay/2 * accu(pow(W,2));
 	
 	grad.set_size(Wgrad.size()+bgrad.size(),1);
 	grad.rows(0,Wgrad.size()-1) = reshape(Wgrad,Wgrad.size(),1);

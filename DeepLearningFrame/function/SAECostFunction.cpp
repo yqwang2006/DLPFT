@@ -42,9 +42,9 @@ double dlpft::function::SAECostFunction::value_gradient(arma::mat& grad){
 
 	arma::mat a3_x = (a3-data)%(a3-data);
 
-	Jcost = (0.5*m_inv)*sum(sum(a3_x));
+	Jcost = (0.5*m_inv)*accu(a3_x);
 	
-	Jweight = 0.5 * (arma::sum(arma::sum(W1%W1)) + arma::sum(arma::sum(W2%W2)));
+	Jweight = 0.5 * (accu(W1%W1) + accu(W2%W2));
 	
 	arma::vec rho = m_inv*sum(a2,1);
 	

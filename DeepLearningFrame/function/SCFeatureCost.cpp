@@ -8,9 +8,9 @@ double SCFeatureCost::value_gradient(arma::mat& grad){
 	
 	arma::mat delta = weightMatrix.t() * coefficient - data;
 
-	double Jcost1 = sum(sum(pow(delta,2)))/samples_num;
+	double Jcost1 = accu(pow(delta,2))/samples_num;
 	arma::mat sparsityMat = sqrt(group_matrix*(pow(coefficient,2))+epsilon);
-	double Jsparse = lambda * sum(sum(sparsityMat));
+	double Jsparse = lambda * accu(sparsityMat);
 	//double Jweight = gamma * sum(sum(pow(weightMatrix,2)));
 
 	Jcost = Jcost1 + Jsparse ;//+ Jweight;

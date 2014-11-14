@@ -51,7 +51,7 @@ double dlpft::optimizer::CgOptimizer::optimize(string varname){
 	return f;
 }
 bool dlpft::optimizer::CgOptimizer::stop(const double& f, const double &f_old, const arma::mat& g, const int& iter){
-	if(sum(sum(abs(g))) <= 1e-5)
+	if(accu(abs(g)) <= 1e-5)
 		return true;
 	if(abs(f-f_old) < 1e-9)
 		return true;
@@ -102,7 +102,7 @@ double dlpft::optimizer::CgOptimizer::line_search(
 	double gtd = arma::dot(grad,search_dir);
 	double t = 0;
 	if(iter == 0){
-		t = min(1.0,1/sum(sum(abs(grad))));
+		t = min(1.0,1/accu(abs(grad)));
 	}else{
 		t = min(1.0,2*(func_value-func_value_old)/gtd);
 	}

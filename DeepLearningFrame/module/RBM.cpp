@@ -42,6 +42,10 @@ void RBM::pretrain(const arma::mat data,NewParam param){
 		
 		rand_data(data,minibatches,sample_num,batch_size);
 
+
+
+
+
 		for(int batch = 0; batch < num_batches; batch++){
 
 			
@@ -69,7 +73,7 @@ void RBM::pretrain(const arma::mat data,NewParam param){
 			bias += deltab ;
 			c_bias = c_bias + deltac ;
 
-			err = arma::sum(arma::sum(gradb))/batch_size;
+			err = arma::accu(gradb)/batch_size;
 
 			errsum += err;
 		}
