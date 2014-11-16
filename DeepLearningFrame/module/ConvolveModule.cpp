@@ -45,7 +45,6 @@ arma::mat ConvolveModule::forwardpropagate(const arma::mat data,  NewParam param
 				all_images.slice(0) = images;
 				all_images.reshape(inputImageDim,inputImageDim,samples_num);
 				//reshape(images,inputImageDim,inputImageDim,inputImageNum);
-				
 				features_filter += convn_cube(all_images,W,"valid");
 			}
 			features_filter = features_filter + b;
