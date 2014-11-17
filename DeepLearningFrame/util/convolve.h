@@ -4,7 +4,7 @@
 #include "armadillo"
 
 //#define OPENMP
-//#define __CUDA__
+#define __CUDA__
 
 #ifdef __CUDA__
 #include "../util/cuda_convolve.h"

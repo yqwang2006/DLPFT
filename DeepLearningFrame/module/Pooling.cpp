@@ -1,5 +1,6 @@
 #include "Pooling.h"
 using namespace dlpft::module;
+#define __CUDA__
 #ifdef __CUDA__
 #include "../util/cupooling.h"
 #endif
@@ -86,7 +87,7 @@ arma::mat Pooling::down_sample(arma::mat data){
 #ifdef __CUDA__
 	//cumaxpooling(double* all_images, double* pooling_result, int* pooling_loc, int samples_num, int input_image_dim, int input_image_num, int output_image_dim, int pooling_dim);
 		double *all_images = new double[samples_num * inputImageNum * inputImageDim * inputImageDim];
-		double *pooling_result = new double[samples_num * inputImageNum * outputImageDim * outputImageDim];
+		double *h_pooling_result = new double[samples_num * inputImageNum * outputImageDim * outputImageDim];
 		int *pooling_loc = new int[samples_num * inputImageNum * outputImageDim * outputImageDim];
 		for(int i = 0;i < samples_num; i++){
 			int start_i_loc = i*inputImageNum * inputImageDim * inputImageDim;
@@ -94,12 +95,30 @@ arma::mat Pooling::down_sample(arma::mat data){
 				int start_j_loc = j * inputImageDim * inputImageDim;
 				for(int x = 0; x < inputImageDim; x++){
 					for(int y = 0; y < inputImageDim; y++){
-						//all_images[start_i_loc + start_j_loc + x * inputImageDim + y] = data.col(i).rows(j*inputImageDim*inputImageDim,(j+1)*inputImageDim*inputImageDim-1);
+						all_images[start_i_loc + start_j_loc + x * inputImageDim + y] = data(start_j_loc+y*inputImageDim+x,i);
 					}
 				}
 			}
 			
 		}
+		cumaxpooling(all_images,h_pooling_result,pooling_loc,samples_num,inputImageDim,inputImageNum,outputImageDim,poolingDim);
+		
+		for(int i = 0;i < samples_num; i++){
+			int start_i_loc = i*inputImageNum * outputImageDim * outputImageDim;
+			for(int j = 0; j < outputImageNum; j++){
+				int start_j_loc = j * outputImageDim * outputImageDim;
+				for(int x = 0; x < outputImageDim; x++){
+					for(int y = 0; y < outputImageDim; y++){
+						pooling_result(start_j_loc+y*outputImageDim+x,i) = h_pooling_result[start_i_loc + start_j_loc + x * outputImageDim + y];
+						sampleLoc(start_j_loc+y*outputImageDim+x,i) = pooling_loc[start_i_loc + start_j_loc + x * outputImageDim + y];
+							
+					}
+				}
+			}
+			
+		}
+
+
 #else
 		for(int i = 0;i < samples_num;i++){
 			for(int j = 0;j < inputImageNum;j++){

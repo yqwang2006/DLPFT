@@ -29,6 +29,14 @@ int snap_num = 0;
 
 
 int main(int argc, char**argv){
+	//cube A= randn<cube> (3,2,2);
+	//cout << A << endl;
+	//A.reshape(6,2,1);
+	//cout << A << endl;
+	//mat B = A.slice(0);
+	//cout << reshape(B,6,2) << endl;
+
+
 	get_device_info();
 	string paramFileFullPath;
 
