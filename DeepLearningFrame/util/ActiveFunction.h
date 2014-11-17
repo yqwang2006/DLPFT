@@ -20,12 +20,20 @@
 	}
 
 	inline static void sigmoid(const arma::mat x, arma::mat& y){
-		y = 1/(1+arma::exp(-x));
+		//y = 1/(1+arma::exp(-x));
+#pragma omp parallel for shared(y,x)
+		for(int i = 0;i < x.size();i++){
+			y(i) = 1/(1+std::exp(-x(i)));
+		}
 	}
 	static void tanh(const arma::mat x, arma::mat& y){
-		y = arma::tanh(x);
+#pragma omp parallel for shared(y,x)
+		for(int i = 0;i < x.size();i++){
+			y(i) = std::tanh(x(i));
+		}
 	}
 	static void rectifier(const arma::mat x, arma::mat& y){
+#pragma omp parallel for shared(y,x)
 		for(int i = 0;i < x.size();i++){
 			y(i) = std::max<double>(0.0,x(i));
 		}
@@ -34,6 +42,10 @@
 		y = x;
 	}
 	static void sigmoid_dev(const arma::mat z, arma::mat& g){
+//#pragma omp parallel for shared(g,z)
+//		for(int i = 0;i < z.size();i++){
+//			g(i) = z(i) * (1-z(i));
+//		}
 		g = z % (1-z);
 	}
 	static void tanh_dev(const arma::mat z, arma::mat& g){
@@ -41,6 +53,7 @@
 		g = t+arma::pow(z,2);
 	}
 	static void rectifier_dev(const arma::mat z, arma::mat& g){
+#pragma omp parallel for shared(g,z)		
 		for(int i = 0;i < z.size();i++){
 			g(i) =(double)(z(i) > 0.0)*1.0;
 		}
@@ -50,10 +63,12 @@
 	}
 	static void softmax(const arma::mat x, arma::mat& features){
 		arma::mat max_M = max(x,0);//1*5000
+//#pragma omp parallel for shared(features,x,max_M)
 		for(int i = 0;i < x.n_rows;i++){
 			features.row(i) = exp(x.row(i)-max_M);
 		}
 		max_M = sum(features,0);
+//#pragma omp parallel for shared(features,x,max_M)
 		for(int i = 0;i < x.n_rows;i++){
 			features.row(i) = features.row(i)/max_M;
 		}

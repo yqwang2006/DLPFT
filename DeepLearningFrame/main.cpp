@@ -13,7 +13,7 @@
 #include "util\convolve.h"
 #include "util\onehot.h"
 #include "util\global_vars.h"
-
+#include "util\cuda_convolve.h"
 
 using namespace std;
 using namespace arma;
@@ -29,12 +29,7 @@ int snap_num = 0;
 
 
 int main(int argc, char**argv){
-
-	
-	cube C = randu<cube>(2,3,5);
-	cout << C <<endl;
-	
-	//cout << sum(C,) << endl;
+	get_device_info();
 	string paramFileFullPath;
 
 	if(argc != 2){
