@@ -31,6 +31,7 @@ int snap_num = 0;
 int main(int argc, char**argv){
 	//cube A= randn<cube> (3,2,2);
 	//cout << A << endl;
+	//cout << A(2) << ' ' << A(3) << endl;
 	//A.reshape(6,2,1);
 	//cout << A << endl;
 	//mat B = A.slice(0);

@@ -16,11 +16,12 @@ namespace dlpft{
 			int outputImageNum;
 		public:
 			ConvolutionRBM():Module(){
-				name = "ConvolveModule";
+				name = "ConvolveRBM";
 			}
 			ConvolutionRBM(int input_image_dim,int input_image_num,int filter_dim, int output_num,
 				const string load_w = "NO",const string w_addr = "",const string b_addr = "",
 				const ActivationFunction act_func = LINEARFUNC,const double weightdecay=3e-3){
+				name = "ConvolveRBM";
 				inputImageDim = input_image_dim;
 				inputImageNum = input_image_num;
 				inputSize = inputImageDim * inputImageDim;

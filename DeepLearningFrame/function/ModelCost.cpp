@@ -101,6 +101,7 @@ double ModelCost::value_gradient(arma::mat& grad){
 	for(int i = layer_num-1;i >=0 ;i--){
 		arma::mat w_grad = zeros(modules[i]->weightMatrix.n_rows,modules[i]->weightMatrix.n_cols);
 		arma::mat b_grad = zeros(modules[i]->bias.size(),1);
+		
 		if(i == 0){
 			modules[i]->calculate_grad_using_delta(data,delta[i],params[i],weight_decay,w_grad,b_grad);
 			

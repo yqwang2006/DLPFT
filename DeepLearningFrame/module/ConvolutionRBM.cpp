@@ -139,8 +139,9 @@ arma::mat ConvolutionRBM::propup(const arma::mat v){
 	mat W = zeros(filterDim,filterDim);
 	mat images = zeros(inputImageDim*inputImageDim,samples_num);
 	cube all_images = zeros(inputImageDim*inputImageDim,samples_num,1);
-
-
+//#ifdef OPENMP
+//#pragma omp parallel for private(features_filter,W,images,all_images) shared(data,all_features)
+//#endif
 	for(int nout = 0; nout < outputImageNum; nout ++){
 			features_filter = zeros(outputImageDim,outputImageDim,samples_num);
 			int fmInBase = 0;
@@ -152,7 +153,6 @@ arma::mat ConvolutionRBM::propup(const arma::mat v){
 				all_images.slice(0) = images;
 				all_images.reshape(inputImageDim,inputImageDim,samples_num);
 				//reshape(images,inputImageDim,inputImageDim,inputImageNum);
-				
 				features_filter += convn_cube(all_images,W,"valid");
 			}
 			features_filter = features_filter + b;
@@ -215,23 +215,25 @@ arma::mat ConvolutionRBM::process_delta(arma::mat curr_delta){
 	//int conv_dim = delta_dim - filter_dim + 1;
 
 	//arma::mat curr_delta = arma::zeros(inputImageDim*inputImageDim*inputImageNum,samples_num);
-	
-		
+	mat W = zeros(filterDim,filterDim);
+	mat single_delta = zeros(delta_dim*delta_dim,samples_num);
+	arma::cube all_deltas = zeros(delta_dim*delta_dim,samples_num,1);
+	arma::cube delta_filter = zeros(inputImageDim,inputImageDim,samples_num);
 		for(int nin = 0; nin < inputImageNum; nin++){
 			int fmInBase = 0;
-			arma::cube delta_filter = zeros(inputImageDim,inputImageDim,samples_num);
+			delta_filter = zeros(inputImageDim,inputImageDim,samples_num);
 			for(int nout = 0; nout < outputImageNum; nout ++){
 				double b = (bias.row(nout))(0);
-				arma::mat W = weightMatrix.rows(filterDim * (nout*inputImageNum + nin),filterDim * (nout*inputImageNum + nin + 1)-1);
+				W = weightMatrix.rows(filterDim * (nout*inputImageNum + nin),filterDim * (nout*inputImageNum + nin + 1)-1);
 				
-				arma::mat single_delta = curr_delta.rows(nout*delta_dim*delta_dim,(nout+1)*delta_dim*delta_dim-1);
-				arma::cube all_deltas = zeros(delta_dim*delta_dim,samples_num,1);
+				single_delta = curr_delta.rows(nout*delta_dim*delta_dim,(nout+1)*delta_dim*delta_dim-1);
+				all_deltas = zeros(delta_dim*delta_dim,samples_num,1);
 				all_deltas.slice(0) = single_delta;
 				all_deltas.reshape(delta_dim,delta_dim,samples_num);
 				delta_filter += convn_cube(all_deltas,W,"full");
 			}
 			delta_filter.reshape(inputImageDim*inputImageDim,samples_num,1);
-			arma::mat temp_delta = delta_filter.slice(0);
+			arma::mat& temp_delta = delta_filter.slice(0);
 			convn_delta.rows(nin*inputImageDim*inputImageDim,(nin+1)*inputImageDim*inputImageDim-1) =temp_delta;
 		}
 		
@@ -253,10 +255,6 @@ arma::mat ConvolutionRBM::backpropagate(const arma::mat next_delta, const arma::
 void ConvolutionRBM::calculate_grad_using_delta(const arma::mat input_data,const arma::mat delta, NewParam param,double weight_decay,arma::mat& Wgrad, arma::mat& bgrad){
 //compute bgrad
 	//compute bgrad
-	clock_t start_time = clock();
-	clock_t end_time;
-	double duration = 0;
-	
 	int mbSize = input_data.n_cols;
 	double lambda = 3e-3;
 	Wgrad.set_size(filterDim*filterNum,filterDim);
@@ -266,6 +264,7 @@ void ConvolutionRBM::calculate_grad_using_delta(const arma::mat input_data,const
 	mat delta_i_k = zeros(outputImageDim*outputImageDim,mbSize);
 	cube all_images = arma::zeros(inputImageDim*inputImageDim,mbSize,1);
 	cube all_delta = zeros(outputImageDim*outputImageDim,mbSize,1);
+	cube temp_wgrad;
 	for(int i = 0; i < outputImageNum; i++){
 		for(int j = 0;j < inputImageNum;j++){
 			Wgrad_j_i = zeros(filterDim,filterDim);
@@ -281,7 +280,7 @@ void ConvolutionRBM::calculate_grad_using_delta(const arma::mat input_data,const
 			all_delta.slice(0) = delta_i_k;
 			all_delta.reshape(outputImageDim,outputImageDim,mbSize);
 
-			cube temp_wgrad = convn_cube(all_images,all_delta,"valid");
+			temp_wgrad = convn_cube(all_images,all_delta,"valid");
 
 			for(int k = 0;k < temp_wgrad.n_slices; k++){
 				Wgrad_j_i += temp_wgrad.slice(k);

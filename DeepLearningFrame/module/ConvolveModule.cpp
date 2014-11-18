@@ -110,10 +110,6 @@ arma::mat ConvolveModule::backpropagate(const arma::mat next_delta, const arma::
 }
 void ConvolveModule::calculate_grad_using_delta(const arma::mat input_data,const arma::mat delta, NewParam param,double weight_decay,arma::mat& Wgrad, arma::mat& bgrad){
 	//compute bgrad
-	clock_t start_time = clock();
-	clock_t end_time;
-	double duration = 0;
-	
 	int mbSize = input_data.n_cols;
 	double lambda = 3e-3;
 	Wgrad.set_size(filterDim*filterNum,filterDim);
@@ -123,6 +119,7 @@ void ConvolveModule::calculate_grad_using_delta(const arma::mat input_data,const
 	mat delta_i_k = zeros(outputImageDim*outputImageDim,mbSize);
 	cube all_images = arma::zeros(inputImageDim*inputImageDim,mbSize,1);
 	cube all_delta = zeros(outputImageDim*outputImageDim,mbSize,1);
+	cube temp_wgrad;
 	for(int i = 0; i < outputImageNum; i++){
 		for(int j = 0;j < inputImageNum;j++){
 			Wgrad_j_i = zeros(filterDim,filterDim);
@@ -138,7 +135,7 @@ void ConvolveModule::calculate_grad_using_delta(const arma::mat input_data,const
 			all_delta.slice(0) = delta_i_k;
 			all_delta.reshape(outputImageDim,outputImageDim,mbSize);
 
-			cube temp_wgrad = convn_cube(all_images,all_delta,"valid");
+			temp_wgrad = convn_cube(all_images,all_delta,"valid");
 
 			for(int k = 0;k < temp_wgrad.n_slices; k++){
 				Wgrad_j_i += temp_wgrad.slice(k);

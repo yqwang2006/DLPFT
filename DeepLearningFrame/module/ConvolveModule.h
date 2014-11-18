@@ -23,6 +23,7 @@ namespace dlpft{
 							const string load_w = "NO",const string w_addr = "",const string b_addr = "",
 							const ActivationFunction act_func = SIGMOIDFUNC,
 							const double weightdecay=3e-3){
+				name = "ConvolveModule";
 				inputImageDim = input_image_dim;
 				inputImageNum = input_image_num;
 				filterDim = filter_dim;

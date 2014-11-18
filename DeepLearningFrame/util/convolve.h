@@ -4,7 +4,6 @@
 #include "armadillo"
 
 //#define OPENMP
-#define __CUDA__
 
 #ifdef __CUDA__
 #include "../util/cuda_convolve.h"
@@ -40,13 +39,13 @@ static arma::cube rot(arma::cube W,int k){
 	else if(k == 2)
 		B = arma::zeros(W.n_rows,W.n_cols,W.n_slices);
 	for(int i = 0;i < W.n_slices;i++){
-		
+
 		if(k == 1){
 			for(int c = 0;c < W.n_cols; c++){
 				B.slice(i).col(c) = W.slice(i).col(W.n_cols-c-1);
 				B.slice(i) = B.slice(i).t();
 			}
-			
+
 		}else if(k == 2){
 			for(int r = 0;r < W.n_rows; r++){
 				for(int c = 0;c < W.n_cols;c++){
@@ -74,8 +73,8 @@ static arma::mat convn(const arma::mat image, const arma::mat W, string info){
 		image_dim = image.n_cols+2*(filter_dim-1);
 		full_image = arma::zeros(image_dim,image_dim);
 		full_image.submat(filter_dim-1,filter_dim-1,filter_dim+image.n_rows-2,filter_dim+image.n_cols-2) = image;
-		
-		
+
+
 		conv_dim = image_dim - filter_dim + 1;
 		feature = arma::zeros(conv_dim,conv_dim);
 		filter = rot(W,2);
@@ -87,7 +86,7 @@ static arma::mat convn(const arma::mat image, const arma::mat W, string info){
 			feature(i,j) = arma::accu(patch % filter);
 		}
 	}
-	
+
 
 	return feature;
 }
@@ -107,8 +106,8 @@ static arma::cube convn_cube(const arma::cube images, const arma::mat W, string 
 		image_dim = images.n_cols+2*(filter_dim-1);
 		full_image = arma::zeros(image_dim,image_dim,sample_num);
 		full_image.tube(filter_dim-1,filter_dim-1,filter_dim+images.n_rows-2,filter_dim+images.n_cols-2) = images;
-		
-		
+
+
 		conv_dim = image_dim - filter_dim + 1;
 		feature = arma::zeros(conv_dim,conv_dim,sample_num);
 		filter = rot(W,2);
@@ -126,29 +125,17 @@ static arma::cube convn_cube(const arma::cube images, const arma::mat W, string 
 	double* h_filter = new double[filter_dim*filter_dim];
 	double* h_full_image = new double[image_dim * image_dim * sample_num];
 	double* h_features = new double[conv_dim * conv_dim * sample_num];
-	int iter = 0;
-	for(int i = 0;i < filter_dim;i++){
-		for(int j = 0;j < filter_dim;j++){
-			h_filter[iter++] = filter(i,j);
-		}
+
+	for(int i = 0;i < filter.size();i++){
+		h_filter[i] =  filter(i);
 	}
-	iter = 0;
-	for(int k = 0;k< sample_num; k++){
-		for(int i = 0;i < image_dim;i++){
-			for(int j = 0;j < image_dim;j++){
-				h_full_image[iter ++] = full_image(i,j,k);
-			}
-		}
+	for(int i = 0;i < full_image.size();i++){
+		h_full_image[i] =  full_image(i);
 	}
 	cuconv(h_filter,h_full_image,h_features,conv_dim,filter_dim,image_dim,sample_num);
 
-	iter = 0;
-	for(int k = 0;k< sample_num; k++){
-		for(int i = 0;i < conv_dim;i++){
-			for(int j = 0;j < conv_dim;j++){
-				feature(i,j,k) = h_features[iter++];
-			}
-		}
+	for(int i = 0;i< feature.size(); i++){
+		feature(i) = h_features[i];
 	}
 	delete []h_filter;
 	delete []h_features;
@@ -159,7 +146,7 @@ static arma::cube convn_cube(const arma::cube images, const arma::mat W, string 
 			patch = full_image.tube(i,j,i+filter_dim-1,j+filter_dim-1);
 			feature_map = patch % filter_scale;
 			for(int k = 0;k < sample_num; k++){
-				
+
 				feature(i,j,k) = arma::accu(feature_map.slice(k));
 			}
 		}
@@ -183,8 +170,8 @@ static arma::cube convn_cube(const arma::cube images, const arma::cube W, string
 		image_dim = images.n_cols+2*(filter_dim-1);
 		full_image = arma::zeros(image_dim,image_dim,sample_num);
 		full_image.tube(filter_dim-1,filter_dim-1,filter_dim+images.n_rows-2,filter_dim+images.n_cols-2) = images;
-		
-		
+
+
 		conv_dim = image_dim - filter_dim + 1;
 		feature = arma::zeros(conv_dim,conv_dim,sample_num);
 		filter = rot(W,2);
@@ -196,28 +183,25 @@ static arma::cube convn_cube(const arma::cube images, const arma::cube W, string
 	double* h_filter = new double[filter_dim*filter_dim* sample_num];
 	double* h_full_image = new double[image_dim * image_dim * sample_num];
 	double* h_features = new double[conv_dim * conv_dim * sample_num];
-	for(int k = 0;k< sample_num; k++){
-		for(int i = 0;i < filter_dim;i++){
-			for(int j = 0;j < filter_dim;j++){
-				h_filter[k*filter_dim*filter_dim+i*filter_dim+j] = filter(i,j,k);
-			}
-		}
+	for(int i = 0;i< filter.size(); i++){
+
+		h_filter[i] = filter(i);
+
 	}
-	for(int k = 0;k< sample_num; k++){
-		for(int i = 0;i < image_dim;i++){
-			for(int j = 0;j < image_dim;j++){
-				h_full_image[k*image_dim*image_dim+i*image_dim+j] = full_image(i,j,k);
-			}
-		}
+	for(int i = 0;i< full_image.size(); i++){
+
+		h_full_image[i] = full_image(i);
+
 	}
 	cuconvcube(h_filter,h_full_image,h_features,conv_dim,filter_dim,image_dim,sample_num);
-	for(int k = 0;k< sample_num; k++){
-		for(int i = 0;i < conv_dim;i++){
-			for(int j = 0;j < conv_dim;j++){
-				feature(i,j,k) = h_features[k*conv_dim*conv_dim+i*conv_dim+j];
-			}
-		}
+
+	for(int i = 0;i < feature.size();i++){
+
+		feature(i) = h_features[i];
 	}
+	delete []h_filter;
+	delete []h_features;
+	delete []h_full_image;	
 #else
 
 	for(int i = 0;i < conv_dim; i++){
