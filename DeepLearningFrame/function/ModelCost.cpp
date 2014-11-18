@@ -7,14 +7,31 @@ void ModelCost::initialParam(){
 }
 void ModelCost::modelff(const arma::mat inputdata,arma::mat *output,arma::mat* dropoutMask){
 	double dropoutfraction = atof(params[layer_num].params[params_name[DROPOUTFRACTION]].c_str());
+	mat print_data = inputdata;
+	ofstream ofs;
+	ofs.open("data.txt");
+	print_data.quiet_save(ofs,raw_ascii);
+	ofs.close();
 	for(int i = 0;i < layer_num;i ++){
-
+		stringstream str_i;
+		str_i << i;
+		std::string wname = "Weight_"+str_i.str() +".txt";
+		string bname = "bias_"+str_i.str() + ".txt";
+		string outname = "out_"+str_i.str()+".txt";
+		ofs.open(wname);
+		modules[i]->weightMatrix.quiet_save(ofs,raw_ascii);
+		ofs.close();
+		ofs.open(bname);
+		modules[i]->bias.quiet_save(ofs,raw_ascii);
+		ofs.close();
 		if(i == 0){
 			output[i] = modules[i]->forwardpropagate(data,params[i]);
 		}else{
 			output[i] = modules[i]->forwardpropagate(output[i-1],params[i]);
 		}
-
+		ofs.open(outname);
+		output[i].quiet_save(ofs,raw_ascii);
+		ofs.close();
 		if(dropoutfraction > 0 && i != layer_num-1){
 			arma::mat rand_mat = arma::randu(output[i].n_rows,output[i].n_cols);
 			arma::uvec indeies = find(output[i]>rand_mat);
@@ -45,15 +62,25 @@ double ModelCost::modelbp(const arma::mat* features,arma::mat* dropoutMask,arma:
 
 	cost += ((double)-1/num_samples)*gm_cost;
 	
-
+	ofstream ofs;
+	
 	//backward propagation to compute delta
 
 	outputdelta[layer_num] = -(desired_out - features[layer_num-1]);
 	arma::mat next_delta = outputdelta[layer_num];
-	
+	ofs.open("d_o.txt");
+	outputdelta[layer_num].quiet_save(ofs,raw_ascii);
+	ofs.close();
+
 	for(int i = layer_num-1;i >=0 ;i--){
 		
 		outputdelta[i] = modules[i]->backpropagate(next_delta,features[i],params[i]);
+		stringstream str_i;
+		str_i << i;
+		std::string deltaname = "delta_"+str_i.str() +".txt";
+		ofs.open(deltaname);
+		outputdelta[i].quiet_save(ofs,raw_ascii);
+		ofs.close();
 
 		if(i > 0){
 			next_delta = modules[i]->process_delta(outputdelta[i]);
