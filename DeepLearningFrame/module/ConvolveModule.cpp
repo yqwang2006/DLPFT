@@ -14,7 +14,13 @@ void ConvolveModule::initial_weights_bias(){
 
 		cube tempW = 0.1 * randn(filterDim,filterDim,filterNum);
 		for(int i = 0; i < filterNum; i++){
-			weightMatrix.rows(i*filterDim,(i+1)*filterDim-1) = tempW.slice(i);
+			//weightMatrix.rows(i*filterDim,(i+1)*filterDim-1) = tempW.slice(i);
+			//net.layers{l}.k{i}{j} = (rand(net.layers{l}.kernelsize) - 0.5) * 2 * sqrt(6 / (fan_in + fan_out));
+			//fan_in = inputmaps * net.layers{l}.kernelsize ^ 2;
+			// fan_out = net.layers{l}.outputmaps * net.layers{l}.kernelsize ^ 2;
+			int fan_in = inputImageNum * filterDim *filterDim;
+			int fan_out = outputImageNum * filterDim *filterDim;
+			weightMatrix.rows(i*filterDim,(i+1)*filterDim-1) = (randn(filterDim,filterDim)-0.5)*2*sqrt(6/(fan_in+fan_out));
 		}
 	
 	
@@ -146,8 +152,8 @@ void ConvolveModule::calculate_grad_using_delta(const arma::mat input_data,const
 			
 			
 			Wgrad.rows(filterDim * (i*inputImageNum + j),filterDim * (i*inputImageNum+j+1)-1) 
-				= ((double)1/mbSize)*Wgrad_j_i
-				+lambda*weightMatrix.rows(filterDim * (i*inputImageNum + j),filterDim * (i*inputImageNum + j + 1)-1);
+				= ((double)1/mbSize)*Wgrad_j_i;
+				//+lambda*weightMatrix.rows(filterDim * (i*inputImageNum + j),filterDim * (i*inputImageNum + j + 1)-1);
 		}
 
 		bgrad(i) = ((double)1/mbSize)*accu(delta.rows(i*outputImageDim*outputImageDim,(i+1)*outputImageDim*outputImageDim-1));
