@@ -195,8 +195,17 @@ int main(int argc, char**argv){
 		}
 
 		if(global_info.params[params_name[MODELTYPE]] == "UnsuperviseModel"){
+			
+			clock_t start1,end1;
+			double duration1 = 0;
+			start1 = clock();
 
 			model.pretrain(train_data,params[iter]);
+
+			end1 = clock();
+			duration1 = (double)(end1-start1)/CLOCKS_PER_SEC;
+			LogOut << "Pretrain costs " << duration1 << "s" << endl;
+
 			if(data_addr.train_labels_info.name != ""){
 				model.train_classifier(train_data,train_labels,params[iter]);
 			}
@@ -205,7 +214,13 @@ int main(int argc, char**argv){
 				LogOut << "Begin finetuning!" << endl;
 				cout << "Begin finetuning!" << endl;
 
+				start1 = clock();
+
 				model.train(finetune_data,finetune_labels,params[iter]);
+
+				end1 = clock();
+				duration1 = (double)(end1-start1)/CLOCKS_PER_SEC;
+				LogOut << "Finetune costs " << duration1 << "s" << endl;
 			}
 
 		}

@@ -9,6 +9,8 @@
 #include "FullConnectModule.h"
 #include "ConvolutionRBM.h"
 #include "SvmModule.h"
+#include "DELM.h"
+#include "ELM_LRF.h"
 using namespace dlpft::module;
 
 #endif

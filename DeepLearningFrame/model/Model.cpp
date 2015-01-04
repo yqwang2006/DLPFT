@@ -9,10 +9,15 @@ void Model::pretrain(const arma::mat data, vector<NewParam> params){
 	arma::mat features = data;
 	if((params[layerNumber-1].params[params_name[ALGORITHM]] == "SoftMax")){
 		for(int i = 0;i < layerNumber-1;i++){
+			
 			modules[i]->pretrain(features,params[i]);
-			if(i < layerNumber-2)
+			if(i < layerNumber-2){
 				features = modules[i]->forwardpropagate(features,params[i]);
+			}
+			
 		}
+	}else if((params[layerNumber-1].params[params_name[ALGORITHM]] == "ELM")){
+		
 	}else{
 		for(int i = 0;i < layerNumber;i++){
 			modules[i]->pretrain(features,params[i]);
@@ -28,10 +33,20 @@ void Model::train_classifier(const arma::mat data, const arma::mat labels, vecto
 			features = modules[i]->forwardpropagate(features,param[i]);
 		}
 	}
+	//ofstream ofs;
+	//ofs.open("Features.txt");
+	//features.quiet_save(ofs,raw_ascii);
+	//ofs.close();
+	//ofs.open("W0.txt");
+	//modules[0]->weightMatrix.quiet_save(ofs,raw_ascii);
+	//ofs.close();
+	
 	if(param[layerNumber-1].params[params_name[ALGORITHM]] == "SoftMax"){
 		((SoftMax *)modules[layerNumber-1])->train(features,labels,param[layerNumber-1]);
 	}else if(param[layerNumber-1].params[params_name[ALGORITHM]] == "SVM"){
 		((SvmModule *)modules[layerNumber-1])->train(features,labels,param[layerNumber-1]);
+	}else if(param[layerNumber-1].params[params_name[ALGORITHM]] == "ELM"){
+		((DELM *)modules[layerNumber-1])->train(features,labels,param[layerNumber-1]);
 	}
 	
 }
@@ -59,6 +74,12 @@ Module* Model::create_module(NewParam& param,int& in_size,int& in_num,int layer_
 		in_size = out_size;
 	}else if(m_name == "SoftMax"){
 		module = new SoftMax(in_size,out_size,load_w,w_addr,b_addr,act_choice,weight_decay);
+		in_size = out_size;
+	}else if(m_name == "ELM"){
+		module = new DELM(in_size,out_size,load_w,w_addr,b_addr,act_choice,weight_decay);
+		in_size = out_size;
+	}else if(m_name == "ELM_LRF"){
+		module = new ELM_LRF(in_size,out_size,load_w,w_addr,b_addr,act_choice,weight_decay);
 		in_size = out_size;
 	}else if(m_name == "SVM"){
 		module = new SvmModule();
@@ -100,7 +121,20 @@ void Model::train(arma::mat data, arma::mat labels,vector<NewParam> model_param)
 
 	cout << "begin train!" <<endl;
 
+	 if(model_param[layerNumber-1].params[params_name[ALGORITHM]] == "ELM" || model_param[layerNumber-1].params[params_name[ALGORITHM]] == "ELM_LRF"){
 
+		arma::mat features = data;
+		if(layerNumber > 1){
+			for(int i = 0;i < layerNumber-1;i++){
+				features = modules[i]->forwardpropagate(features,model_param[i]);
+			}
+		}
+		if(model_param[layerNumber-1].params[params_name[ALGORITHM]] == "ELM" )
+			((DELM *)modules[layerNumber-1])->train(features,labels,model_param[layerNumber-1]);
+		else
+			((ELM_LRF *)modules[layerNumber-1])->train(features,labels,model_param[layerNumber-1]);
+		return;
+	}
 
 	int sample_num = data.n_cols;
 	
@@ -174,7 +208,41 @@ arma::mat Model::predict(const arma::mat testdata, const arma::mat testlabels,ve
 			delete []test_case;
 			test_case = NULL;
 		}
-	}else{
+	}else if(params[layerNumber-1].params["Algorithm"] == "ELM"){
+		features = modules[layerNumber-1]->forwardpropagate(features,params[layerNumber-1]);
+
+		features = (features.t() * ((DELM*)modules[layerNumber-1])->outputWeight).t();
+
+		max_vals = max(features);
+
+		for(int i = 0;i < features.n_cols;i++){
+			pred_labels[i] = 0;
+			for(int j = 0;j < features.n_rows; j++){
+				if(max_vals(i) == features(j,i)){
+					pred_labels[i] = j+1;
+					continue;
+				}
+			}
+
+		}
+	}else if(params[layerNumber-1].params["Algorithm"] == "ELM_LRF"){
+		//features = modules[layerNumber-1]->forwardpropagate(features,params[layerNumber-1]);
+
+		features = (features.t() * ((ELM_LRF*)modules[layerNumber-1])->outputWeight).t();
+
+		max_vals = max(features);
+
+		for(int i = 0;i < features.n_cols;i++){
+			pred_labels[i] = 0;
+			for(int j = 0;j < features.n_rows; j++){
+				if(max_vals(i) == features(j,i)){
+					pred_labels[i] = j+1;
+					continue;
+				}
+			}
+
+		}
+	}else {
 		features = modules[layerNumber-1]->forwardpropagate(features,params[layerNumber-1]);
 		pred_labels = features.t();
 	}
