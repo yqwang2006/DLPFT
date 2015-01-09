@@ -21,6 +21,9 @@ using namespace dlpft::factory;
 using namespace dlpft::model;
 using namespace dlpft::io;
 
+
+#define PREDICTONLY
+
 //#define UNSUPERVISEDMODEL 1
 void load_data(DataInfo ,arma::mat&);
 
@@ -38,7 +41,7 @@ int main(int argc, char**argv){
 	//cout << reshape(B,6,2) << endl;
 
 
-	get_device_info();
+	//get_device_info();
 	string paramFileFullPath;
 
 	if(argc != 2){
@@ -108,12 +111,29 @@ int main(int argc, char**argv){
 
 	//params存放所有层的参数，其中params[layer_num]存放全局参数
 	load_param.load(params,data_addr,global_info);
-	arma::mat train_data,test_data,finetune_data;
-	arma::mat train_labels,test_labels,finetune_labels;
+
+
+
 
 
 	int layer_num = params[0].size();
 	int class_number = atoi(params[0][layer_num-2].params[params_name[HIDNUM]].c_str());
+
+
+	string init_mat_from_file = global_info.params[params_name[LOADWEIGHT]];
+	string file_path = global_info.params[params_name[WEIGHTADDRESS]];
+
+	arma::mat pred_labels;
+	double pred_acc = 0;
+
+	clock_t start,end;
+	double duration = 0;
+	start = clock();
+
+#ifndef PREDICTONLY
+	
+	arma::mat train_data,finetune_data;
+	arma::mat train_labels,finetune_labels;
 	//load train data
 	if(data_addr.train_data_info.name == ""){
 		LogOut << "Please set the address of the train data at the param file!" << endl;
@@ -153,21 +173,13 @@ int main(int argc, char**argv){
 
 	int input_size = train_data.n_rows;
 
-	arma::mat pred_labels;
-	double pred_acc = 0;
-
-	clock_t start,end;
-	double duration = 0;
-	start = clock();
+	
 
 	LogOut << "Begin trainning!" << endl;
 	cout << "Begin trainning!" << endl;
 
 
 	//只训练第一个参数文件，此处可加循环将所有的参数文件都训练一遍。
-
-	string init_mat_from_file = global_info.params[params_name[LOADWEIGHT]];
-	string file_path = global_info.params[params_name[WEIGHTADDRESS]];
 
 	Model model(input_size,params[0],init_mat_from_file,file_path);
 
@@ -204,11 +216,22 @@ int main(int argc, char**argv){
 
 	}
 
+#endif
+	arma::mat test_data, test_labels;
+
+
 	if(data_addr.test_data_info.name != ""){
 		LogOut << "Loading test data!" << endl;
 		cout << "Loading test data!" << endl;
 		load_data(data_addr.test_data_info,test_data);
 		test_data = test_data.t();
+#ifdef PREDICTONLY
+		int input_size = test_data.n_rows;
+		
+		Model model(input_size,params[0],init_mat_from_file,file_path);
+
+#endif
+
 		if(data_addr.test_labels_info.name != ""){
 			load_data(data_addr.test_labels_info,test_labels);
 
@@ -224,19 +247,15 @@ int main(int argc, char**argv){
 			LogOut << "predict accu: " << pred_acc*100 << "%"<< endl;
 			cout << "predict accu: " << pred_acc*100 << "%"<< endl;
 		}
-
+		string header_info = "Program consumed " + save_result.getstring(duration) + " s\n";
+		header_info += "The accuracy is " + save_result.getstring(pred_acc*100) + "%\n";
+		save_result.save_result(model.modules,params[0],filedir,pred_labels,header_info);
 	}
 
 
 	end = clock();
 	duration = (double)(end-start)/CLOCKS_PER_SEC;
 	LogOut << duration << endl;
-
-
-	string header_info = "Program consumed " + save_result.getstring(duration) + " s\n";
-	header_info += "The accuracy is " + save_result.getstring(pred_acc*100) + "%\n";
-
-	save_result.save_result(model.modules,params[0],filedir,pred_labels,header_info);
 
 
 	close_file();
