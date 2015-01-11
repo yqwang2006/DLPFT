@@ -14,13 +14,10 @@ void ConvolveModule::initial_weights_bias(){
 
 		cube tempW = 0.1 * randn(filterDim,filterDim,filterNum);
 		for(int i = 0; i < filterNum; i++){
-			//weightMatrix.rows(i*filterDim,(i+1)*filterDim-1) = tempW.slice(i);
-			//net.layers{l}.k{i}{j} = (rand(net.layers{l}.kernelsize) - 0.5) * 2 * sqrt(6 / (fan_in + fan_out));
-			//fan_in = inputmaps * net.layers{l}.kernelsize ^ 2;
-			// fan_out = net.layers{l}.outputmaps * net.layers{l}.kernelsize ^ 2;
-			int fan_in = inputImageNum * filterDim *filterDim;
+			weightMatrix.rows(i*filterDim,(i+1)*filterDim-1) = tempW.slice(i);
+			/*int fan_in = inputImageNum * filterDim *filterDim;
 			int fan_out = outputImageNum * filterDim *filterDim;
-			weightMatrix.rows(i*filterDim,(i+1)*filterDim-1) = (randn(filterDim,filterDim)-0.5)*2*sqrt(6/(fan_in+fan_out));
+			weightMatrix.rows(i*filterDim,(i+1)*filterDim-1) = (randn(filterDim,filterDim)-0.5)*2*sqrt(6/(fan_in+fan_out));*/
 		}
 	
 	

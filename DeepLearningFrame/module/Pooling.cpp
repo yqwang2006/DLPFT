@@ -1,6 +1,6 @@
 #include "Pooling.h"
 using namespace dlpft::module;
-#define __CUDA__
+//#define __CUDA__
 #ifdef __CUDA__
 #include "../util/cupooling.h"
 #endif
@@ -109,8 +109,8 @@ arma::mat Pooling::down_sample(arma::mat data){
 				int start_j_loc = j * outputImageDim * outputImageDim;
 				for(int x = 0; x < outputImageDim; x++){
 					for(int y = 0; y < outputImageDim; y++){
-						pooling_result(start_j_loc+y*outputImageDim+x,i) = h_pooling_result[start_i_loc + start_j_loc + x * outputImageDim + y];
-						sampleLoc(start_j_loc+y*outputImageDim+x,i) = pooling_loc[start_i_loc + start_j_loc + x * outputImageDim + y];
+						pooling_result(start_j_loc+x*outputImageDim+y,i) = h_pooling_result[start_i_loc + start_j_loc + x * outputImageDim + y];
+						sampleLoc(start_j_loc+x*outputImageDim+y,i) = pooling_loc[start_i_loc + start_j_loc + x * outputImageDim + y];
 							
 					}
 				}
