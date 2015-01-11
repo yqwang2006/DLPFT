@@ -26,14 +26,15 @@ double dlpft::optimizer::SgdOptimizer::optimize(string varname){
 		
 		for(int s = 0;s <= data_length-batch_size;s += batch_size){
 			it ++;
-			/*if(it == momIncrease){
+			if(it == momIncrease){
 				mom = momentum;
-			}*/
+			}
 			int iter = 0;
 			for(int j = 0;j<batch_size;j++,iter++){
-				minibatch.col(iter) = dat.col(randperm[s+j]);
-				//minibatch.col(iter) = dat.col(s+j);
-				batchlabels.row(iter) = labels_opt.row(randperm[s+j]);
+				//minibatch.col(iter) = dat.col(randperm[s+j]);
+				//batchlabels.row(iter) = labels_opt.row(randperm[s+j]);
+				minibatch.col(iter) = dat.col(j);
+				batchlabels.row(iter) = labels_opt.row(j);
 			}
 
 			function_ptr->data = minibatch;

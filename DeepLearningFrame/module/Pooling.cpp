@@ -1,5 +1,6 @@
 #include "Pooling.h"
 using namespace dlpft::module;
+//#define __CUDA__
 #ifdef __CUDA__
 #include "../util/cupooling.h"
 #endif
@@ -88,24 +89,35 @@ arma::mat Pooling::down_sample(arma::mat data){
 		double *all_images = new double[samples_num * inputImageNum * inputImageDim * inputImageDim];
 		double *h_pooling_result = new double[samples_num * inputImageNum * outputImageDim * outputImageDim];
 		int *pooling_loc = new int[samples_num * inputImageNum * outputImageDim * outputImageDim];
-		for(int i = 0;i < data.size(); i++){
-			
-			all_images[i] = data(i);
-					
+		for(int i = 0;i < samples_num; i++){
+			int start_i_loc = i*inputImageNum * inputImageDim * inputImageDim;
+			for(int j = 0; j < inputImageNum; j++){
+				int start_j_loc = j * inputImageDim * inputImageDim;
+				for(int x = 0; x < inputImageDim; x++){
+					for(int y = 0; y < inputImageDim; y++){
+						all_images[start_i_loc + start_j_loc + x * inputImageDim + y] = data(start_j_loc+y*inputImageDim+x,i);
+					}
+				}
+			}
 			
 		}
 		cumaxpooling(all_images,h_pooling_result,pooling_loc,samples_num,inputImageDim,inputImageNum,outputImageDim,poolingDim);
 		
-		for(int i = 0;i < pooling_result.size(); i++){
-			
-			pooling_result(i) = h_pooling_result[i];
-			sampleLoc(i) = pooling_loc[i];
-						
+		for(int i = 0;i < samples_num; i++){
+			int start_i_loc = i*inputImageNum * outputImageDim * outputImageDim;
+			for(int j = 0; j < outputImageNum; j++){
+				int start_j_loc = j * outputImageDim * outputImageDim;
+				for(int x = 0; x < outputImageDim; x++){
+					for(int y = 0; y < outputImageDim; y++){
+						pooling_result(start_j_loc+x*outputImageDim+y,i) = h_pooling_result[start_i_loc + start_j_loc + x * outputImageDim + y];
+						sampleLoc(start_j_loc+x*outputImageDim+y,i) = pooling_loc[start_i_loc + start_j_loc + x * outputImageDim + y];
+							
+					}
+				}
+			}
 			
 		}
-		delete []all_images;
-		delete []h_pooling_result;
-		delete []pooling_loc;
+
 
 #else
 		for(int i = 0;i < samples_num;i++){
@@ -185,7 +197,6 @@ arma::mat Pooling::process_delta(arma::mat curr_delta){
 				temp_pool_id.reshape(outputImageDim,outputImageDim);
 				for(int row = 0;row < temp_curr_delta.n_rows; row ++){
 					for(int col = 0;col < temp_curr_delta.n_cols;col++){
-						//cout << temp_pool_id(row,col) << endl;
 						temp_delta(temp_pool_id(row,col)) = temp_curr_delta(row,col);
 					}
 				}

@@ -15,6 +15,9 @@ void ConvolveModule::initial_weights_bias(){
 		cube tempW = 0.1 * randn(filterDim,filterDim,filterNum);
 		for(int i = 0; i < filterNum; i++){
 			weightMatrix.rows(i*filterDim,(i+1)*filterDim-1) = tempW.slice(i);
+			/*int fan_in = inputImageNum * filterDim *filterDim;
+			int fan_out = outputImageNum * filterDim *filterDim;
+			weightMatrix.rows(i*filterDim,(i+1)*filterDim-1) = (randn(filterDim,filterDim)-0.5)*2*sqrt(6/(fan_in+fan_out));*/
 		}
 	
 	
@@ -110,6 +113,10 @@ arma::mat ConvolveModule::backpropagate(const arma::mat next_delta, const arma::
 }
 void ConvolveModule::calculate_grad_using_delta(const arma::mat input_data,const arma::mat delta, NewParam param,double weight_decay,arma::mat& Wgrad, arma::mat& bgrad){
 	//compute bgrad
+	clock_t start_time = clock();
+	clock_t end_time;
+	double duration = 0;
+	
 	int mbSize = input_data.n_cols;
 	double lambda = 3e-3;
 	Wgrad.set_size(filterDim*filterNum,filterDim);
@@ -119,7 +126,6 @@ void ConvolveModule::calculate_grad_using_delta(const arma::mat input_data,const
 	mat delta_i_k = zeros(outputImageDim*outputImageDim,mbSize);
 	cube all_images = arma::zeros(inputImageDim*inputImageDim,mbSize,1);
 	cube all_delta = zeros(outputImageDim*outputImageDim,mbSize,1);
-	cube temp_wgrad;
 	for(int i = 0; i < outputImageNum; i++){
 		for(int j = 0;j < inputImageNum;j++){
 			Wgrad_j_i = zeros(filterDim,filterDim);
@@ -135,7 +141,7 @@ void ConvolveModule::calculate_grad_using_delta(const arma::mat input_data,const
 			all_delta.slice(0) = delta_i_k;
 			all_delta.reshape(outputImageDim,outputImageDim,mbSize);
 
-			temp_wgrad = convn_cube(all_images,all_delta,"valid");
+			cube temp_wgrad = convn_cube(all_images,all_delta,"valid");
 
 			for(int k = 0;k < temp_wgrad.n_slices; k++){
 				Wgrad_j_i += temp_wgrad.slice(k);
@@ -143,8 +149,8 @@ void ConvolveModule::calculate_grad_using_delta(const arma::mat input_data,const
 			
 			
 			Wgrad.rows(filterDim * (i*inputImageNum + j),filterDim * (i*inputImageNum+j+1)-1) 
-				= ((double)1/mbSize)*Wgrad_j_i
-				+lambda*weightMatrix.rows(filterDim * (i*inputImageNum + j),filterDim * (i*inputImageNum + j + 1)-1);
+				= ((double)1/mbSize)*Wgrad_j_i;
+				//+lambda*weightMatrix.rows(filterDim * (i*inputImageNum + j),filterDim * (i*inputImageNum + j + 1)-1);
 		}
 
 		bgrad(i) = ((double)1/mbSize)*accu(delta.rows(i*outputImageDim*outputImageDim,(i+1)*outputImageDim*outputImageDim-1));
