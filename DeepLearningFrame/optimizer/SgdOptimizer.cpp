@@ -6,7 +6,7 @@ double dlpft::optimizer::SgdOptimizer::optimize(string varname){
 	arma::mat labels_opt = function_ptr->labels;
 	size_t data_dim = size(dat,0);
 	size_t data_length = size(dat,1);
-	double mom = 0.2;
+	double mom = 0.5;
 	int momIncrease = 100;
 	arma::mat velocity = zeros(size(x,0),size(x,1));
 	int it = 0;
