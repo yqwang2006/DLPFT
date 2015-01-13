@@ -7,7 +7,7 @@ double dlpft::optimizer::SgdOptimizer::optimize(string varname){
 	size_t data_dim = size(dat,0);
 	size_t data_length = size(dat,1);
 	double mom = 0.5;
-	int momIncrease = 20;
+	int momIncrease = 100;
 	arma::mat velocity = zeros(size(x,0),size(x,1));
 	int it = 0;
 	vector<int> randperm;
@@ -26,15 +26,14 @@ double dlpft::optimizer::SgdOptimizer::optimize(string varname){
 		
 		for(int s = 0;s <= data_length-batch_size;s += batch_size){
 			it ++;
-			if(it == momIncrease){
+			/*if(it == momIncrease){
 				mom = momentum;
-			}
+			}*/
 			int iter = 0;
 			for(int j = 0;j<batch_size;j++,iter++){
-				//minibatch.col(iter) = dat.col(randperm[s+j]);
-				//batchlabels.row(iter) = labels_opt.row(randperm[s+j]);
-				minibatch.col(iter) = dat.col(j);
-				batchlabels.row(iter) = labels_opt.row(j);
+				minibatch.col(iter) = dat.col(randperm[s+j]);
+				//minibatch.col(iter) = dat.col(s+j);
+				batchlabels.row(iter) = labels_opt.row(randperm[s+j]);
 			}
 
 			function_ptr->data = minibatch;

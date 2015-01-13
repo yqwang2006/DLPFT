@@ -40,6 +40,26 @@ bool dlpft::io::LoadData::load_data(arma::mat& data_mat){
 		matClose(pmatFile);
 		mxFree(initA);
 		return true;
+	}else if(file_type_name == "dat"){
+		FILE *fp = fopen(file_name.c_str(),"rb");
+		
+		int M, N;
+		int len = fread(&M, sizeof(int), 1, fp);
+		len = fread(&N, sizeof(int), 1, fp);
+
+		double *inputA = new double[M*N];
+		int reallen = fread(inputA, sizeof(double), M*N, fp);
+
+		if(reallen != M*N)
+			return false;
+		data_mat.set_size(M,N);
+		for(int i = 0;i < M; i++)
+			for(int j = 0;j < N; j++)
+				data_mat(i,j) = inputA[j*M+i];
+
+		fclose(fp);
+		delete []inputA;
+		return true;
 	}
 
 	load_stream.open(file_name.c_str(),std::fstream::in);

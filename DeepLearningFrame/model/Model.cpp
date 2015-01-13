@@ -43,8 +43,8 @@ Module* Model::create_module(NewParam& param,int& in_size,int& in_num,int layer_
 	string load_w = loadWeightFromFile;
 	stringstream layer_id_str;
 	layer_id_str << layer_id;
-	string w_addr = filePath + "WeightMat_" + layer_id_str.str() + ".txt";
-	string b_addr = filePath + "bias_" + layer_id_str.str() + ".txt";
+	string w_addr = filePath + "WeightMat_" + layer_id_str.str() + ".dat";
+	string b_addr = filePath + "bias_" + layer_id_str.str() + ".dat";
 	ActivationFunction act_choice = get_activation_function(act_func);
 	double weight_decay = atof(param.params[params_name[WEIGHTDECAY]].c_str());
 	Module* module;
@@ -139,7 +139,7 @@ arma::mat Model::predict(const arma::mat testdata, const arma::mat testlabels,ve
 	double dropoutfraction = atof(params[layerNumber].params[params_name[DROPOUTFRACTION]].c_str());
 	
 	arma::mat max_vals;
-	arma::mat pred_labels = zeros<arma::mat>(testdata.n_cols,size(testlabels,1));
+	arma::mat pred_labels = zeros<arma::mat>(testdata.n_cols,1);
 
 	for(int i = 0;i < layerNumber-1;i++){
 		features = modules[i]->forwardpropagate(features,params[i]);
