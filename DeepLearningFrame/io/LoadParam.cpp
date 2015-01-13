@@ -56,8 +56,10 @@ void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllData
 				continue;
 			}
 			if(varname == params_name[TRAINDATA]){
-				
-				data_info.train_data_info.name = values[0].replace(value.find("%"),1,":");
+				if( value.find("%") != string::npos )
+					data_info.train_data_info.name = values[0].replace(value.find("%"),1,":");
+				else
+					data_info.train_data_info.name = values[0];
 				string filetype = values[1];
 				if(filetype == "mat"){
 					data_info.train_data_info.var_name = values[2];
@@ -74,7 +76,10 @@ void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllData
 
 			}
 			if(varname == params_name[TRAINLABELS]){
-				data_info.train_labels_info.name = values[0].replace(value.find("%"),1,":");
+				if( value.find("%") != string::npos )
+					data_info.train_labels_info.name = values[0].replace(value.find("%"),1,":");
+				else
+					data_info.train_labels_info.name = values[0];
 				string filetype = values[1];
 				if(filetype == "mat"){
 					data_info.train_labels_info.var_name = values[2];
@@ -90,7 +95,10 @@ void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllData
 				continue;
 			}
 			if(varname == params_name[TESTDATA]){
-				data_info.test_data_info.name = values[0].replace(value.find("%"),1,":");
+				if( value.find("%") != string::npos )
+					data_info.test_data_info.name = values[0].replace(value.find("%"),1,":");
+				else
+					data_info.test_data_info.name = values[0];
 				string filetype = values[1];
 				if(filetype == "mat"){
 					data_info.test_data_info.var_name = values[2];
@@ -106,7 +114,10 @@ void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllData
 				continue;
 			}
 			if(varname == params_name[TESTLABELS]){
-				data_info.test_labels_info.name = values[0].replace(value.find("%"),1,":");
+				if( value.find("%") != string::npos )
+					data_info.test_labels_info.name = values[0].replace(value.find("%"),1,":");
+				else
+					data_info.test_labels_info.name = values[0];
 				string filetype = values[1];
 				if(filetype == "mat"){
 					data_info.test_labels_info.var_name = values[2];
@@ -122,7 +133,10 @@ void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllData
 				continue;
 			}
 			if(varname == params_name[FINETUNEDATA]){
-				data_info.finetune_data_info.name = values[0].replace(value.find("%"),1,":");
+				if( value.find("%") != string::npos )
+					data_info.finetune_data_info.name = values[0].replace(value.find("%"),1,":");
+				else
+					data_info.finetune_data_info.name = values[0];
 				string filetype = values[1];
 				if(filetype == "mat"){
 					data_info.finetune_data_info.var_name = values[2];
@@ -138,7 +152,10 @@ void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllData
 				continue;
 			}
 			if(varname == params_name[FINETUNELABELS]){
-				data_info.finetune_labels_info.name = values[0].replace(value.find("%"),1,":");
+				if( value.find("%") != string::npos )
+					data_info.finetune_labels_info.name = values[0].replace(value.find("%"),1,":");
+				else
+					data_info.finetune_labels_info.name = values[0];
 				string filetype = values[1];
 				if(filetype == "mat"){
 					data_info.finetune_labels_info.var_name = values[2];
@@ -159,7 +176,10 @@ void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllData
 			}
 			if(varname == params_name[WEIGHTADDRESS]){
 				
-				globalInfo.params[varname] = values[0].replace(value.find("%"),1,":");
+				if( value.find("%") != string::npos )
+					globalInfo.params[varname] = values[0].replace(value.find("%"),1,":");
+				else
+					globalInfo.params[varname] = values[0];
 				
 				continue;
 			}

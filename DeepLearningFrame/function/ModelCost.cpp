@@ -7,31 +7,31 @@ void ModelCost::initialParam(){
 }
 void ModelCost::modelff(const arma::mat inputdata,arma::mat *output,arma::mat* dropoutMask){
 	double dropoutfraction = atof(params[layer_num].params[params_name[DROPOUTFRACTION]].c_str());
-	mat print_data = inputdata;
-	ofstream ofs;
-	ofs.open("data.txt");
-	print_data.quiet_save(ofs,raw_ascii);
-	ofs.close();
+	//mat print_data = inputdata;
+	//ofstream ofs;
+	//ofs.open("data.txt");
+	//print_data.quiet_save(ofs,raw_ascii);
+	//ofs.close();
 	for(int i = 0;i < layer_num;i ++){
-		stringstream str_i;
-		str_i << i;
-		std::string wname = "Weight_"+str_i.str() +".txt";
-		string bname = "bias_"+str_i.str() + ".txt";
-		string outname = "out_"+str_i.str()+".txt";
-		ofs.open(wname);
-		modules[i]->weightMatrix.quiet_save(ofs,raw_ascii);
-		ofs.close();
-		ofs.open(bname);
-		modules[i]->bias.quiet_save(ofs,raw_ascii);
-		ofs.close();
+		//stringstream str_i;
+		//str_i << i;
+		//std::string wname = "Weight_"+str_i.str() +".txt";
+		//string bname = "bias_"+str_i.str() + ".txt";
+		//string outname = "out_"+str_i.str()+".txt";
+		//ofs.open(wname);
+		//modules[i]->weightMatrix.quiet_save(ofs,raw_ascii);
+		//ofs.close();
+		//ofs.open(bname);
+		//modules[i]->bias.quiet_save(ofs,raw_ascii);
+		//ofs.close();
 		if(i == 0){
-			output[i] = modules[i]->forwardpropagate(data,params[i]);
+			output[i] = modules[i]->forwardpropagate(inputdata,params[i]);
 		}else{
 			output[i] = modules[i]->forwardpropagate(output[i-1],params[i]);
 		}
-		ofs.open(outname);
+		/*ofs.open(outname);
 		output[i].quiet_save(ofs,raw_ascii);
-		ofs.close();
+		ofs.close();*/
 		if(dropoutfraction > 0 && i != layer_num-1){
 			arma::mat rand_mat = arma::randu(output[i].n_rows,output[i].n_cols);
 			arma::uvec indeies = find(output[i]>rand_mat);
@@ -68,20 +68,20 @@ double ModelCost::modelbp(const arma::mat* features,arma::mat* dropoutMask,arma:
 
 	outputdelta[layer_num] = -(desired_out - features[layer_num-1]);
 	arma::mat next_delta = outputdelta[layer_num];
-	ofstream ofs;
+	/*ofstream ofs;
 	ofs.open("d_o.txt");
 	outputdelta[layer_num].quiet_save(ofs,raw_ascii);
-	ofs.close();
+	ofs.close();*/
 
 	for(int i = layer_num-1;i >=0 ;i--){
 		
 		outputdelta[i] = modules[i]->backpropagate(next_delta,features[i],params[i]);
-		stringstream str_i;
+		/*stringstream str_i;
 		str_i << i;
 		std::string deltaname = "delta_"+str_i.str() +".txt";
 		ofs.open(deltaname);
 		outputdelta[i].quiet_save(ofs,raw_ascii);
-		ofs.close();
+		ofs.close();*/
 
 		if(i != layer_num-1 && dropoutfraction > 0){
 			outputdelta[i] = outputdelta[i] % dropoutMask[i];
@@ -126,7 +126,7 @@ double ModelCost::value_gradient(arma::mat& grad){
 	
 
 	//compute gradient using delta
-	ofstream ofs;
+	//ofstream ofs;
 	
 	int curr_loc = coefficient.size()-1;
 	for(int i = layer_num-1;i >=0 ;i--){
@@ -140,7 +140,7 @@ double ModelCost::value_gradient(arma::mat& grad){
 		else{
 			modules[i]->calculate_grad_using_delta( activations[i-1],delta[i],params[i],weight_decay,w_grad,b_grad);
 		}
-		stringstream str_i;
+		/*stringstream str_i;
 		str_i << i;
 		std::string wgradname = "wgrad_"+str_i.str() +".txt";
 		std::string bgradname = "bgrad_"+str_i.str() +".txt";
@@ -149,7 +149,7 @@ double ModelCost::value_gradient(arma::mat& grad){
 		ofs.close();
 		ofs.open(bgradname);
 		b_grad.quiet_save(ofs,raw_ascii);
-		ofs.close();
+		ofs.close();*/
 
 
 		grad.rows(curr_loc - b_grad.size()+1, curr_loc) = reshape(b_grad,b_grad.size(),1);

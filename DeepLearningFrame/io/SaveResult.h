@@ -31,42 +31,41 @@ namespace dlpft{
 					if(_access(param_dir.c_str(),6) == -1){
 						mkdir(param_dir.c_str());
 					}*/
-					string W_name = dir_name + "\\WeightMat_" + getstring(i) + ".mat";
+					string W_name = dir_name + "\\WeightMat_" + getstring(i) + ".dat";
+					FILE *wfp = fopen(W_name.c_str(),"w");
+
 					double *outA = new double[m[i]->weightMatrix.size()];  
 					int M = m[i]->weightMatrix.n_rows;
 					int N = m[i]->weightMatrix.n_cols;
+
+					fwrite(&M,sizeof(int),1,wfp);
+					fwrite(&N,sizeof(int),1,wfp);
+
 					for (int k=0; k<M; k++)  
 						for(int j = 0; j < N; j++)
-							outA[M*j+k] = m[i]->weightMatrix(k,j);  
-					MATFile *pmatFile = NULL;  
-					mxArray *pMxArray = NULL;
-					pmatFile = matOpen(W_name.c_str(),"w");  
-					pMxArray = mxCreateDoubleMatrix(M, N, mxREAL);  
-					mxSetData(pMxArray, outA);  
-					matPutVariable(pmatFile, "weightMatrix", pMxArray);  
-					matClose(pmatFile); 
-					mxFree(outA);
+							outA[M*j+k] = m[i]->weightMatrix(k,j);
+					fwrite(outA,sizeof(double),M*N,wfp);
+					fclose(wfp);
+					delete []outA;
+
 				}
 				if(params[params.size()-2].params[params_name[ALGORITHM]]=="SVM"){
 					string W_name = dir_name + "\\svmmodel.txt";
 					svm_save_model(W_name.c_str(),((SvmModule*)m[params.size()-1])->svmmodel); 
 				}else{
-					string W_name = dir_name + "\\WeightMat_" + getstring((int)(params.size()-2)) + ".mat";
+					string W_name = dir_name + "\\WeightMat_" + getstring((int)(params.size()-2)) + ".dat";
+					FILE *wfp = fopen(W_name.c_str(),"wb");
 					double *outA = new double[m[params.size()-2]->weightMatrix.size()];  
 					int M = m[params.size()-2]->weightMatrix.n_rows;
 					int N = m[params.size()-2]->weightMatrix.n_cols;
-					for (int i=0; i<M; i++)  
+					fwrite(&M,sizeof(int),1,wfp);
+					fwrite(&N,sizeof(int),1,wfp);
+					for (int k=0; k<M; k++)  
 						for(int j = 0; j < N; j++)
-							outA[M*j+i] = m[i]->weightMatrix(i,j);  
-					MATFile *pmatFile = NULL;  
-					mxArray *pMxArray = NULL;
-					pmatFile = matOpen(W_name.c_str(),"w");  
-					pMxArray = mxCreateDoubleMatrix(M, N, mxREAL);  
-					mxSetData(pMxArray, outA);  
-					matPutVariable(pmatFile, "weightMatrix", pMxArray);  
-					matClose(pmatFile); 
-					mxFree(outA);
-
+							outA[M*j+k] = m[params.size()-2]->weightMatrix(k,j);
+					fwrite(outA,sizeof(double),M*N,wfp);
+					fclose(wfp);
+					delete []outA;
 
 				}
 
@@ -82,23 +81,33 @@ namespace dlpft{
 					if(_access(param_dir.c_str(),6) == -1){
 						mkdir(param_dir.c_str());
 					}*/
-					string W_name = dir_name + "\\WeightMat_" + getstring(i) + ".mat";
-					string b_name = dir_name + "\\bias_" + getstring(i) + ".mat";
-					MATFile *pmatFile = NULL;  
-					mxArray *pMxArray = NULL;
-
+					string W_name = dir_name + "\\WeightMat_" + getstring(i) + ".dat";
+					string b_name = dir_name + "\\bias_" + getstring(i) + ".dat";
+					FILE *wfp = fopen(W_name.c_str(),"wb");
+					double *outA = new double[m[i]->weightMatrix.size()];  
 					int M = m[i]->weightMatrix.n_rows;
 					int N = m[i]->weightMatrix.n_cols;
-					double *outA = new double[M*N];  
+					fwrite(&M,sizeof(int),1,wfp);
+					fwrite(&N,sizeof(int),1,wfp);
 					for (int k=0; k<M; k++)  
 						for(int j = 0; j < N; j++)
-							outA[M*j+k] = m[i]->weightMatrix(k,j);  
+							outA[M*j+k] = m[i]->weightMatrix(k,j);
+					fwrite(outA,sizeof(double),M*N,wfp);
 					
-					pmatFile = matOpen(W_name.c_str(),"w");  
-					pMxArray = mxCreateDoubleMatrix(M, N, mxREAL);  
-					mxSetData(pMxArray, outA);  
-					matPutVariable(pmatFile, "weightMatrix", pMxArray);  
+					wfp = fopen(b_name.c_str(),"wb");
+					double *outB = new double[m[i]->bias.size()];
+					M = m[i]->bias.n_rows;
+					N = m[i]->bias.n_cols;
+					fwrite(&M,sizeof(int),1,wfp);
+					fwrite(&N,sizeof(int),1,wfp);
+					for (int k=0; k<M; k++)  
+						for(int j = 0; j < N; j++)
+							outB[M*j+k] = m[i]->bias(k,j);
 
+					fwrite(outB,sizeof(double),M*N,wfp);
+					fclose(wfp);
+					delete []outA;
+					delete []outB;
 					/*pmatFile = matOpen(b_name.c_str(),"w");
 					M = m[i]->bias.n_rows;
 					N = m[i]->bias.n_cols;
@@ -121,44 +130,39 @@ namespace dlpft{
 					string W_name = dir_name + "\\svmmodel.txt";
 					svm_save_model(W_name.c_str(),((SvmModule*)m[params.size()-2])->svmmodel); 
 				}else{
-					string W_name = dir_name + "\\WeightMat_" + getstring((int)(params.size()-2)) + ".mat";
-					string b_name = dir_name + "\\bias_" + getstring((int)(params.size()-2)) + ".mat";
+					string W_name = dir_name + "\\WeightMat_" + getstring((int)(params.size()-2)) + ".dat";
+					string b_name = dir_name + "\\bias_" + getstring((int)(params.size()-2)) + ".dat";
 
+					FILE *wfp = fopen(W_name.c_str(),"wb");
 					double *outA = new double[m[params.size()-2]->weightMatrix.size()];  
 					int M = m[params.size()-2]->weightMatrix.n_rows;
 					int N = m[params.size()-2]->weightMatrix.n_cols;
+					fwrite(&M,sizeof(int),1,wfp);
+					fwrite(&N,sizeof(int),1,wfp);
 					for (int k=0; k<M; k++)  
 						for(int j = 0; j < N; j++)
-							outA[M*j+k] = m[params.size()-2]->weightMatrix(k,j);  
-					MATFile *pmatFile = NULL;  
-					mxArray *pMxArray = NULL;
-					pmatFile = matOpen(W_name.c_str(),"w");  
-					pMxArray = mxCreateDoubleMatrix(M, N, mxREAL);  
-					mxSetData(pMxArray, outA);  
-					matPutVariable(pmatFile, "weightMatrix", pMxArray);  
-
-					/*pmatFile = matOpen(b_name.c_str(),"w");
+							outA[M*j+k] = m[params.size()-2]->weightMatrix(k,j);
+					fwrite(outA,sizeof(double),M*N,wfp);
+					
+					wfp = fopen(b_name.c_str(),"wb");
+					double *outB = new double[m[params.size()-2]->bias.size()];
 					M = m[params.size()-2]->bias.n_rows;
 					N = m[params.size()-2]->bias.n_cols;
-					pMxArray = mxCreateDoubleMatrix(M,N,mxREAL);
-					double *outB = new double[M*N];
-
+					fwrite(&M,sizeof(int),1,wfp);
+					fwrite(&N,sizeof(int),1,wfp);
 					for (int k=0; k<M; k++)  
 						for(int j = 0; j < N; j++)
-							outB[M*j+k] = m[params.size()-2]->weightMatrix(k,j);  
+							outB[M*j+k] = m[params.size()-2]->bias(k,j);
 
-					mxSetData(pMxArray,outB);
-					matPutVariable(pmatFile, "bias", pMxArray);
-					
-					mxFree(outB);*/
+					fwrite(outB,sizeof(double),M*N,wfp);
+					fclose(wfp);
+					delete []outA;
+					delete []outB;
 
-					matClose(pmatFile); 
-					mxFree(outA);
-					
 				}
 
 
-				string labels_name = dir_name+"\\predict_labels.mat";
+				string labels_name = dir_name+"\\predict_labels.txt";
 				
 				
 				

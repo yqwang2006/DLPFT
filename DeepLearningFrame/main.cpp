@@ -22,7 +22,7 @@ using namespace dlpft::model;
 using namespace dlpft::io;
 
 
-#define PREDICTONLY
+//#define PREDICTONLY
 
 //#define UNSUPERVISEDMODEL 1
 void load_data(DataInfo ,arma::mat&);
@@ -188,15 +188,13 @@ int main(int argc, char**argv){
 
 	}
 
-
-
-
 	if(global_info.params[params_name[MODELTYPE]] == "UnsuperviseModel"){
 
 		model.pretrain(train_data,params[0]);
 		if(data_addr.train_labels_info.name != ""){
 			model.train_classifier(train_data,train_labels,params[0]);
 		}
+		
 		if(finetune_data_switch && global_info.params[params_name[FINETUNESWITCH]] == "ON"){
 			LogOut << "Begin finetuning!" << endl;
 			cout << "Begin finetuning!" << endl;
