@@ -161,6 +161,18 @@ namespace dlpft{
 
 				}
 
+				string param_file_name = dir_name + "\\model.param";
+				ofstream paramofs;
+				paramofs.open(param_file_name);
+
+				int layer_num = params.size()-1;
+				paramofs << "Layer_num " << layer_num << endl;
+
+				for(int i = 0;i < params.size(); i++){
+					paramofs << params[i] << endl;
+				}
+				paramofs.close();
+
 
 				string labels_name = dir_name+"\\predict_labels.txt";
 				
