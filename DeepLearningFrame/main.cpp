@@ -87,19 +87,8 @@ int main(int argc, char**argv){
 
 	/*get the result file path to save the result files*/
 
-	string param_path = "param";
 
-	if((pos = paramFullpath.find(param_path)) != string::npos){
-		filedir = paramFullpath .replace(pos,param_path.length(),"result" + split_symbol) + paramFileName;
-	}else{
-		filedir = paramFullpath + "result" + split_symbol + paramFileName;
-	}
-	string snapshotdir = "snapshot"+ split_symbol +paramFileName;
-	if(_access(filedir.c_str(),6) == -1){
-		mkdir(filedir.c_str());
-	}
-
-	open_file(filedir,"LogOut.txt");
+	
 
 
 	/*load param file from param file*/
@@ -113,151 +102,168 @@ int main(int argc, char**argv){
 	load_param.load(params,data_addr,global_info);
 
 
+	int iter = 0;
+	for(iter = 0;iter < params.size();iter++)
+	{
+		string param_path = "param";
+		stringstream iter_str;
+		iter_str<<iter;
 
-
-
-	int layer_num = params[0].size();
-	int class_number = atoi(params[0][layer_num-2].params[params_name[HIDNUM]].c_str());
-
-
-	string init_mat_from_file = global_info.params[params_name[LOADWEIGHT]];
-	string file_path = global_info.params[params_name[WEIGHTADDRESS]];
-
-	arma::mat pred_labels;
-	double pred_acc = 0;
-
-	clock_t start,end;
-	double duration = 0;
-	start = clock();
-
-#ifndef PREDICTONLY
-	
-	arma::mat train_data,finetune_data;
-	arma::mat train_labels,finetune_labels;
-	//load train data
-	if(data_addr.train_data_info.name == ""){
-		LogOut << "Please set the address of the train data at the param file!" << endl;
-		cout << "Please set the address of the train data at the param file!" << endl;
-		exit(-1);
-	}
-
-	LogOut << "Loading train data!" << endl;
-	cout << "Loading train data!" << endl;
-
-	load_data(data_addr.train_data_info,train_data);
-	train_data = train_data.t();
-	if(data_addr.train_labels_info.name != ""){
-		load_data(data_addr.train_labels_info,train_labels);
-		train_labels(find(train_labels==0))+=class_number;
-	}
-
-
-
-	bool finetune_data_switch = false;
-
-	if(data_addr.finetune_data_info.name != "" && data_addr.finetune_labels_info.name != ""){
-		LogOut << "Loading finetune data!" << endl;
-		cout << "Loading finetune data!" << endl;
-		load_data(data_addr.finetune_data_info,finetune_data);
-		finetune_data = finetune_data.t();
-		load_data(data_addr.finetune_labels_info,finetune_labels);
-		finetune_data_switch = true;
-	}else if(data_addr.train_labels_info.name!=""){
-		finetune_data = train_data;
-		finetune_labels = train_labels;
-		finetune_data_switch = true;
-	}else{
-		finetune_data_switch = false;
-	}
-
-
-	int input_size = train_data.n_rows;
-
-	
-
-	LogOut << "Begin trainning!" << endl;
-	cout << "Begin trainning!" << endl;
-
-
-	//只训练第一个参数文件，此处可加循环将所有的参数文件都训练一遍。
-
-	Model model(input_size,params[0],init_mat_from_file,file_path);
-
-	//load test data, if test data == null, test labels must be null.
-	if(data_addr.test_data_info.name != ""){
-
-	}
-
-	if(global_info.params[params_name[MODELTYPE]] == "UnsuperviseModel"){
-
-		model.pretrain(train_data,params[0]);
-		if(data_addr.train_labels_info.name != ""){
-			model.train_classifier(train_data,train_labels,params[0]);
+		if((pos = paramFullpath.find(param_path)) != string::npos){
+			filedir = paramFullpath .replace(pos,param_path.length(),"result" + split_symbol) + paramFileName + iter_str.str();
+		}else{
+			filedir = paramFullpath + "result" + split_symbol + paramFileName + iter_str.str();
 		}
-		
-		if(finetune_data_switch && global_info.params[params_name[FINETUNESWITCH]] == "ON"){
-			LogOut << "Begin finetuning!" << endl;
-			cout << "Begin finetuning!" << endl;
-
-			model.train(finetune_data,finetune_labels,params[0]);
+		string snapshotdir = "snapshot"+ split_symbol +paramFileName + iter_str.str();
+		if(_access(filedir.c_str(),6) == -1){
+			mkdir(filedir.c_str());
 		}
 
-	}
-	else{
-		if(data_addr.train_labels_info.name == ""){
-			LogOut << "You must set the train labels! Because you choose the supervised model for train!" << endl;
-			cout << "You must set the train labels! Because you choose the supervised model for train!" << endl;
+
+		open_file(filedir,"LogOut.txt");
+
+		int layer_num = params[iter].size();
+		int class_number = atoi(params[iter][layer_num-2].params[params_name[HIDNUM]].c_str());
+
+
+		string init_mat_from_file = global_info.params[params_name[LOADWEIGHT]];
+		string file_path = global_info.params[params_name[WEIGHTADDRESS]];
+
+		arma::mat pred_labels;
+		double pred_acc = 0;
+
+		clock_t start,end;
+		double duration = 0;
+		start = clock();
+
+	#ifndef PREDICTONLY
+	
+		arma::mat train_data,finetune_data;
+		arma::mat train_labels,finetune_labels;
+		//load train data
+		if(data_addr.train_data_info.name == ""){
+			LogOut << "Please set the address of the train data at the param file!" << endl;
+			cout << "Please set the address of the train data at the param file!" << endl;
 			exit(-1);
 		}
-		model.train(train_data,train_labels,params[0]);
 
+		LogOut << "Loading train data!" << endl;
+		cout << "Loading train data!" << endl;
 
-	}
-
-#endif
-	arma::mat test_data, test_labels;
-
-
-	if(data_addr.test_data_info.name != ""){
-		LogOut << "Loading test data!" << endl;
-		cout << "Loading test data!" << endl;
-		load_data(data_addr.test_data_info,test_data);
-		test_data = test_data.t();
-#ifdef PREDICTONLY
-		int input_size = test_data.n_rows;
-		
-		Model model(input_size,params[0],init_mat_from_file,file_path);
-
-#endif
-
-		if(data_addr.test_labels_info.name != ""){
-			load_data(data_addr.test_labels_info,test_labels);
-
-			test_labels(find(test_labels==0))+=class_number;
-
-			LogOut << "Begin predicting!" << endl;
-			cout << "Begin predicting!" << endl;
-
-			pred_labels = model.predict(test_data,test_labels,params[0]);
-
-			pred_acc = model.predict_acc(pred_labels,test_labels,class_number);
-
-			LogOut << "predict accu: " << pred_acc*100 << "%"<< endl;
-			cout << "predict accu: " << pred_acc*100 << "%"<< endl;
+		load_data(data_addr.train_data_info,train_data);
+		train_data = train_data.t();
+		if(data_addr.train_labels_info.name != ""){
+			load_data(data_addr.train_labels_info,train_labels);
+			train_labels(find(train_labels==0))+=class_number;
 		}
-		string header_info = "Program consumed " + save_result.getstring(duration) + " s\n";
-		header_info += "The accuracy is " + save_result.getstring(pred_acc*100) + "%\n";
-		save_result.save_result(model.modules,params[0],filedir,pred_labels,header_info);
-	}
 
 
-	end = clock();
-	duration = (double)(end-start)/CLOCKS_PER_SEC;
-	LogOut << duration << endl;
+
+		bool finetune_data_switch = false;
+
+		if(data_addr.finetune_data_info.name != "" && data_addr.finetune_labels_info.name != ""){
+			LogOut << "Loading finetune data!" << endl;
+			cout << "Loading finetune data!" << endl;
+			load_data(data_addr.finetune_data_info,finetune_data);
+			finetune_data = finetune_data.t();
+			load_data(data_addr.finetune_labels_info,finetune_labels);
+			finetune_data_switch = true;
+		}else if(data_addr.train_labels_info.name!=""){
+			finetune_data = train_data;
+			finetune_labels = train_labels;
+			finetune_data_switch = true;
+		}else{
+			finetune_data_switch = false;
+		}
 
 
-	close_file();
+		int input_size = train_data.n_rows;
 
+	
+
+		LogOut << "Begin trainning!" << endl;
+		cout << "Begin trainning!" << endl;
+
+
+		//只训练第一个参数文件，此处可加循环将所有的参数文件都训练一遍。
+
+		Model model(input_size,params[iter],init_mat_from_file,file_path);
+
+		//load test data, if test data == null, test labels must be null.
+		if(data_addr.test_data_info.name != ""){
+
+		}
+
+		if(global_info.params[params_name[MODELTYPE]] == "UnsuperviseModel"){
+
+			model.pretrain(train_data,params[iter]);
+			if(data_addr.train_labels_info.name != ""){
+				model.train_classifier(train_data,train_labels,params[iter]);
+			}
+		
+			if(finetune_data_switch && global_info.params[params_name[FINETUNESWITCH]] == "ON"){
+				LogOut << "Begin finetuning!" << endl;
+				cout << "Begin finetuning!" << endl;
+
+				model.train(finetune_data,finetune_labels,params[iter]);
+			}
+
+		}
+		else{
+			if(data_addr.train_labels_info.name == ""){
+				LogOut << "You must set the train labels! Because you choose the supervised model for train!" << endl;
+				cout << "You must set the train labels! Because you choose the supervised model for train!" << endl;
+				exit(-1);
+			}
+			model.train(train_data,train_labels,params[iter]);
+
+
+		}
+
+	#endif
+		arma::mat test_data, test_labels;
+
+
+		if(data_addr.test_data_info.name != ""){
+			LogOut << "Loading test data!" << endl;
+			cout << "Loading test data!" << endl;
+			load_data(data_addr.test_data_info,test_data);
+			test_data = test_data.t();
+	#ifdef PREDICTONLY
+			int input_size = test_data.n_rows;
+		
+			Model model(input_size,params[0],init_mat_from_file,file_path);
+
+	#endif
+
+			if(data_addr.test_labels_info.name != ""){
+				load_data(data_addr.test_labels_info,test_labels);
+
+				test_labels(find(test_labels==0))+=class_number;
+
+				LogOut << "Begin predicting!" << endl;
+				cout << "Begin predicting!" << endl;
+
+				pred_labels = model.predict(test_data,test_labels,params[iter]);
+
+				pred_acc = model.predict_acc(pred_labels,test_labels,class_number);
+
+				LogOut << "predict accu: " << pred_acc*100 << "%"<< endl;
+				cout << "predict accu: " << pred_acc*100 << "%"<< endl;
+			}
+			string header_info = "Program consumed " + save_result.getstring(duration) + " s\n";
+			header_info += "The accuracy is " + save_result.getstring(pred_acc*100) + "%\n";
+			save_result.save_result(model.modules,params[iter],filedir,pred_labels,header_info);
+		}
+
+
+		end = clock();
+		duration = (double)(end-start)/CLOCKS_PER_SEC;
+		LogOut << duration << endl;
+
+
+		close_file();
+		}
 	return 0;
 }
 

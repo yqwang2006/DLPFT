@@ -209,9 +209,9 @@ void dlpft::io::LoadParam::load(vector<vector<NewParam>>& result_vector, AllData
 				assert(values.size()==3+1);//1means mode,3 means three values;
 				vector<string> var_values;
 
-				double minval = atof(values[0].c_str());
-				double step = atof(values[1].c_str());
-				double maxval = atof(values[2].c_str());
+				double minval = atof(values[1].c_str());
+				double step = atof(values[2].c_str());
+				double maxval = atof(values[3].c_str());
 
 				for(double var = minval;var <= maxval;var += step){
 					char var_char[128];
