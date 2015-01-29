@@ -14,7 +14,7 @@ void ELM_LRF::train(const arma::mat data, const arma::mat labels, NewParam param
 	mat T = zeros(class_num, numberofsamples);
 	if (elm_type != "REGESSION"){
 
-		T = onehot_elm(class_num, numberofsamples ,labels);
+		T = onehot(class_num, numberofsamples ,labels);
 
 		mat H = data;
 

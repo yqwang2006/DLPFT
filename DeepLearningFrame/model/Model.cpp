@@ -16,8 +16,6 @@ void Model::pretrain(const arma::mat data, vector<NewParam> params){
 			}
 			
 		}
-	}else if((params[layerNumber-1].params[params_name[ALGORITHM]] == "ELM")){
-		
 	}else{
 		for(int i = 0;i < layerNumber;i++){
 			modules[i]->pretrain(features,params[i]);
@@ -47,6 +45,8 @@ void Model::train_classifier(const arma::mat data, const arma::mat labels, vecto
 		((SvmModule *)modules[layerNumber-1])->train(features,labels,param[layerNumber-1]);
 	}else if(param[layerNumber-1].params[params_name[ALGORITHM]] == "ELM"){
 		((DELM *)modules[layerNumber-1])->train(features,labels,param[layerNumber-1]);
+	}else if(param[layerNumber-1].params[params_name[ALGORITHM]] == "ELM_LRF"){
+		((ELM_LRF *)modules[layerNumber-1])->train(features,labels,param[layerNumber-1]);
 	}
 	
 }
@@ -77,6 +77,9 @@ Module* Model::create_module(NewParam& param,int& in_size,int& in_num,int layer_
 		in_size = out_size;
 	}else if(m_name == "ELM"){
 		module = new DELM(in_size,out_size,load_w,w_addr,b_addr,act_choice,weight_decay);
+		in_size = out_size;
+	}else if(m_name == "ElmAutoEncoder"){
+		module = new ElmAutoEncoder(in_size,out_size,load_w,w_addr,b_addr,act_choice,weight_decay);
 		in_size = out_size;
 	}else if(m_name == "ELM_LRF"){
 		module = new ELM_LRF(in_size,out_size,load_w,w_addr,b_addr,act_choice,weight_decay);

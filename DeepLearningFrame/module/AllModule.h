@@ -11,6 +11,7 @@
 #include "SvmModule.h"
 #include "DELM.h"
 #include "ELM_LRF.h"
+#include "ElmAutoEncoder.h"
 using namespace dlpft::module;
 
 #endif

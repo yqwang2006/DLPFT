@@ -12,7 +12,7 @@ namespace dlpft{
 				const string load_w = "NO",const string w_addr = "",const string b_addr = "",
 				const ActivationFunction active_func=SIGMOIDFUNC,const double weightdecay = 3e-3)
 				:Module(in_size,out_size,load_w,w_addr,b_addr,active_func,weightdecay){
-				name = "DELM";
+				name = "ELM_LRF";
 				initial_weights_bias();
 			}
 			~ELM_LRF(){
