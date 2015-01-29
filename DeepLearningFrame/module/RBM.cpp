@@ -7,11 +7,9 @@ void RBM::pretrain(const arma::mat data,NewParam param){
 	int max_epoch = atoi(param.params[params_name[MAXEPOCH]].c_str());
 	int batch_size = atoi(param.params[params_name[BATCHSIZE]].c_str());
 	double learn_rate = atof(param.params[params_name[LEARNRATE]].c_str());
+	double weightcost = atof(param.params[params_name[WEIGHTDECAY]].c_str());
 
-
-	double momentum = 0.5;
-
-	double weightcost = 0.0002;
+	double momentum = atof(param.params[params_name[MOMENTUM]].c_str());
 
 	int sample_num = data.n_cols;
 	int visible_size = data.n_rows;
@@ -158,6 +156,6 @@ void RBM::initial_weights_bias(){
 }
 void RBM::calculate_grad_using_delta(const arma::mat input_data,const arma::mat delta,NewParam param,double weight_decay,arma::mat& Wgrad, arma::mat& bgrad){
 	int lambda = atoi(param.params[params_name[WEIGHTDECAY]].c_str());
-	Wgrad = ((double)1/input_data.n_cols)*delta * input_data.t();// + 0.003 * weightMatrix;
+	Wgrad = ((double)1/input_data.n_cols)*delta * input_data.t() + lambda * weightMatrix;
 	bgrad = sum(delta,1)/input_data.n_cols;
 }

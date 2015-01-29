@@ -12,9 +12,10 @@ void ConvolveModule::initial_weights_bias(){
 		bias = zeros(outputImageNum,1);
 		weightMatrix = zeros(filterDim*filterNum,filterDim);
 
-		cube tempW = 0.1 * randn(filterDim,filterDim,filterNum);
+		//cube tempW = 0.1 * randn(filterDim,filterDim,filterNum);
 		for(int i = 0; i < filterNum; i++){
-			weightMatrix.rows(i*filterDim,(i+1)*filterDim-1) = tempW.slice(i);
+			//weightMatrix.rows(i*filterDim,(i+1)*filterDim-1) = tempW.slice(i);
+			weightMatrix.rows(i*filterDim,(i+1)*filterDim-1) = 2*randu(filterDim,filterDim)-1;
 			/*int fan_in = inputImageNum * filterDim *filterDim;
 			int fan_out = outputImageNum * filterDim *filterDim;
 			weightMatrix.rows(i*filterDim,(i+1)*filterDim-1) = (randn(filterDim,filterDim)-0.5)*2*sqrt(6/(fan_in+fan_out));*/

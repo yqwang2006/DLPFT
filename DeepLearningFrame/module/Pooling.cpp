@@ -40,6 +40,27 @@ arma::mat Pooling::down_sample(arma::mat data){
 				sampleLoc.col(i).rows(j*outputImageDim*outputImageDim,(j+1)*outputImageDim*outputImageDim-1) = reshape(temp_pool_id,temp_pool_id.size(),1);
 			}
 		}
+	}else if(poolingType == "SQUAREROOT"){
+		for(int i = 0;i < samples_num;i++){
+			for(int j = 0;j < inputImageNum;j++){
+				image = data.col(i).rows(j*inputImageDim*inputImageDim,(j+1)*inputImageDim*inputImageDim-1);
+				image.reshape(inputImageDim,inputImageDim);
+
+
+				for(int poolrow = 0; poolrow < outputImageDim; poolrow ++){
+					int offsetrow = poolrow*poolingDim;
+					for(int poolcol = 0;poolcol < outputImageDim; poolcol++){
+						int offsetcol = poolcol*poolingDim;
+						patch = image.submat(offsetrow,offsetcol,offsetrow+poolingDim-1,offsetcol+poolingDim-1);
+
+						temp_pooling_result(poolrow,poolcol) = sqrt(arma::accu(patch%patch));
+					}
+				}
+
+				pooling_result.col(i).rows(j*outputImageDim*outputImageDim,(j+1)*outputImageDim*outputImageDim-1) = reshape(temp_pooling_result,temp_pooling_result.size(),1);
+				sampleLoc.col(i).rows(j*outputImageDim*outputImageDim,(j+1)*outputImageDim*outputImageDim-1) = reshape(temp_pool_id,temp_pool_id.size(),1);
+			}
+		}
 	}else if(poolingType == "STOCHASTIC"){
 		for(int i = 0;i < samples_num;i++){
 			for(int j = 0;j < inputImageNum;j++){
