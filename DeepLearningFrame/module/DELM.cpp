@@ -53,8 +53,11 @@ void DELM::train(const arma::mat data, const arma::mat labels, NewParam param){
 }
 
 void DELM::initial_weights_bias(){
-		srand(unsigned(time(NULL)));
-		weightMatrix = randu(outputSize,inputSize)*2-1;
+		/*srand(unsigned(time(NULL)));
+		weightMatrix = randn(outputSize,inputSize)*2-1;
+		bias = arma::randn(outputSize,1);*/
+		//srand(unsigned(time(NULL)));
+		weightMatrix = 2 * arma::randu(outputSize,inputSize)-1;
 		bias = arma::randu(outputSize,1);
 	
 }
