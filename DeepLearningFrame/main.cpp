@@ -123,6 +123,12 @@ int main(int argc, char**argv){
 		open_file(filedir,"LogOut.txt");
 
 		int layer_num = params[iter].size();
+		int class_number;
+		if(params[iter][layer_num-2].params[params_name[ALGORITHM]] == "ELM" || params[iter][layer_num-2].params[params_name[ALGORITHM]] == "ELM_LRF" ){
+			class_number = atoi(params[iter][layer_num-2].params[params_name[ELMCLASSNUM]].c_str());
+		}else {
+			class_number = atoi(params[iter][layer_num-2].params[params_name[HIDNUM]].c_str());
+		}
 		int class_number = atoi(params[iter][layer_num-2].params[params_name[HIDNUM]].c_str());
 
 
