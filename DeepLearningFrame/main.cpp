@@ -129,7 +129,7 @@ int main(int argc, char**argv){
 		}else {
 			class_number = atoi(params[iter][layer_num-2].params[params_name[HIDNUM]].c_str());
 		}
-		int class_number = atoi(params[iter][layer_num-2].params[params_name[HIDNUM]].c_str());
+		class_number = atoi(params[iter][layer_num-2].params[params_name[HIDNUM]].c_str());
 
 
 		string init_mat_from_file = global_info.params[params_name[LOADWEIGHT]];

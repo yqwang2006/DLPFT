@@ -31,6 +31,7 @@ namespace dlpft{
 
 			void calculate_grad_using_delta(const mat input_data,const mat delta,NewParam param,double weight_decay, mat& Wgrad, mat& bgrad){};
 
+			mat procrustNew(mat A, mat B);
 		};
 	};
 };
