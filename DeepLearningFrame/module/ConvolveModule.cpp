@@ -1,5 +1,6 @@
 #include "ConvolveModule.h"
 #include "../util/convolve.h"
+#include "../util/convnfft.h"
 using namespace dlpft::module;
 void ConvolveModule::initial_weights_bias(){
 	if(load_weight == "YES"){
@@ -25,7 +26,8 @@ void ConvolveModule::initial_weights_bias(){
 }
 
 arma::mat ConvolveModule::forwardpropagate(const arma::mat data,  NewParam param){
-	
+	clock_t start,stop;
+	start = clock();
 
 	const int samples_num = data.n_cols;
 	int outputMapSize = outputImageDim * outputImageDim;
@@ -59,6 +61,10 @@ arma::mat ConvolveModule::forwardpropagate(const arma::mat data,  NewParam param
 		}
 
 	all_features = active_function(activeFuncChoice,all_features);
+
+	stop = clock();
+	double dur = (double)(stop-start)/CLOCKS_PER_SEC;
+	cout << "convn takes " << dur << "s" << endl;
 	return all_features;
 }
 arma::mat ConvolveModule::process_delta(arma::mat curr_delta){

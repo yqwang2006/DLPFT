@@ -40,6 +40,12 @@ int main(int argc, char**argv){
 	//mat B = A.slice(0);
 	//cout << reshape(B,6,2) << endl;
 
+	mat A = randn(4,4);
+	mat B = "0.1,0.2;0.3,0.4";
+	cout << B << endl;
+	cx_mat C = arma::fft2(B,5,5);
+	cout << C << endl;
+
 
 	//get_device_info();
 	string paramFileFullPath;

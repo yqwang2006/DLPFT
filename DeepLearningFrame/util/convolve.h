@@ -56,7 +56,7 @@ static arma::cube rot(arma::cube W,int k){
 	}
 	return B;
 }
-static arma::mat convn(const arma::mat image, const arma::mat W, string info){
+static arma::mat convn(const arma::mat image, const arma::mat W, std::string info){
 	int image_dim,conv_dim;
 	int filter_dim = W.n_cols;
 
@@ -90,7 +90,7 @@ static arma::mat convn(const arma::mat image, const arma::mat W, string info){
 
 	return feature;
 }
-static arma::cube convn_cube(const arma::cube images, const arma::mat W, string info){
+static arma::cube convn_cube(const arma::cube images, const arma::mat W, std::string info){
 	int image_dim,conv_dim;
 	int filter_dim = W.n_cols;
 	int sample_num = images.n_slices;
@@ -112,7 +112,7 @@ static arma::cube convn_cube(const arma::cube images, const arma::mat W, string 
 		feature = arma::zeros(conv_dim,conv_dim,sample_num);
 		filter = rot(W,2);
 	}
-	arma::cube filter_scale = zeros(filter_dim,filter_dim,sample_num);	
+	arma::cube filter_scale = arma::zeros(filter_dim,filter_dim,sample_num);	
 	for(int i = 0;i < sample_num; i++){
 		filter_scale.slice(i) = filter;
 	}
@@ -155,7 +155,7 @@ static arma::cube convn_cube(const arma::cube images, const arma::mat W, string 
 
 	return feature;
 }
-static arma::cube convn_cube(const arma::cube images, const arma::cube W, string info){
+static arma::cube convn_cube(const arma::cube images, const arma::cube W, std::string info){
 	int image_dim,conv_dim;
 	int filter_dim = W.n_cols;
 	int sample_num = images.n_slices;

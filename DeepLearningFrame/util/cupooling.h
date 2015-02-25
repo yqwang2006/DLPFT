@@ -1,2 +1,0 @@
-#define EXPORT extern "C"
-EXPORT int cumaxpooling(double* all_images, double* pooling_result, int* pooling_loc, int samples_num, int input_image_dim, int input_image_num, int output_image_dim, int pooling_dim);
